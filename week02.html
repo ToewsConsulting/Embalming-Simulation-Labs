@@ -1,0 +1,995 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Prep Room Ready</title><meta name="theme-color" content="#1b2329"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="2244 Labs"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><style>.homelink{display:inline-block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none;margin-bottom:4px}.homelink:hover{color:var(--accent)}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: case-file strip on top, one working step at a time; exam = prep table chart beside zoom + exam panel */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --ink:#1b2329; --muted:#56636d; --line:#cdd5db;
+  --accent:#b8325a; --ok:#2f7d5b; --ok-soft:#e1f1e9; --warn:#a85f17; --warn-soft:#f8ecdf; --bad:#a3333d; --bad-soft:#f7e3e5;
+  --table:#d9dfe4; --table-edge:#aab4bc;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171b; --surface:#1b2227; --ink:#e6ebee; --muted:#97a4ad; --line:#2f3a41;
+  --accent:#e56c90; --ok:#5fc295; --ok-soft:#173027; --warn:#e3a35a; --warn-soft:#38291a; --bad:#ec7c86; --bad-soft:#3a1d21;
+  --table:#2a3238; --table-edge:#46525b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171b; --surface:#1b2227; --ink:#e6ebee; --muted:#97a4ad; --line:#2f3a41;
+  --accent:#e56c90; --ok:#5fc295; --ok-soft:#173027; --warn:#e3a35a; --warn-soft:#38291a; --bad:#ec7c86; --bad-soft:#3a1d21;
+  --table:#2a3238; --table-edge:#46525b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+*{box-sizing:border-box}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+header.tag{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.tag h1{font-family:var(--f-display);font-weight:700;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em}
+.tag .course{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.steps{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.steps li{font-family:var(--f-display);font-size:.95rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--line);border-radius:3px;color:var(--muted);background:var(--surface)}
+.steps li.on{border-color:var(--accent);color:var(--accent)}
+.steps li.done{color:var(--ok);border-color:var(--ok)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;min-width:0}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.6rem;margin:0;line-height:1.1;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0;letter-spacing:.02em}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+label{font-weight:600;font-size:.92rem}
+input[type=text],textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;width:100%}
+textarea{min-height:150px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;background:var(--accent);color:var(--surface);border:0;border-radius:4px;padding:10px 18px;align-self:flex-start}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.file{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:0}
+.file div{background:var(--surface);padding:10px 12px;min-width:0}
+.file dt{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.file dd{margin:2px 0 0;font-weight:500}
+.request{border-left:3px solid var(--accent);padding:6px 0 6px 14px;font-style:italic}
+.two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:minmax(0,1fr)}}
+.chart{background:var(--table);border:1px solid var(--table-edge);border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chart svg{width:100%;max-width:470px;height:auto;display:block}
+.legend{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.zoomrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:460px){.zoomrow{grid-template-columns:minmax(0,1fr)}}
+.zoom{background:var(--table);border:1px solid var(--table-edge);border-radius:8px;overflow:hidden;max-width:220px}
+.zoom svg{display:block;width:100%;height:auto}
+.spot{cursor:pointer}
+.spot .ring{fill:#ffffff;fill-opacity:.55;stroke:#b8325a;stroke-width:3.5}
+.spot .core{fill:#b8325a}
+.spot.sel .ring{stroke-width:6;fill-opacity:.2}
+.spot.done .ring{stroke:#2f7d5b;fill:#e1f1e9;fill-opacity:.9}
+.spot.wrongspot .ring{stroke:#a85f17;fill:#f8ecdf;fill-opacity:.95}
+.spot.wrongspot .pulse{stroke:#a85f17}
+.spot.picked .ring{stroke:#1b2329;fill:#ffffff;fill-opacity:.85}
+.choice.picked{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.spot:focus{outline:none}
+.spot:focus-visible .ring{stroke-width:6}
+.pulse{fill:none;stroke:#b8325a;stroke-width:3;opacity:.6;transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.7}to{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:0}}
+.progress{font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--ok);transition:width .3s}
+.obs{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.choices.list{grid-template-columns:minmax(0,1fr)}
+.choice{text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px 12px;line-height:1.4}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.choice.right{border-color:var(--ok);background:var(--ok-soft)}
+.choice:disabled{cursor:default}
+.note{border-radius:4px;padding:10px 14px;font-size:.93rem}
+.note.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.note.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.note.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.event{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--bad);border:1px solid var(--bad);border-radius:3px;padding:2px 8px;align-self:flex-start}
+.scene{font-size:1.02rem}
+.findings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;font-size:.88rem}
+.findings li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0}
+.findings .v{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);text-align:right}
+.trail{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.trail li{border-left:3px solid var(--ok);padding:2px 0 2px 10px}
+.trail li.detour{border-left-color:var(--bad)}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.qcount{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.score{display:flex;gap:12px;flex-wrap:wrap}
+.score div{border:1px solid var(--line);border-radius:4px;padding:8px 14px;background:var(--bg)}
+.score b{font-family:var(--f-display);font-size:1.6rem;display:block;line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.reportbox{border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+.reportbox .bar2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--ink);color:var(--bg);padding:8px 12px}
+.reportbox .bar2 span{font-family:var(--f-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.reportbox .btn{background:var(--bg);color:var(--ink)}
+pre.report{font-family:var(--f-mono);font-size:.8rem;line-height:1.55;background:var(--surface);padding:16px;white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto;margin:0;user-select:text}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.two.wide{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)}
+@media (max-width:820px){.two.wide{grid-template-columns:minmax(0,1fr)}}
+.shelfwrap{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:14px;align-items:start}
+@media (max-width:560px){.shelfwrap{grid-template-columns:minmax(0,1fr)}}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;background:var(--table);border:1px solid var(--table-edge);border-bottom:8px solid var(--table-edge);border-radius:6px;padding:10px}
+.bottle{display:flex;flex-direction:column;align-items:center;gap:2px;background:transparent;border:2px solid transparent;border-radius:6px;padding:6px 4px;color:var(--ink);text-align:center;transition:transform .15s}
+.bottle svg{width:54px;height:auto;display:block}
+.bottle:hover:not(:disabled){transform:translateY(-3px);border-color:var(--accent)}
+.bottle:disabled{cursor:default}
+.bottle.in{opacity:.45}
+.bottle.no{border-color:var(--warn);background:var(--warn-soft)}
+.bottle .bn{font-family:var(--f-display);font-weight:600;font-size:.95rem;line-height:1.1}
+.bottle .bs{font-size:.74rem;line-height:1.2;color:var(--muted)}
+.bottle .bt{font-family:var(--f-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ok)}
+.bottle .bt.x{color:var(--warn)}
+.tank{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--bg)}
+.tankimg svg{width:110px;height:auto;display:block;margin:0 auto}
+details.calc{border:1px solid var(--line);border-radius:6px;padding:10px 14px;background:var(--bg)}
+details.calc summary{font-family:var(--f-display);font-weight:600;font-size:1.1rem;letter-spacing:.03em;cursor:pointer}
+.seg{gap:0}
+.segb{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;font-size:.88rem}
+.segb:first-child{border-radius:4px 0 0 4px}.segb:last-child{border-radius:0 4px 4px 0;border-left:0}
+.segb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.cgrid label{display:flex;flex-direction:column;gap:4px;font-size:.85rem}
+.cgrid input{padding:8px 10px}
+.cgrid select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px}
+.calcout{font-family:var(--f-mono);font-size:.95rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.mixer{display:grid;grid-template-columns:130px minmax(0,1fr);gap:16px;border:2px solid var(--ink);border-radius:6px;padding:14px;background:var(--bg)}
+@media (max-width:520px){.mixer{grid-template-columns:minmax(0,1fr)}}
+.mixer .tankimg svg{width:120px}
+.stps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stp{display:flex;flex-direction:column;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.stl{font-size:.8rem;font-weight:600}
+.sv{font-family:var(--f-display);font-weight:600;font-size:1.25rem;min-width:5.5em;text-align:center;font-variant-numeric:tabular-nums}
+.ssub{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.sb{width:34px;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font-size:1.2rem;line-height:1}
+.sb:hover:not(:disabled){border-color:var(--accent)}
+.sb:disabled{opacity:.4;cursor:not-allowed}
+.gauge{display:flex;flex-direction:column;gap:3px}
+.gtrack{position:relative;height:16px;background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.gband{position:absolute;top:0;bottom:0;background:var(--ok-soft);border-left:2px solid var(--ok);border-right:2px solid var(--ok)}
+.gfill{position:absolute;left:0;top:4px;bottom:4px;background:var(--muted);border-radius:0 2px 2px 0;transition:width .2s}
+.gfill.in{background:var(--ok)}.gfill.low,.gfill.high,.gfill.over{background:var(--warn)}
+.gticks{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
+.strength{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.strength b{font-family:var(--f-display);font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.strength.in b{color:var(--ok)}.strength.low b,.strength.high b,.strength.over b{color:var(--warn)}
+.formula{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.chips li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:4px 4px 4px 10px;font-size:.86rem}
+.rm{font-size:.78rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:3px;padding:3px 8px}
+.rm:hover{border-color:var(--accent)}
+</style>
+<style>
+.room{background:var(--table);border:1px solid var(--table-edge);border-radius:10px;padding:10px}
+.room svg{width:100%;height:auto;display:block}
+.qlabel{font-weight:600;font-size:.92rem}
+.flag{display:flex;gap:8px;flex-wrap:wrap}
+.flag .choice{flex:1 1 140px;text-align:center}
+.ppe{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.ppe button{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:6px;padding:10px 12px;line-height:1.3}
+.ppe button .pn{font-weight:600}
+.ppe button .pd{font-size:.8rem;color:var(--muted)}
+.ppe button.on{border-color:var(--ink);background:var(--bg)}
+.ppe button.on::after{content:"Selected";font-family:var(--f-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ok)}
+.tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;background:var(--table);border:1px solid var(--table-edge);border-radius:8px;padding:10px}
+.inst{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--surface);border:2px solid transparent;border-radius:6px;padding:8px 6px;color:var(--ink);text-align:center}
+.inst svg{width:100%;max-width:150px;height:auto}
+.inst span{font-size:.8rem;font-weight:600;line-height:1.2}
+.inst:hover:not(:disabled){border-color:var(--accent)}
+.inst.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.inst.right{border-color:var(--ok);background:var(--ok-soft)}
+.inst:disabled{cursor:default}
+.hs{cursor:pointer}
+.hs .ring{fill:#ffffff;fill-opacity:.6;stroke:#b8325a;stroke-width:3}
+.hs .core{fill:#b8325a}
+.hs.picked .ring{stroke:#1b2329;fill-opacity:.9}
+.hs.done .ring{stroke:#2f7d5b;fill:#e1f1e9;fill-opacity:.95}
+.hs.wrongspot .ring{stroke:#a85f17;fill:#f8ecdf;fill-opacity:.95}
+.hs.sel .ring{stroke-width:5}
+.hs:focus{outline:none}.hs:focus-visible .ring{stroke-width:5}
+.two.roomwide{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.room.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:820px){.two.roomwide{grid-template-columns:minmax(0,1fr)}.room.sticky{position:static}}
+.hs .ring{stroke-width:2.5}
+.pts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center}
+.pt{width:40px;height:40px;border-radius:50%;border:2px solid #b8325a;background:var(--surface);color:var(--ink);font-weight:700}
+.pt.pk{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.pt.done{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.pt.wr{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.pt.sel{outline:3px solid var(--accent);outline-offset:2px}
+.rg{cursor:pointer;outline:none}
+.rg rect{fill:transparent;stroke:transparent;stroke-width:3}
+.rg:hover rect,.rg:focus-visible rect{fill:rgba(184,50,90,.10);stroke:#b8325a;stroke-dasharray:6 4}
+.rg.found rect{fill:transparent}
+.rg.open rect{stroke:#2f7d5b;fill:rgba(47,125,91,.10)}
+.icard{border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:0 6px 6px 0;background:var(--surface);padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.ik{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ok)}
+.two.ppewrap{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)}
+.ppefig{background:linear-gradient(var(--bg),var(--table))}
+.ppefig svg{max-height:440px;width:100%;height:auto;display:block}
+@media (max-width:820px){.two.ppewrap{grid-template-columns:minmax(0,1fr)}.ppefig svg{max-height:300px}}
+.prompt{border:2px solid var(--accent);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;background:var(--surface);animation:pop 1.1s ease-out}
+.prompt .pk{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.prompt h2{margin:0}
+@keyframes pop{0%{box-shadow:0 0 0 0 rgba(184,50,90,.55);transform:scale(1.015)}60%{box-shadow:0 0 0 10px rgba(184,50,90,0);transform:scale(1)}100%{box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.prompt{animation:none}}
+.note.fresh{animation:pop 1.1s ease-out}
+.zoomwrap{overflow:hidden}
+.zoomer{transform-origin:63% 89%;transition:transform 1.6s ease-in-out}
+.zoomer.in{transform:scale(2.4)}
+@media (prefers-reduced-motion:reduce){.zoomer{transition:none}}
+.jugs{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:8px}
+.jug{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 8px;text-align:center}
+.jug svg{width:100%;max-width:110px;height:auto;background:var(--table);border-radius:6px}
+.jug .jn{font-weight:700;font-size:.88rem;line-height:1.2}
+.jug .jt{font-size:.78rem;color:var(--muted);line-height:1.3}
+.jug:hover:not(:disabled){border-color:var(--accent)}
+.jug.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.jug.right{border-color:var(--ok);background:var(--ok-soft)}
+.jug:disabled{cursor:default}
+.findbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:var(--surface);border:2px solid var(--accent);border-radius:8px;padding:8px 12px;margin-bottom:8px;animation:pop 1.1s ease-out}
+.findbar.ok{border-color:var(--ok);animation:none}
+.findbar .fk{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.findbar .ft{font-family:var(--f-display);font-weight:700;font-size:1.35rem;line-height:1.1;flex:1 1 auto}
+.findbar .fm{flex-basis:100%;font-size:.9rem;color:var(--warn);background:var(--warn-soft);border-radius:4px;padding:4px 8px}
+.navar{display:inline-flex;gap:6px}
+.arw{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-size:1.4rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.arw:hover{border-color:var(--accent);color:var(--accent)}
+.mback{position:fixed;inset:0;background:rgba(20,26,30,.45);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:50;animation:fadein .2s ease-out}
+.modal{background:var(--surface);color:var(--ink);border:3px solid var(--accent);border-radius:12px;max-width:560px;width:100%;max-height:100%;overflow:auto;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:bubble .28s ease-out}
+.mhead{display:flex;justify-content:space-between;align-items:center}
+.mhead .fk{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+@keyframes bubble{from{transform:translateY(14px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+body.modal-open{overflow:hidden}
+.mback.still,.mback.still .modal{animation:none}
+@media (prefers-reduced-motion:reduce){.modal,.mback,.findbar{animation:none}}
+.scenefig{background:var(--table);border:1px solid var(--table-edge);border-radius:10px;padding:10px}
+.scenefig svg{width:100%;height:auto;display:block;border-radius:6px}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots button{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:var(--muted);font-size:.72rem;font-weight:700;padding:0}
+.dots button.done{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.dots button.cur{border-color:var(--accent);color:var(--accent)}
+.steps li.nav{cursor:pointer}
+.steps li.nav:hover,.steps li.nav:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+</style>
+
+<div class="wrap">
+  <header class="tag">
+    <div>
+      <a class="homelink" href="./">&larr; All labs</a><div class="course">MRTS 2244 Technical Procedures I &middot; Week 2 Lab</div>
+      <h1>Prep Room Ready</h1>
+    </div>
+    <ol class="steps" id="steps" aria-label="Lab progress">
+      <li data-s="0">Sign in</li><li data-s="1">Inspect</li><li data-s="2">Gear up</li><li data-s="3">Instruments</li><li data-s="4">Scenarios</li><li data-s="5">Report</li>
+    </ol>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ---------- content (EHTP 6th ed., Ch. 2 to 4) ---------- */
+const NAMES=["Prep room door","Local exhaust arm","Embalming table and decedent","Identification band","Embalming machine","Hydroaspirator","Flush sink","Exhaust vent","Fresh air intake vent","Eyewash station","Drench shower","Sharps container","Chemical counter and SDS binder","Mortuary refrigeration unit","Biohazard waste container","Electric aspirator","Dressing table","Hand sink"];
+const ITEMS=[
+ {id:"door",name:"Prep room door",
+  ok:"The door is closed and locks with a keypad. A PRIVATE sign is posted on it. A note on the inside says to use the hallway to reach the garage.",
+  bad:"The door is propped open a few inches with a wedge so it doesn't slam. The front office staff cut through the prep room to reach the garage. There's no sign on the door.",
+  fix:{q:"What's the right fix for the door?",o:[
+   {t:"Pull the wedge, keep the door closed and locked, post a PRIVATE sign, and route staff through the hallway instead.",ok:1,c:"The room is kept strictly private, a private sign goes on the door, and the prep room must not become a passage to other parts of the building. (EHTP p. 60; p. 64)"},
+   {t:"Post a PRIVATE sign and ask staff to knock before they cut through to the garage.",c:"A sign helps, but the room still can't be used as a passage to other parts of the building. (EHTP p. 60)"},
+   {t:"Close the door while a body is on the table. Staff can cut through when the table is empty.",c:"The room stays private and is never a hallway, whether or not a body is on the table. Decedents may be in the cooler too. (EHTP p. 60)"},
+   {t:"Install a door closer so it shuts on its own, and leave the shortcut open to staff.",c:"A closer keeps the door shut, but staff walking through still makes it a passage. Route them around and post the sign. (EHTP p. 60; p. 64)"}]}},
+ {id:"arm",name:"Local exhaust arm",
+  ok:"The ceiling exhaust arm is pulled down with its hood low over the table, close to where you'll work. The fan is running. It's noisy.",
+  bad:"The ceiling exhaust arm is folded up and parked near the ceiling, about four feet above the table. The fan is running.",
+  fix:{q:"What's the right fix for the exhaust arm?",o:[
+   {t:"Pull the hood down close to the work area, below your breathing zone, so vapor is drawn down and away from you.",ok:1,c:"Local exhaust captures formaldehyde at the source, and air should move down and away from your breathing zone. A hood near the ceiling captures almost nothing at the table. (EHTP p. 110; p. 38)"},
+   {t:"Leave it where it is. The fan is on, so it's already pulling vapor.",c:"The fan running isn't enough. Capture depends on how close the hood is to the source. (EHTP p. 110)"},
+   {t:"Pull the hood down level with your face so it catches what you breathe.",c:"That draws vapor up past your face. Keep the hood low, near the work, so vapor moves down and away. (EHTP p. 38)"},
+   {t:"Turn the fan off and rely on the room exhaust. Two systems fight each other.",c:"Local exhaust adds to the room ventilation. Both should run. (EHTP p. 110; p. 15)"}]}},
+ {id:"table",name:"Embalming table and decedent",
+  ok:"The decedent is on the hydraulic table, covered with a sheet while you set up. The modesty cloth is on the counter, ready to place when the sheet comes off.",
+  bad:"The sheet was pulled off and folded at the foot of the table so you can look over the body. The modesty cloth is still in the drawer. Nobody else is in the room.",
+  fix:{q:"What's the right fix here?",o:[
+   {t:"Cover the body again and keep it covered. Place the modesty cloth over the genitals when the sheet comes off for embalming.",ok:1,c:"The body is covered at all times, and a modesty cloth stays over the genitals during embalming and decedent care. (EHTP p. 15; p. 64)"},
+   {t:"It's fine as long as only licensed staff are in the room.",c:"Coverage is about the dignity of the deceased, not who is watching. Cover at all times. (EHTP p. 15)"},
+   {t:"Place the modesty cloth now and leave the rest uncovered so you can finish your case analysis.",c:"Uncover only what you're working on. The rest of the body stays covered. (EHTP p. 15; p. 64)"},
+   {t:"Cover the face only. The face is what the family will see.",c:"The whole body stays covered, with a modesty cloth over the genitals. (EHTP p. 15)"}]}},
+ {id:"idband",name:"Identification band",
+  ok:"The hospital band and the funeral home's own band are on the left wrist. Both match the body bag tag and the funeral home record.",
+  bad:"The hospital band is on the left wrist, and the name matches the first call sheet. There's no funeral home band, and the body bag tag hasn't been checked.",
+  fix:{q:"What's the right fix for identification?",o:[
+   {t:"Compare the wristband, toe tag, and body bag tag with the funeral home record, then attach the funeral home's own ID to the body.",ok:1,c:"Compare every form of ID on the body and the bag with funeral home records, and the funeral home attaches its own ID. (EHTP p. 14)"},
+   {t:"The name matches the first call sheet. That confirms identity.",c:"The first call sheet is one record. Compare every ID on the body and bag, then add the funeral home's own. (EHTP p. 14)"},
+   {t:"Attach the funeral home band now. You'll check the tags at dressing.",c:"Identity is confirmed before care starts and kept through every phase. Check first, then attach. (EHTP p. 14)"},
+   {t:"Write the name and case number on the body bag and keep the bag with the body.",c:"The bag comes off. The funeral home attaches its own ID to the body after comparing all of them. (EHTP p. 14)"}]}},
+ {id:"machine",name:"Embalming machine",
+  ok:"The centrifugal machine sits under the water control unit spout. The tank is mixed for the first case, the lid is on, and the pump is off.",
+  bad:"The centrifugal machine sits under the water control unit spout. The tank is mixed for the first case. The lid is on the counter so you can add dye after you see the first gallon.",
+  fix:{q:"What's the right fix for the machine?",o:[
+   {t:"Put the lid back on now. Lift it only when you add to the tank, then close it again.",ok:1,c:"Keep the lid on the embalming machine whenever solution is in the tank. (EHTP p. 48; p. 34)"},
+   {t:"Leave the lid off but turn the room ventilation up while the tank sits.",c:"Ventilation helps, but keeping the lid on is its own required work practice. Do both. (EHTP p. 48)"},
+   {t:"Cover the tank with a paper towel so you can still add dye quickly.",c:"A towel doesn't hold in vapor. The lid goes back on. (EHTP p. 48)"},
+   {t:"Leave it off until injection starts. Vapor only matters during injection.",c:"Vapor comes off mixed solution the whole time it sits in an open tank. (EHTP p. 48)"}]}},
+ {id:"hydro",name:"Hydroaspirator",
+  ok:"The hydroaspirator is on the water control unit beside the embalming machine. Its vacuum breaker is in place. The water is off.",
+  bad:"The hydroaspirator is on the water control unit beside the embalming machine. The vacuum breaker was taken off last week because it dripped. Suction still works fine.",
+  fix:{q:"What's the right fix for the hydroaspirator?",o:[
+   {t:"Don't aspirate with it until the vacuum breaker is back on. Use an electric aspirator in the meantime.",ok:1,c:"The vacuum breaker keeps aspirated material from being pulled into the water supply if pressure drops. Suction working doesn't mean it's safe. (EHTP p. 66; p. 39)"},
+   {t:"Use it. The building has a vacuum breaker on the main water line.",c:"Vacuum breakers belong on the main line and on hydroaspirators. One doesn't replace the other. (EHTP p. 39)"},
+   {t:"Use it, but keep the water pressure high so nothing flows backward.",c:"You can't control a pressure drop in the supply. That's why the vacuum breaker is required. (EHTP p. 66)"},
+   {t:"Use it and put a work order in for the vacuum breaker.",c:"Report it, yes, but don't aspirate with it until the vacuum breaker is back. (EHTP p. 66; p. 39)"}]}},
+ {id:"sink",name:"Flush sink",
+  ok:"The flush sink at the foot of the table has its cover on. The table drain tube runs to the bottom of the basin.",
+  bad:"The flush sink at the foot of the table has no cover. The table drain tube ends a few inches above the basin, and drainage splashes as it lands.",
+  fix:{q:"What's the right fix for the sink?",o:[
+   {t:"Cover the sink and extend the drain tubing so it reaches the bottom of the basin.",ok:1,c:"Cover sinks and basins to stop splashing and aerosols, and run tubing to the bottom of the sink. (EHTP p. 39; p. 48)"},
+   {t:"Run water in the sink the whole time to wash drainage down faster.",c:"Running water adds to splashing. Cover the sink and lower the tubing. (EHTP p. 39)"},
+   {t:"Cover the sink. The tubing height doesn't matter with a cover on.",c:"Tubing that ends above the basin still splashes under the cover and around it. Lower it too. (EHTP p. 39)"},
+   {t:"Wear a face shield. The splash stays at the sink.",c:"PPE is the last line. Splashing creates aerosols that travel. Fix the source. (EHTP p. 39)"}]}},
+ {id:"vent",name:"Exhaust vent",
+  ok:"The low exhaust grill in the cabinet base near the foot of the table is clear. Nothing is stored in front of it.",
+  bad:"A supply cart is parked in front of the low exhaust grill near the foot of the table to keep it out of the walkway.",
+  fix:{q:"What's the right fix for the vent?",o:[
+   {t:"Move the cart somewhere else and keep the low exhaust grill clear.",ok:1,c:"Formaldehyde is heavier than air, so exhaust at or near floor level pulls vapor down and away. A blocked low grill lets it build up. (EHTP p. 68; p. 38)"},
+   {t:"Leave the cart. The ceiling vents handle the exhaust.",c:"Ceiling vents bring fresh air in. The low grill is the exhaust that matters for formaldehyde. (EHTP p. 68)"},
+   {t:"Leave it. The local exhaust arm makes up for it.",c:"The arm adds capture. It doesn't replace the room's air exchange. (EHTP p. 110; p. 38)"},
+   {t:"Pull the cart out a few inches so some air gets behind it.",c:"A partly blocked grill still cuts the exhaust. Keep it fully clear. (EHTP p. 68)"}]}},
+ {id:"eyewash",name:"Eyewash station",
+  ok:"The plumbed eyewash at the hand sink is clear, with dust caps on the heads. A tag shows it was tested this week.",
+  bad:"Three cases of fluid are stacked in front of the eyewash until the delivery gets put away. The test tag was last signed two months ago.",
+  fix:{q:"What's the right fix for the eyewash?",o:[
+   {t:"Move the boxes so the eyewash can be reached in seconds, then test it and sign the tag.",ok:1,c:"Know where your eyewash is and keep emergency equipment tested and ready. After a splash there's no time to clear a path. (EHTP p. 48; p. 66)"},
+   {t:"Move the boxes. Testing is the building maintenance crew's job.",c:"The book asks embalmers when they last tested their emergency equipment. Know it works. (EHTP p. 48)"},
+   {t:"Leave the boxes. You can use the drench shower if you get splashed.",c:"Both are required, and each has to be reachable. Clear the eyewash. (EHTP p. 66; p. 39)"},
+   {t:"Test it now and leave the boxes until the delivery is put away this afternoon.",c:"A tested eyewash you can't reach doesn't help. Clear it now. (EHTP p. 48)"}]}},
+ {id:"sharps",name:"Sharps container",
+  ok:"The red sharps container is mounted on the wall at hand level, near where you work. Nothing sharp is loose on the counter.",
+  bad:"A used scalpel blade is still on the reusable handle, lying on the counter under the sharps container. The plan is to pull it off with your fingers when you clean the instruments.",
+  fix:{q:"What's the right fix?",o:[
+   {t:"Remove the blade with the blade removal device, without touching it, and drop it straight into the sharps container.",ok:1,c:"Use blade removal devices that don't require handling the blade, and discard sharps in an approved sharps container. (EHTP p. 49; p. 74)"},
+   {t:"Pull the blade off with gloved fingers and drop it in the sharps container.",c:"Removing a blade by hand is how cuts happen. Use a removal device. (EHTP p. 49)"},
+   {t:"Leave it on the handle and put the whole thing in the instrument soak.",c:"Contaminated sharps go in the sharps container, not into the soak where someone reaches in. (EHTP p. 39; p. 74)"},
+   {t:"Wrap the blade in gauze, then remove it and put it in the biohazard waste container.",c:"Blades go in the sharps container. The red bag container isn't puncture resistant. (EHTP p. 15)"}]}},
+ {id:"counter",name:"Chemical counter and SDS binder",
+  ok:"Bottles of arterial and cavity fluid on the counter, all capped. The SDS binder has a sheet for every chemical in the room.",
+  bad:"All the bottles are capped. A new co-injection fluid arrived today and is on the counter. The SDS binder has sheets for the arterial and cavity fluid, but not the new one. The sheet that came in the box went in the trash with the packing.",
+  fix:{q:"What's the right fix for the counter?",o:[
+   {t:"Get the SDS for the new fluid from the supplier and put it in the binder before anyone uses it.",ok:1,c:"Suppliers ship an SDS with each shipment. Keep the current SDS for every product you use, readily accessible on site. (EHTP p. 46; p. 48)"},
+   {t:"Use the new fluid. Its label has the hazard warnings.",c:"Labels and SDS are both required. The SDS has the exposure, handling, and emergency information. (EHTP p. 46)"},
+   {t:"Use the SDS for the arterial fluid. It's from the same company.",c:"Every hazardous product needs its own current SDS. (EHTP p. 46; p. 48)"},
+   {t:"Order a new SDS and use the fluid while you wait for it to come.",c:"The SDS has to be on file and accessible for each product in the work area. Get it before you use it. (EHTP p. 46)"}]}},
+ {id:"cooler",name:"Mortuary refrigeration unit",
+  ok:"The walk-in cooler holds at 36 degrees. The door latches and locks, and the entry and exit log on the door is filled in.",
+  bad:"The walk-in cooler holds at 36 degrees and the log is filled in. A coworker's sealed lunch bag and two sodas are on the top shelf, away from the decedents.",
+  fix:{q:"What's the right fix?",o:[
+   {t:"Take the food and drinks out and tell your supervisor. Food and drinks never go in mortuary refrigeration.",ok:1,c:"Food and beverages are never stored in mortuary refrigeration, and eating and drinking aren't allowed in work areas. (EHTP p. 39)"},
+   {t:"Leave it. It's sealed and on a separate shelf.",c:"Sealed or not, food never goes in mortuary refrigeration. (EHTP p. 39)"},
+   {t:"Move the lunch to the bottom shelf so nothing can drip on it.",c:"Where it sits doesn't matter. Food doesn't go in the unit at all. (EHTP p. 39)"},
+   {t:"Move the lunch to the prep room counter until your coworker comes for it.",c:"Food and drink aren't allowed in work areas either. (EHTP p. 39)"}]}},
+ {id:"waste",name:"Biohazard waste container",
+  ok:"The red biohazard waste container is closed. It has a foot pedal, so the lid opens without hands.",
+  bad:"The red biohazard waste container's lid is propped open so it's easier to use during the case. A used body bag hangs over the edge.",
+  fix:{q:"What's the right fix for the waste container?",o:[
+   {t:"Push the body bag all the way in and close the lid. Keep it closed between uses.",ok:1,c:"Waste containers stay covered or sealed at all times, and body bags go in an approved biohazard container. (EHTP p. 64; p. 15)"},
+   {t:"Leave it open during the case and close it when you clean up.",c:"Containers stay covered at all times, not just at the end of the day. (EHTP p. 64)"},
+   {t:"Close the lid. The body bag can hang out as long as the lid holds it.",c:"A lid propped on a bag isn't closed. Push it in and seal it. (EHTP p. 64)"},
+   {t:"Move the body bag to the regular trash so the red container doesn't fill up.",c:"Contaminated items like body bags go in the biohazard waste container. (EHTP p. 15)"}]}}
+];
+const LEAVE="Leave it as is. It's set up correctly.";
+const OKFIX={
+ door:[
+  {t:"Prop it open a few inches with a wedge so it doesn't slam.",c:"The room is kept strictly private. The door stays closed. (EHTP p. 60)"},
+  {t:"Take the PRIVATE sign down. Staff already know what the room is.",c:"A private sign is required on the prep room door. (EHTP p. 64)"},
+  {t:"Unlock it during business hours so staff can get through to the garage.",c:"The prep room is never a passage to other parts of the building. (EHTP p. 60)"}],
+ arm:[
+  {t:"Turn the fan off. It's loud, and the room exhaust is enough.",c:"Local exhaust adds capture at the source on top of the room ventilation. Both run. (EHTP p. 110; p. 15)"},
+  {t:"Raise the hood to face level so it catches what you breathe.",c:"That pulls vapor up past your face. The hood stays low, near the work. (EHTP p. 38)"},
+  {t:"Push the arm up near the ceiling to give yourself room to work.",c:"A hood near the ceiling captures almost nothing at the table. (EHTP p. 110)"}],
+ table:[
+  {t:"Pull the sheet off so you can look over the whole body while you set up.",c:"The body is covered at all times. Uncover only what you're working on. (EHTP p. 15)"},
+  {t:"Take the sheet off. Nobody else is in the room.",c:"Coverage is about the dignity of the deceased, not who's watching. (EHTP p. 15; p. 64)"},
+  {t:"Swap the sheet for just the modesty cloth while you set up.",c:"The modesty cloth goes on during embalming. During setup the whole body stays covered. (EHTP p. 15)"}],
+ idband:[
+  {t:"Cut off the hospital band. Two bands are confusing.",c:"The funeral home adds its own ID after comparing all of them. The original ID stays with the body. (EHTP p. 14)"},
+  {t:"Remove the toe tag now that the wristbands match.",c:"Identity is kept through every phase of care. Don't strip ID off the body. (EHTP p. 14)"},
+  {t:"Write the name on the sheet too, in case a band comes off.",c:"The sheet comes off. ID goes on the body, and the bands already match the record. (EHTP p. 14)"}],
+ machine:[
+  {t:"Take the lid off so you can watch the level before injection.",c:"The lid stays on whenever solution is in the tank. (EHTP p. 48)"},
+  {t:"Leave the lid cracked so you can add dye quickly.",c:"A cracked lid still lets vapor out. Keep it on. (EHTP p. 48)"},
+  {t:"Turn the pump on now and open the rate-of-flow valve so it's ready.",c:"Keep the rate-of-flow valve closed when the machine isn't in use. (EHTP p. 32)"}],
+ hydro:[
+  {t:"Remove the vacuum breaker. The main water line already has one.",c:"Vacuum breakers belong on the main line and on hydroaspirators. (EHTP p. 39)"},
+  {t:"Remove the vacuum breaker. It slows the suction.",c:"The vacuum breaker keeps aspirated material out of the water supply. It stays on. (EHTP p. 66)"},
+  {t:"Move it to the hand sink faucet where the water pressure is better.",c:"The hand sink is for hand washing. Aspiration stays at the embalming station. (EHTP p. 39)"}],
+ sink:[
+  {t:"Take the cover off so you can watch the drainage.",c:"Sinks stay covered to stop splashing and aerosols. (EHTP p. 39)"},
+  {t:"Shorten the drain tube so it doesn't touch the basin.",c:"Tubing that reaches the bottom of the sink cuts splashing. (EHTP p. 39)"},
+  {t:"Run water in the sink the whole time to keep it flushed.",c:"Running water adds splashing. Leave it as set up. (EHTP p. 39)"}],
+ vent:[
+  {t:"Park the supply cart in front of it to keep the walkway clear.",c:"Formaldehyde is heavier than air. The low exhaust grill has to stay clear. (EHTP p. 68)"},
+  {t:"Close the grill during embalming so drafts don't dry the body.",c:"The low exhaust pulls vapor down and away from you. It stays open. (EHTP p. 68; p. 38)"},
+  {t:"Tape plastic over it. The exhaust arm does the work.",c:"The arm adds capture. It doesn't replace the room exhaust. (EHTP p. 110)"}],
+ eyewash:[
+  {t:"Stack today's fluid delivery in front of it. It's out of the walkway there.",c:"Emergency equipment has to be reachable in seconds. Keep it clear. (EHTP p. 48)"},
+  {t:"Skip the test this week. It worked last week.",c:"Know when your emergency equipment was last tested, and keep it tested. (EHTP p. 48)"},
+  {t:"Shut the water off to it so it doesn't drip.",c:"It has to work the second you need it. (EHTP p. 66)"}],
+ sharps:[
+  {t:"Move it under the sink so it's out of sight.",c:"Sharps go straight into the container after use, so it stays where you work. (EHTP p. 39; p. 74)"},
+  {t:"Set used blades on the counter beside it and drop them in at the end of the day.",c:"A loose blade is how someone gets cut. Discard sharps right away. (EHTP p. 39)"},
+  {t:"Swap it for a red biohazard bag. It's easier to drop things in.",c:"Sharps need a puncture-resistant sharps container. (EHTP p. 74; p. 15)"}],
+ counter:[
+  {t:"Move the SDS binder to the office so it doesn't get splashed.",c:"SDS must be readily accessible on the work site. (EHTP p. 48)"},
+  {t:"Throw out the SDS sheets. The labels have the same information.",c:"Labels and SDS are both required. The SDS has exposure and emergency information. (EHTP p. 46)"},
+  {t:"Leave one bottle uncapped so you can mix faster.",c:"Recap fluid bottles to cut formaldehyde vapor. (EHTP p. 48)"}],
+ cooler:[
+  {t:"Prop the door open during the day so you can reach decedents faster.",c:"The cooler is there to slow postmortem changes. An open door lets it warm up. (EHTP p. 68)"},
+  {t:"Put your sealed lunch on the top shelf. It's the coldest spot.",c:"Food and drinks never go in mortuary refrigeration. (EHTP p. 39)"},
+  {t:"Take down the entry and exit log. The door locks anyway.",c:"The log is part of keeping the unit secure. Leave it up. (EHTP p. 68)"}],
+ waste:[
+  {t:"Prop the lid open so it's easier to use during the case.",c:"Waste containers stay covered at all times. (EHTP p. 64)"},
+  {t:"Put used body bags in the regular trash so this one doesn't fill up.",c:"Body bags go in an approved biohazard container. (EHTP p. 15)"},
+  {t:"Take the lid off and use a liner only.",c:"Containers stay covered or sealed at all times. (EHTP p. 64)"}]
+};
+function choiceList(x){return isBad(x.id)?[...x.fix.o,{t:LEAVE,c:"Look again at what you see. Something here isn't right."}]:[...OKFIX[x.id],{t:LEAVE,ok:1,c:"Right. This one is set up correctly."}]}
+const CASES=[
+ {code:"W02-A",home:"Maple Street Funeral Home",problems:["door","machine","vent","cooler","sharps"]},
+ {code:"W02-B",home:"Riverside Chapel",problems:["arm","table","sink","eyewash","counter"]},
+ {code:"W02-C",home:"Cedar Hill Funeral Home",problems:["idband","hydro","waste","counter","machine"]}
+];
+const PPE=[
+ {id:"gown",n:"Impervious gown",d:"Fluid-resistant, neck to below the knees",need:1,c:"Arms, torso, and legs need full coverage that fluid can't soak through. (EHTP p. 39; p. 64)"},
+ {id:"gloves",n:"Heavy nitrile gloves",d:"13 mil or thicker",need:1,c:"Heavier gloves of 13 mil or more are more durable and give more protection. Change them often. (EHTP p. 39)"},
+ {id:"exam",n:"Thin exam gloves",d:"Standard 4 mil",need:0,c:"Thin gloves tear easily. Embalming calls for 13 mil or heavier. (EHTP p. 39)"},
+ {id:"shield",n:"Face shield",d:"Covers forehead, cheeks, and neck",need:"eye",c:"The forehead, cheeks, and neck should be protected by a face shield. (EHTP p. 39)"},
+ {id:"goggles",n:"Safety glasses or goggles",d:"Splash barrier for the eyes",need:"eye",c:"Eyes need a splash barrier like safety glasses, goggles, or a combination face-eye shield. (EHTP p. 39)"},
+ {id:"mask",n:"Barrier mask",d:"Covers mouth and nose, snug fit",need:1,c:"A barrier mask must cover both mouth and nose and fit snugly. (EHTP p. 39)"},
+ {id:"cap",n:"Surgical or bouffant cap",d:"Hair tucked under",need:1,c:"Wear a head covering with hair tucked beneath it. (EHTP p. 39)"},
+ {id:"shoes",n:"Shoe covers",d:"Over work shoes",need:1,c:"Never enter preparation areas without the right PPE, including shoe covers. (EHTP p. 48)"},
+ {id:"labcoat",n:"Cloth lab coat",d:"Cotton, open front",need:0,c:"Cloth soaks through. PPE only counts if it keeps blood and fluids from breaching the barrier. (EHTP p. 39)"},
+ {id:"resp",n:"Respirator",d:"Requires a fit test",need:0,c:"Respirators are required when formaldehyde reaches the PEL or STEL, and only after a fit test. They aren't routine PPE. (EHTP p. 47)"}
+];
+const INST=[
+ {id:"hook",n:"Aneurysm hook"},{id:"needle",n:"Aneurysm needle"},{id:"bistoury",n:"Bistoury knife"},{id:"scalpel",n:"Scalpel"},
+ {id:"ascissors",n:"Arterial scissors"},{id:"hemostat",n:"Arterial hemostat"},{id:"separator",n:"Separator"},{id:"director",n:"Grooved director"},
+ {id:"atube",n:"Arterial tube"},{id:"stopcock",n:"Stopcock"},{id:"ytube",n:"Y-tube"},{id:"forceps",n:"Angular spring forceps"},
+ {id:"trocar",n:"Trocar"},{id:"button",n:"Trocar button"},{id:"autopsy",n:"Autopsy aspirator"},{id:"nasal",n:"Nasal tube aspirator"},
+ {id:"avplug",n:"A/V plug"},{id:"eyecap",n:"Eye cap"},{id:"mouth",n:"Mouth former"}
+];
+const TASKS=[
+ {t:"You need to find the artery in the incision and lift it up out of the tissue.",a:"hook",also:["needle"],c:"Aneurysm hooks and aneurysm needles are both curve-tipped instruments for blunt dissection to locate and raise arteries and veins. (EHTP p. 73)"},
+ {t:"The artery is raised. You need to pass ligature thread underneath it.",a:"needle",c:"The aneurysm needle has an eye in its hook for passing suture thread around a vessel. (EHTP p. 73)"},
+ {t:"The artery and vein are raised. You need something to keep them up above the incision while you work.",a:"separator",c:"The separator keeps vessels elevated above the incision. (EHTP p. 74)"},
+ {t:"You need to open the artery without cutting all the way through it.",a:"ascissors",c:"Arterial scissors have an angled tip and short blades so you don't cut through the vessel. (EHTP p. 74)"},
+ {t:"The arterial tube is in. You need to hold it securely in the artery.",a:"hemostat",c:"The arterial hemostat holds the arterial tube securely in the artery. (EHTP p. 73)"},
+ {t:"You need to start and stop the flow of solution between the delivery hose and the arterial tube.",a:"stopcock",c:"The stopcock attaches to the delivery hose and starts and stops the flow into the artery. (EHTP p. 76)"},
+ {t:"Drainage from the internal jugular vein is full of clots. You need to grasp them and pull them out.",a:"forceps",c:"Angular spring forceps go into the internal jugular toward the heart and grasp clotted material. (EHTP p. 77)"},
+ {t:"You need to expand the vein and guide the drain tube into it.",a:"director",c:"The grooved director expands the vein and guides a drain tube into place. (EHTP p. 78)"},
+ {t:"An autopsied body: you want to inject both legs at the same time.",a:"ytube",c:"The Y-tube lets you inject both legs, both arms, or both sides of the head at once. (EHTP p. 76)"},
+ {t:"Arterial injection is done. You need to aspirate the body cavities.",a:"trocar",c:"The trocar is a long hollow needle used for cavity aspiration and injection. (EHTP p. 78)"},
+ {t:"Aspiration is done. You need to close the trocar opening.",a:"button",c:"The trocar button is a threaded nylon device that closes the trocar insertion site. (EHTP p. 79)"},
+ {t:"An autopsied body: blood and arterial solution are collecting in the open trunk cavities during injection.",a:"autopsy",c:"The autopsy aspirator has large holes or slots in its head so it doesn't clog, and it aspirates what collects in the autopsied cavities. (EHTP p. 78)"},
+ {t:"Purge is coming from the nose. You need limited aspiration of the nasal passages and throat.",a:"nasal",c:"The nasal tube aspirator attaches to the aspirating hose and goes into the nostril or throat for limited aspiration. (EHTP p. 78)"},
+ {t:"After cavity treatment, there's anal purge. You've packed the orifice with cotton and want a device to seal it.",a:"avplug",c:"An A/V plug is a threaded closure device inserted after packing to seal the orifice. (EHTP p. 231; p. 156)"},
+ {t:"Setting features: you need to keep the eyelids closed and give the closed eye its contour.",a:"eyecap",c:"Eye caps go beneath the eyelids to hold closure and contour. (EHTP p. 79)"},
+ {t:"There are no natural teeth and no dentures. You need to shape the mouth so the lips close with a natural curve.",a:"mouth",c:"Mouth formers keep closure and create natural mouth curvature when teeth or dentures are missing. (EHTP p. 79)"}
+];
+const SC={start:"s1",nodes:{
+ s1:{t:"Before you start",s:"The room is set right. Before you uncap a single bottle, what do you turn on?",o:[
+  {t:"The room ventilation system, and leave it running while chemicals are out",ok:1,next:"s2",c:"Engage the room ventilation during embalming and whenever chemicals are used. (EHTP p. 15)"},
+  {t:"Just the local exhaust arm. The room system can wait until injection starts.",c:"The arm adds capture at the table. The room ventilation runs whenever chemicals are used. (EHTP p. 15; p. 110)"},
+  {t:"The embalming machine first, then ventilation once the tank is mixed",c:"Vapor starts the moment you open a bottle to mix. Ventilation goes on first. (EHTP p. 15)"},
+  {t:"Nothing yet. The cooler fans keep air moving until you start.",c:"Refrigeration fans aren't ventilation. Turn on the room system whenever chemicals are used. (EHTP p. 15)"}]},
+ s2:{t:"A visitor",s:"The decedent's nephew knocks. He's thinking about mortuary school and asks to come in and watch.",o:[
+  {t:"Politely tell him the prep room is private during preparation, and offer to talk with him about the program afterward.",ok:1,next:"s3",c:"Admittance is by authorization only, and the room is kept strictly private during preparation. A prospective student isn't on that list. (EHTP p. 60)"},
+  {t:"Let him watch if he puts on full PPE and stands back from the table.",c:"PPE doesn't make someone authorized. Admittance is limited to licensees, registered students and trainees, and officials. (EHTP p. 60)"},
+  {t:"Let him watch if the funeral director in charge says it's okay.",c:"He isn't a licensee, a registered student or trainee, or an official, and this is his relative. The room stays private. (EHTP p. 60)"},
+  {t:"Let him look in for a minute before you uncover the body.",c:"The room is kept strictly private during body preparation, covered or not. (EHTP p. 60)"}]},
+ s3:{t:"A splash",ev:"Accident",s:"While you're mixing the tank, arterial fluid splashes into your right eye.",o:[
+  {t:"Stop everything and go straight to the eyewash. Hold your eye open and flush. Report it and get medical care. Another embalmer finishes the case.",ok:1,next:"s4",c:"Use the eyewash right away after a chemical splash. Your day in the prep room is over: report it and get evaluated. Someone else takes the case. (EHTP p. 46; p. 48)"},
+  {t:"Flush at the eyewash until the burning stops, then go back and finish the case. Report it at the end of the day.",go:"s3x",c:"The burning eased, so you went back to the table. Twenty minutes later your eye is worse."},
+  {t:"Rinse at the hand sink faucet since it's right there, then report it.",c:"A faucet doesn't flush the eye the way an eyewash does. That's why OSHA requires the eyewash. (EHTP p. 66; p. 46)"},
+  {t:"Finish setting the tank so the solution doesn't sit open, then flush and report.",go:"s3x",c:"Those extra seconds let the fluid sit in your eye."}]},
+ s3x:{t:"Eye burning",ev:"Things got worse",s:"Your eye is red and burning, and your vision is blurry.",o:[
+  {t:"Go back to the eyewash and flush. Stop working, report it now, and get medical care. Another embalmer takes over the case.",ok:1,next:"s4",c:"Flush, stop, report, and get evaluated. You don't finish the case with a chemical eye injury. (EHTP p. 46)"},
+  {t:"Put in eye drops and finish the case. Report it if it still hurts tomorrow.",c:"Eye drops don't flush formaldehyde, and an exposure gets reported now. (EHTP p. 46)"},
+  {t:"Flush again, then finish the case wearing goggles.",c:"Goggles now don't treat the injury. Stop, report, and get care. (EHTP p. 46)"}]},
+ s4:{t:"A spill",jugs:1,s:"A few days later, on another case, a full bottle of arterial fluid tips off the counter and spills across the floor. What do you grab?",o:[
+  {jug:"neutral",n:"Formaldehyde neutralizer and absorbent towels",t:"Spray it with formaldehyde neutralizer, wipe it up with absorbent towels, and put the towels in the contaminated waste container.",ok:1,next:"s5",c:"Neutralize, absorb, and put the towels in the contaminated waste container. That is the spill procedure the Hazard Communication training should cover. (EHTP p. 46)"},
+  {jug:"bleach",n:"Household bleach",t:"Pour bleach on it to kill the formaldehyde, then wipe it up.",c:"Bleach isn't a formaldehyde neutralizer, and the book warns that formaldehyde neutralizing cleaners are incompatible with household bleach. Neutralize, absorb, and dispose. (EHTP p. 46; p. 56)"},
+  {jug:"mop",n:"Floor mop and hot water",t:"Mop it with the floor mop and hot water.",go:"s4x",c:"The mop is spreading it across the floor, and the hot water is sending up vapor."},
+  {jug:"pads",n:"Absorbent pads only",t:"Lay absorbent pads on it and let the exhaust clear the vapor before you pick them up.",c:"Absorbing it without neutralizing leaves formaldehyde off-gassing in the room. Neutralize first. (EHTP p. 46)"},
+  {jug:"paper",n:"Paper towels and the trash can",t:"Wipe it up with paper towels and put them in the regular trash.",c:"Towels from a chemical spill go in the contaminated waste container, after neutralizing. (EHTP p. 46)"}]},
+ s4x:{t:"Spreading spill",ev:"Things got worse",s:"The mop spread fluid across half the room, and the smell is strong. Your eyes are watering.",o:[
+  {t:"Spray the whole area with neutralizer, wipe it up with absorbent towels, and bag the mop head and towels as contaminated waste.",ok:1,next:"s5",c:"Neutralize, absorb, and dispose of everything that touched it as contaminated waste. (EHTP p. 46)"},
+  {t:"Prop the door open to air it out while you finish mopping.",c:"The room stays private, and mopping is what spread it. Neutralize and absorb. (EHTP p. 60; p. 46)"},
+  {t:"Rinse the mop and go over it again with clean water.",c:"More water spread it farther."}]},
+ s5:{t:"A used blade",s:"You're done with the disposable scalpel. The blade is dull and bloody.",o:[
+  {t:"Drop the whole disposable scalpel into the sharps container. Don't remove or recap the blade by hand.",ok:1,next:"s6",c:"Sharps are never recapped or resheathed by hand. Disposable scalpels go straight into the sharps container. (EHTP p. 39; p. 74)"},
+  {t:"Slide the plastic cover back over the blade, then drop it in the sharps container.",go:"s5x",c:"The blade slipped past the cover."},
+  {t:"Lay it on the instrument tray and dispose of all the sharps together at the end of the case.",c:"A loose blade on the tray is how someone gets cut during cleanup. Dispose of it now. (EHTP p. 39)"},
+  {t:"Pull the blade off with your fingers and save the handle.",go:"s5x",c:"The blade slipped."}]},
+ s5x:{t:"You're cut",ev:"Things got worse",s:"The blade cut through your glove and into your finger. It's bleeding.",o:[
+  {t:"Wash the cut with soap and water, report it to your supervisor right away, and start the postexposure evaluation and follow-up.",ok:1,next:"s6",c:"An exposure incident starts postexposure evaluation and follow-up right away. (EHTP p. 39; p. 41)"},
+  {t:"Wash it, bandage it, double glove, and report it after the case.",c:"An exposure incident is reported and followed up immediately, not after the case. (EHTP p. 39)"},
+  {t:"Pour cavity fluid on it to disinfect it, then report it.",c:"Cavity fluid is a harsh chemical, not first aid. Wash, report, and follow up. (EHTP p. 41)"}]},
+ s6:{t:"Hand washing",s:"You've taken off your gloves to change them. How do you wash?",o:[
+  {t:"Soap and running water for at least 20 seconds, between the fingers, then dry with a disposable towel and use it to turn off the faucet.",ok:1,next:"s7",c:"Scrub with soap and water for at least 20 seconds and use the towel to turn off manual faucets. (EHTP p. 39)"},
+  {t:"Hand sanitizer, then new gloves. You never touched anything bare-handed.",c:"Gloves can have tiny tears. Wash with soap and running water. (EHTP p. 39)"},
+  {t:"Antiseptic soap for about 10 seconds. Antiseptic works faster.",c:"The recommended contact time is 20 seconds. (EHTP p. 39)"},
+  {t:"Soap and water for 20 seconds, then dry on the cloth towel by the sink.",c:"Dry with disposable toweling or air dry. A shared cloth towel puts germs back on clean hands. (EHTP p. 39)"}]},
+ s7:{t:"Hepatitis B vaccine",s:"A new embalmer apprentice says she doesn't want the hepatitis B vaccine.",o:[
+  {t:"She signs a declination statement. She can change her mind later and still get it at no cost.",ok:1,next:"s8",c:"The vaccine is offered at no cost. An employee who declines signs a declination and can accept it later. (EHTP p. 39)"},
+  {t:"She can decline, but if she wants it later she pays for it.",c:"The vaccine is offered at no cost, including later. (EHTP p. 39)"},
+  {t:"She can't work in the prep room until she takes it.",c:"Employees can decline. They sign a declination statement. (EHTP p. 39)"},
+  {t:"She can decline verbally. Nothing has to be signed.",c:"An employee who declines signs a declination statement. (EHTP p. 39)"}]},
+ s8:{t:"Air monitoring results",s:"Your funeral home's 8-hour formaldehyde sampling, done during embalming, comes back at 0.8 ppm.",o:[
+  {t:"The 0.75 ppm permissible exposure limit was reached. Post warning signs, start medical surveillance, and provide fit-tested respirators while you lower the exposure.",ok:1,next:"s9",c:"At or above 0.75 ppm on the 8-hour TWA, the employer posts signs, starts medical surveillance, and provides respirators. (EHTP p. 47)"},
+  {t:"Only the 0.5 ppm action level was passed. Lower the exposure, but nothing else is required yet.",c:"0.8 ppm is over the 0.75 ppm permissible exposure limit too, so more is required. (EHTP p. 47)"},
+  {t:"No action. It's under 1 ppm.",c:"The 8-hour permissible exposure limit is 0.75 ppm, and the action level is 0.5 ppm. (EHTP p. 47)"},
+  {t:"Hand out respirators. That fixes it.",c:"Respirators require fit testing, and the employer still posts signs, starts medical surveillance, and lowers the exposure. (EHTP p. 47)"}]},
+ s9:{t:"End of the day",s:"Embalming is done. One instrument has pitted, worn chrome.",o:[
+  {t:"Clean and disinfect the room, table, and instruments (terminal disinfection), and replace the pitted instrument.",ok:1,end:1,c:"Terminal disinfection happens after embalming. Pitted instruments can't be properly disinfected and should be replaced. (EHTP pp. 42 to 43)"},
+  {t:"Clean and disinfect everything, and keep the pitted instrument. It still works.",c:"Pitted surfaces hold contamination and can't be properly disinfected. Replace it. (EHTP pp. 42 to 43)"},
+  {t:"Rinse everything with water. It will be cleaned before the next case.",c:"Water alone isn't disinfection. Surfaces and instruments are cleaned and disinfected after each case. (EHTP pp. 42 to 43; p. 64)"},
+  {t:"Soak all the instruments in household bleach overnight.",c:"Bleach damages the chrome finish. It's only advised for special cases like known CJD. (EHTP p. 43)"}]}
+}};
+
+/* ---------- drawing ---------- */
+function jugSvg(k){const D='#3a454d';const S2=b=>`<svg viewBox="0 0 120 110" aria-hidden="true">${b}</svg>`;
+ const lbl=(x,y,w,h,lines,col,tc)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${col}"/>`+lines.map((l,i)=>`<text x="${x+w/2}" y="${y+11+i*9}" font-size="8" font-weight="700" text-anchor="middle" fill="${tc}" font-family="Arial">${l}</text>`).join("");
+ const m={
+  neutral:`<path d="M20,40 h44 v60 q0,6 -6,6 h-32 q-6,0 -6,-6z" fill="#3fa58f" stroke="${D}" stroke-width="2"/><rect x="34" y="26" width="16" height="14" fill="#e9edf0" stroke="${D}" stroke-width="2"/><path d="M34,26 h-14 l-4,6 h18" fill="#e9edf0" stroke="${D}" stroke-width="2"/><path d="M40,32 l-6,14" stroke="${D}" stroke-width="2.5"/>`+`<rect x="22" y="58" width="40" height="24" rx="2" fill="#fff"/><text x="42" y="68" font-size="5.4" font-weight="700" text-anchor="middle" fill="#1f6e5c" font-family="Arial">FORMALDEHYDE</text><text x="42" y="77" font-size="5.4" font-weight="700" text-anchor="middle" fill="#1f6e5c" font-family="Arial">NEUTRALIZER</text>`+`<g><rect x="70" y="90" width="40" height="8" rx="1" fill="#fff" stroke="${D}" stroke-width="1.5"/><rect x="72" y="82" width="38" height="8" rx="1" fill="#fff" stroke="${D}" stroke-width="1.5"/><rect x="70" y="74" width="40" height="8" rx="1" fill="#fff" stroke="${D}" stroke-width="1.5"/></g>`,
+  bleach:`<path d="M30,36 h46 q8,0 8,10 v52 q0,8 -8,8 h-46 q-8,0 -8,-8 v-52 q0,-10 8,-10z" fill="#fafafa" stroke="${D}" stroke-width="2"/><path d="M66,36 v-12 h14 q8,0 8,10 v12" fill="none" stroke="${D}" stroke-width="5"/><rect x="38" y="20" width="18" height="16" rx="2" fill="#2b6cb0" stroke="${D}" stroke-width="2"/>`+lbl(30,58,46,22,["BLEACH"],"#2b6cb0","#fff"),
+  mop:`<path d="M22,58 h60 l-6,46 h-48z" fill="#f2c94c" stroke="${D}" stroke-width="2"/><path d="M22,58 q30,-10 60,0" fill="#9fc7da" stroke="${D}" stroke-width="1.5"/><path d="M60,58 L92,6" stroke="#8a6a3a" stroke-width="5" stroke-linecap="round"/><path d="M40,48 q-4,-8 0,-16 M52,46 q-4,-8 0,-16" fill="none" stroke="#9aa6af" stroke-width="2"/>`+lbl(30,78,44,14,["HOT WATER"],"#fff","#3a454d"),
+  pads:`<g>${[96,86,76,66,56].map((y,i)=>`<rect x="${20+i%2*4}" y="${y}" width="76" height="10" rx="2" fill="#ffffff" stroke="${D}" stroke-width="1.5"/>`).join("")}</g>`+lbl(30,30,56,20,["ABSORBENT","PADS"],"#e9edf0","#3a454d"),
+  paper:`<rect x="18" y="40" width="40" height="64" rx="4" fill="#fff" stroke="${D}" stroke-width="2"/><ellipse cx="38" cy="40" rx="20" ry="6" fill="#f4f4f4" stroke="${D}" stroke-width="2"/><ellipse cx="38" cy="40" rx="6" ry="2" fill="#c9b79c"/><path d="M68,64 h36 l-4,42 h-28z" fill="#6c7780" stroke="${D}" stroke-width="2"/><rect x="64" y="58" width="44" height="7" rx="2" fill="#56636d" stroke="${D}" stroke-width="1.5"/><text x="86" y="88" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">TRASH</text>`
+ };return S2(m[k])}
+function sceneSvg(id){const D='#3a454d',W='#f3f4f4',F='#dfe3e5',SK='#e8b996',ST='#56636d';
+ const wrap=b=>`<svg viewBox="0 0 400 220" role="img" aria-label="Scenario picture">${b}</svg>`;
+ const room=`<rect width="400" height="220" fill="${W}"/><rect y="170" width="400" height="50" fill="${F}"/><line x1="0" y1="170" x2="400" y2="170" stroke="#c9ced2" stroke-width="3"/>`;
+ const tx=(x,y,t,sz,c,w)=>`<text x="${x}" y="${y}" font-size="${sz||12}" font-family="Arial" font-weight="${w||700}" fill="${c||D}" text-anchor="middle">${t}</text>`;
+ const S={
+  s1:room+`<rect x="40" y="40" width="140" height="110" rx="6" fill="#e9edf0" stroke="${ST}" stroke-width="2"/>`+tx(110,62,"PREP ROOM CONTROLS",10)+
+   `<rect x="60" y="78" width="36" height="56" rx="4" fill="#fff" stroke="${ST}" stroke-width="2"/><rect x="70" y="106" width="16" height="22" rx="3" fill="#a3333d"/>`+tx(78,145,"ROOM VENT",8)+
+   `<rect x="124" y="78" width="36" height="56" rx="4" fill="#fff" stroke="${ST}" stroke-width="2"/><rect x="134" y="106" width="16" height="22" rx="3" fill="#a3333d"/>`+tx(142,145,"EXHAUST ARM",8)+
+   tx(78,100,"OFF",9,"#a3333d")+tx(142,100,"OFF",9,"#a3333d")+
+   `<rect x="230" y="0" width="120" height="16" fill="#cfd5d9"/><circle cx="290" cy="40" r="22" fill="#e3e7ea" stroke="${ST}" stroke-width="2"/><path d="M290,40 l0,-18 M290,40 l16,9 M290,40 l-16,9" stroke="${ST}" stroke-width="3"/>`+
+   `<rect x="240" y="120" width="120" height="8" fill="#b9bfc3"/><rect x="262" y="90" width="18" height="30" rx="3" fill="#e8738f" stroke="${ST}"/><rect x="265" y="82" width="12" height="9" fill="${D}"/><rect x="290" y="90" width="18" height="30" rx="3" fill="#e6b54a" stroke="${ST}"/><rect x="293" y="82" width="12" height="9" fill="${D}"/>`+tx(300,150,"Bottles still capped",11,ST,400),
+  s2:room+`<rect x="150" y="30" width="110" height="140" fill="#3a454d"/><polygon points="150,30 196,44 196,160 150,170" fill="#c9d1d7" stroke="${ST}" stroke-width="2"/><rect x="160" y="70" width="28" height="12" fill="#a3333d"/>`+tx(174,79,"PRIVATE",6,"#fff")+
+   `<circle cx="226" cy="74" r="16" fill="${SK}" stroke="${D}" stroke-width="2"/><path d="M210,70 Q210,52 226,54 Q242,52 242,70 Q236,62 226,62 Q216,62 210,70Z" fill="#6b4a32"/><path d="M204,170 L208,104 Q226,92 244,104 L248,170Z" fill="#6c8fb8" stroke="${D}" stroke-width="2"/>`+
+   `<path d="M262,48 h120 q8,0 8,8 v30 q0,8 -8,8 h-96 l-14,12 l2,-12 h-12 q-8,0 -8,-8 v-30 q0,-8 8,-8z" fill="#fff" stroke="${ST}" stroke-width="2"/>`+tx(322,68,"Can I come in",12,D,600)+tx(322,84,"and watch?",12,D,600)+
+   `<rect x="30" y="120" width="90" height="12" rx="3" fill="#d3d9dd" stroke="${ST}" stroke-width="2"/><path d="M40,120 q30,-22 70,0" fill="#fff" stroke="#9aa6af" stroke-width="2"/>`+tx(75,150,"Body on the table",10,ST,400),
+  s3:room+`<rect x="40" y="110" width="120" height="8" fill="#b9bfc3"/><rect x="60" y="60" width="60" height="50" rx="5" fill="#cfd6db" stroke="${ST}" stroke-width="2"/><rect x="66" y="30" width="48" height="34" rx="5" fill="#f2b4c4" stroke="${ST}" stroke-width="2"/>`+
+   `<g fill="#e8738f"><circle cx="140" cy="40" r="4"/><circle cx="160" cy="34" r="3.5"/><circle cx="182" cy="40" r="3"/><circle cx="200" cy="48" r="3.5"/><circle cx="220" cy="56" r="4"/></g><path d="M118,36 Q170,10 230,58" fill="none" stroke="#e8738f" stroke-width="2" stroke-dasharray="5 5"/>`+
+   `<circle cx="270" cy="80" r="34" fill="${SK}" stroke="${D}" stroke-width="2"/><path d="M236,74 Q236,42 270,44 Q304,42 304,74 Q296,58 270,58 Q246,58 236,74Z" fill="#a9d1ee" stroke="${D}" stroke-width="1.5"/><ellipse cx="254" cy="78" rx="8" ry="5" fill="#fff" stroke="${D}"/><circle cx="254" cy="78" r="3" fill="${D}"/><path d="M244,70 l20,-2" stroke="${D}" stroke-width="2"/><g fill="#9fd3f5"><path d="M250,88 q-3,8 0,12 q3,-4 0,-12z"/></g><path d="M250,100 Q270,112 292,100 L290,112 Q270,122 252,112Z" fill="#cfe6f5" stroke="${D}" stroke-width="1.5"/><path d="M236,128 L230,170 L310,170 L304,128 Q270,114 236,128Z" fill="#f0cf5a" stroke="${D}" stroke-width="2"/>`+tx(330,40,"SPLASH!",16,"#a3333d"),
+  s3x:room+`<ellipse cx="200" cy="100" rx="120" ry="60" fill="${SK}" stroke="${D}" stroke-width="3"/><ellipse cx="200" cy="100" rx="78" ry="38" fill="#fbe1e1" stroke="${D}" stroke-width="2"/><g stroke="#d64545" stroke-width="2" fill="none"><path d="M128,96 q20,-6 30,4 q10,8 22,2"/><path d="M130,110 q16,4 26,-4"/><path d="M272,92 q-20,-4 -30,6"/><path d="M270,110 q-16,6 -28,-2"/></g><circle cx="200" cy="100" r="26" fill="#6b8a5a" opacity=".85"/><circle cx="200" cy="100" r="12" fill="${D}"/><circle cx="192" cy="92" r="4" fill="#fff"/><g fill="#9fd3f5"><path d="M150,148 q-5,12 0,18 q5,-6 0,-18z"/><path d="M250,150 q-5,12 0,18 q5,-6 0,-18z"/></g><rect x="0" y="0" width="400" height="220" fill="#fff" opacity=".18"/>`+tx(200,30,"Red, burning, and blurry",14,"#a3333d"),
+  s5:room+`<rect x="60" y="120" width="220" height="14" rx="4" fill="#cfd6db" stroke="${ST}" stroke-width="2"/><rect x="70" y="100" width="200" height="22" rx="3" fill="#e9edf0" stroke="${ST}" stroke-width="2"/>`+
+   `<rect x="96" y="104" width="70" height="10" rx="3" fill="#2f9e62" stroke="#1f6e44"/><path d="M166,104 L182,102 Q214,100 226,110 Q206,116 182,114 L166,114Z" fill="#eef1f3" stroke="${ST}" stroke-width="1.5"/><g fill="#a3333d"><circle cx="196" cy="108" r="3"/><circle cx="206" cy="111" r="2.5"/><circle cx="214" cy="108" r="2"/></g>`+
+   `<rect x="300" y="60" width="60" height="76" rx="5" fill="#d62828" stroke="#7a1f1f" stroke-width="2"/><rect x="306" y="64" width="48" height="10" rx="2" fill="#7a1f1f"/>`+tx(330,112,"SHARPS",11,"#fff")+tx(170,160,"Dull, bloody, and done",12,ST,400),
+  s5x:room+`<g fill="#3b4fa8" stroke="${D}" stroke-width="2"><rect x="120" y="96" width="92" height="84" rx="16"/><rect x="122" y="40" width="20" height="70" rx="10"/><rect x="146" y="26" width="20" height="80" rx="10"/><rect x="170" y="30" width="20" height="76" rx="10"/><rect x="194" y="44" width="18" height="64" rx="9"/><rect x="88" y="104" width="20" height="56" rx="10" transform="rotate(-35 98 132)"/></g><path d="M150,46 L162,40" stroke="#fff" stroke-width="2.5"/><path d="M150,52 q8,6 4,14" fill="none" stroke="#a3333d" stroke-width="3"/><g fill="#a3333d"><path d="M156,64 q-6,12 0,18 q6,-6 0,-18z"/><path d="M158,96 q-5,10 0,15 q5,-5 0,-15z"/></g><path d="M240,60 L300,40 Q330,34 342,46 Q326,58 300,60Z" fill="#eef1f3" stroke="${ST}" stroke-width="2"/><rect x="190" y="54" width="52" height="12" rx="3" fill="#2f9e62" stroke="#1f6e44" transform="rotate(-12 216 60)"/>`+tx(300,120,"Through the glove",14,"#a3333d"),
+  s6:room+`<rect x="80" y="120" width="240" height="20" rx="6" fill="#d3d9dd" stroke="${ST}" stroke-width="2"/><path d="M110,120 Q200,170 290,120" fill="#e9edf0" stroke="${ST}" stroke-width="2"/><path d="M200,30 V60 Q200,70 210,70 H230" fill="none" stroke="${ST}" stroke-width="7"/><path d="M200,72 v20" stroke="#9fd3f5" stroke-width="5" opacity=".8"/>`+
+   `<ellipse cx="186" cy="104" rx="24" ry="13" fill="${SK}" stroke="${D}" stroke-width="2"/><ellipse cx="214" cy="104" rx="24" ry="13" fill="${SK}" stroke="${D}" stroke-width="2"/><g fill="#fff" stroke="#c9d1d7"><circle cx="176" cy="96" r="5"/><circle cx="196" cy="94" r="4"/><circle cx="218" cy="96" r="5"/><circle cx="230" cy="100" r="4"/></g>`+
+   `<circle cx="340" cy="60" r="34" fill="#fff" stroke="${ST}" stroke-width="3"/><path d="M340,60 V34" stroke="#b8325a" stroke-width="3"/><path d="M340,60 L356,70" stroke="${D}" stroke-width="3"/>`+tx(340,112,"20 seconds?",12,ST,600)+`<rect x="40" y="40" width="40" height="56" rx="4" fill="#fff" stroke="${ST}" stroke-width="2"/>`+tx(60,72,"TOWELS",8,ST),
+  s7:room+`<rect x="70" y="30" width="130" height="150" rx="6" fill="#c9a87a" stroke="#8a6a3a" stroke-width="2"/><rect x="82" y="44" width="106" height="128" fill="#fff" stroke="${ST}"/><rect x="118" y="24" width="34" height="14" rx="3" fill="#9aa6af" stroke="${ST}"/>`+tx(135,62,"HEPATITIS B",10)+tx(135,75,"VACCINE",10)+tx(135,88,"DECLINATION",10)+`<g stroke="#9aa6af"><line x1="92" y1="104" x2="178" y2="104"/><line x1="92" y1="116" x2="178" y2="116"/><line x1="92" y1="128" x2="160" y2="128"/><line x1="92" y1="156" x2="150" y2="156"/></g>`+tx(120,168,"Signature",8,ST,400)+
+   `<rect x="250" y="80" width="30" height="54" rx="4" fill="#dff1f9" stroke="${ST}" stroke-width="2"/><rect x="250" y="70" width="30" height="12" rx="2" fill="#2f7d5b"/><rect x="254" y="100" width="22" height="16" fill="#fff"/><g transform="rotate(-30 320 100)"><rect x="290" y="94" width="60" height="12" rx="2" fill="#eef3f6" stroke="${ST}" stroke-width="1.5"/><rect x="350" y="98" width="20" height="4" fill="${ST}"/><rect x="280" y="96" width="10" height="8" fill="${ST}"/></g>`,
+  s8:room+`<rect x="40" y="30" width="150" height="150" rx="6" fill="#fff" stroke="${ST}" stroke-width="2"/>`+tx(115,52,"AIR MONITORING",11)+tx(115,68,"8-hour TWA, during embalming",9,ST,400)+tx(115,110,"0.8 ppm",30,"#a3333d")+tx(115,140,"Formaldehyde",11,ST,400)+
+   `<rect x="240" y="40" width="40" height="130" rx="4" fill="#e9edf0" stroke="${ST}" stroke-width="2"/><rect x="242" y="64" width="36" height="104" fill="#e8738f" opacity=".75"/><g stroke="${D}" stroke-width="2"><line x1="236" y1="96" x2="286" y2="96"/><line x1="236" y1="120" x2="286" y2="120"/></g>`+
+   `<text x="292" y="99" font-size="10" font-family="Arial" fill="${D}">0.75 ppm  PEL</text><text x="292" y="124" font-size="10" font-family="Arial" fill="${D}">0.5 ppm  action level</text><text x="292" y="67" font-size="10" font-family="Arial" font-weight="700" fill="#a3333d">0.8 ppm</text>`,
+  s9:room+`<rect x="40" y="110" width="250" height="16" rx="4" fill="#cfd6db" stroke="${ST}" stroke-width="2"/><rect x="50" y="88" width="230" height="24" rx="3" fill="#e9edf0" stroke="${ST}" stroke-width="2"/>`+
+   `<g stroke="${ST}" stroke-width="4" stroke-linecap="round"><line x1="64" y1="96" x2="130" y2="96"/><line x1="64" y1="104" x2="120" y2="104"/><line x1="150" y1="96" x2="220" y2="100"/></g><line x1="150" y1="104" x2="262" y2="104" stroke="#b9a37a" stroke-width="5" stroke-linecap="round"/><g fill="#7a5a2a"><circle cx="180" cy="104" r="2"/><circle cx="196" cy="103" r="1.6"/><circle cx="214" cy="105" r="2.2"/><circle cx="236" cy="104" r="1.8"/></g><circle cx="208" cy="104" r="34" fill="none" stroke="#b8325a" stroke-width="2.5" stroke-dasharray="6 4"/>`+tx(208,58,"Pitted, worn chrome",12,"#b8325a")+
+   `<path d="M320,80 h30 v80 q0,8 -8,8 h-14 q-8,0 -8,-8z" fill="#5aa2a8" stroke="${D}" stroke-width="2"/><rect x="326" y="64" width="18" height="16" fill="#e9edf0" stroke="${D}" stroke-width="2"/><path d="M326,64 h-14 l-4,6 h18" fill="#e9edf0" stroke="${D}" stroke-width="2"/><rect x="324" y="110" width="22" height="20" fill="#fff"/>`+tx(335,124,"DISINF.",6)
+ };return S[id]?wrap(S[id]):""}
+
+function spillSvg(big){const k=big?1.7:1;const P=(x,y)=>`${(570+(x-570)*k).toFixed(0)},${(500+(y-500)*k).toFixed(0)}`;
+ let g=`<path d="M${P(500,500)} Q${P(496,482)} ${P(530,480)} Q${P(570,470)} ${P(610,478)} Q${P(648,486)} ${P(636,506)} Q${P(610,522)} ${P(566,520)} Q${P(512,520)} ${P(500,500)}Z" fill="#e8738f" fill-opacity=".75" stroke="#c4506d" stroke-width="1.5"/>`;
+ g+=`<g transform="rotate(-80 590 486)"><rect x="574" y="478" width="18" height="34" rx="3" fill="#e8738f" stroke="#56636d" stroke-width="1.5"/><rect x="577" y="471" width="12" height="8" rx="1" fill="#3a454d"/></g>`;
+ if(big)g+=`<rect x="472" y="400" width="8" height="110" rx="3" fill="#8a6a3a" transform="rotate(18 476 510)"/><path d="M452,508 h48 l-6,18 h-36z" fill="#d9d4c8" stroke="#56636d"/>`;
+ g+=`<g fill="none" stroke="#e8738f" stroke-width="2" opacity=".6"><path d="M540,474 q6,-10 0,-20 q-6,-10 0,-20"/><path d="M600,470 q6,-10 0,-20 q-6,-10 0,-20"/></g>`;return g}
+function bio(cx,cy,k){const R='#d62828',K='#1b1b1b';let o="";const P=(a,d)=>{const r=a*Math.PI/180;return [(cx+d*k*Math.cos(r)).toFixed(1),(cy+d*k*Math.sin(r)).toFixed(1)]};
+  [-90,30,150].forEach(a=>{const [x,y]=P(a,5.2);o+=`<circle cx="${x}" cy="${y}" r="${7*k}" fill="${K}"/>`});
+  [-90,30,150].forEach(a=>{const [x,y]=P(a,7.6);o+=`<circle cx="${x}" cy="${y}" r="${4.4*k}" fill="${R}"/>`});
+  o+=`<circle cx="${cx}" cy="${cy}" r="${4.4*k}" fill="none" stroke="${K}" stroke-width="${1.8*k}"/><circle cx="${cx}" cy="${cy}" r="${1.6*k}" fill="${R}"/>`;
+  [90,210,330].forEach(a=>{const [x,y]=P(a,7.5);o+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${R}" stroke-width="${1.2*k}"/>`});
+  return o}
+function room(c,spots){
+  const P=id=>c.problems.includes(id);
+  const ST='#56636d',CAB='#a39d94',CABD='#8b857c',TOP='#e9ebec';
+  let g=`<svg viewBox="0 0 900 560" role="img" aria-label="Front view of the preparation room">`;
+  // ceiling with light panels, wall, floor
+  g+=`<rect x="0" y="0" width="900" height="560" fill="#f3f4f4"/><polygon points="0,0 900,0 860,34 40,34" fill="#e4e7e9"/>`;
+  [[120,260],[360,540],[640,800]].forEach(([a,b])=>g+=`<polygon points="${a},6 ${b},6 ${b-8},24 ${a+8},24" fill="#ffffff" stroke="#cfd5d9"/>`);
+  g+=`<rect x="40" y="34" width="820" height="410" fill="#f7f7f6"/><line x1="40" y1="34" x2="860" y2="34" stroke="#d5dadd" stroke-width="2"/>`;
+  g+=`<polygon points="0,0 40,34 40,444 0,560" fill="#ecefef"/><polygon points="900,0 860,34 860,444 900,560" fill="#ecefef"/>`;
+  g+=`<polygon points="40,444 860,444 900,560 0,560" fill="#dfe3e5"/><g stroke="#d3d8db" stroke-width="1.2">`;for(let x=-100;x<1000;x+=90)g+=`<line x1="${450+(x-450)*0.86}" y1="444" x2="${x}" y2="560"/>`;g+=`<line x1="20" y1="500" x2="880" y2="500"/></g><rect x="40" y="440" width="820" height="6" fill="#c9ced2"/>`;
+  // door on left
+  if(P("door")){g+=`<rect x="56" y="170" width="100" height="274" fill="#3a454d"/><polygon points="56,170 100,184 100,434 56,444" fill="#b9c2c8" stroke="${ST}" stroke-width="2"/><polygon points="108,436 138,436 132,444 102,444" fill="#8a6a3a"/>`;}
+  else{g+=`<rect x="56" y="170" width="100" height="274" fill="#c9d1d7" stroke="${ST}" stroke-width="3"/><rect x="132" y="300" width="14" height="20" rx="2" fill="#3a454d"/><rect x="66" y="190" width="80" height="54" fill="#e3e7ea" stroke="#9aa6af"/><rect x="72" y="258" width="68" height="24" fill="#a3333d"/><text x="106" y="275" font-size="12" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">PRIVATE</text>`;}
+  // refrigeration unit: walk-in mortuary cooler door
+  g+=`<rect x="166" y="96" width="148" height="348" fill="#b9c2c8" stroke="${ST}" stroke-width="2"/><rect x="214" y="100" width="52" height="16" rx="2" fill="#1b2329"/><text x="240" y="112" font-size="11" fill="#5fe08f" text-anchor="middle" font-family="monospace">36&#176;F</text>`;
+  if(P("cooler")){g+=`<rect x="176" y="122" width="128" height="322" fill="#2e3a42"/><rect x="186" y="214" width="110" height="7" fill="#9aa6af"/><rect x="186" y="314" width="110" height="7" fill="#9aa6af"/><rect x="194" y="196" width="80" height="18" rx="4" fill="#e9edf0"/><rect x="240" y="292" width="26" height="22" rx="3" fill="#5b8c3a"/><rect x="270" y="296" width="9" height="18" rx="3" fill="#c0392b"/><rect x="282" y="296" width="9" height="18" rx="3" fill="#c0392b"/><polygon points="176,122 216,134 216,434 176,444" fill="#dfe4e8" stroke="${ST}" stroke-width="2"/>`;}
+  else{g+=`<rect x="176" y="122" width="128" height="322" fill="#dfe4e8" stroke="${ST}" stroke-width="2.5"/><g stroke="#cdd3d8" stroke-width="1">`;for(let x=184;x<300;x+=8)g+=`<line x1="${x}" y1="126" x2="${x}" y2="440"/>`;g+=`</g><rect x="298" y="150" width="12" height="30" rx="2" fill="#8a949c" stroke="${ST}"/><rect x="298" y="380" width="12" height="30" rx="2" fill="#8a949c" stroke="${ST}"/><rect x="184" y="262" width="26" height="64" rx="4" fill="#c9d1d7" stroke="${ST}" stroke-width="2"/><rect x="180" y="280" width="42" height="12" rx="5" fill="#56636d"/><circle cx="197" cy="308" r="4" fill="#3a454d"/><rect x="222" y="186" width="54" height="46" fill="#fff" stroke="#9aa6af"/><rect x="240" y="182" width="18" height="8" rx="2" fill="#8a949c"/><g stroke="#9aa6af"><line x1="228" y1="200" x2="270" y2="200"/><line x1="228" y1="208" x2="270" y2="208"/><line x1="228" y1="216" x2="264" y2="216"/><line x1="228" y1="224" x2="270" y2="224"/></g><rect x="176" y="430" width="128" height="10" fill="#9aa6af"/>`;}
+  // drench shower
+  g+=`<line x1="106" y1="34" x2="106" y2="84" stroke="#2f9e62" stroke-width="4"/><path d="M90,84 h32 l-5,10 h-22z" fill="#2f9e62"/><line x1="116" y1="94" x2="116" y2="136" stroke="#2f9e62" stroke-width="2"/><circle cx="116" cy="140" r="4" fill="#2f9e62"/>`;
+  // upper cabinets
+  g+=`<rect x="350" y="70" width="510" height="110" fill="${CAB}" stroke="${CABD}" stroke-width="2"/>`;for(let x=350;x<860;x+=85)g+=`<rect x="${x+4}" y="74" width="77" height="102" fill="none" stroke="${CABD}" stroke-width="1.5"/><rect x="${x+70}" y="132" width="3" height="20" fill="#d9d6d1"/>`;
+  // base cabinets and counter
+  g+=`<rect x="350" y="330" width="510" height="114" fill="${CAB}" stroke="${CABD}" stroke-width="2"/>`;for(let x=350;x<860;x+=64){g+=`<rect x="${x+4}" y="336" width="56" height="30" fill="none" stroke="${CABD}" stroke-width="1.5"/><rect x="${x+4}" y="370" width="56" height="66" fill="none" stroke="${CABD}" stroke-width="1.5"/><rect x="${x+24}" y="349" width="16" height="3" fill="#d9d6d1"/>`}
+  g+=`<rect x="344" y="320" width="522" height="12" fill="${TOP}" stroke="#b9bfc3" stroke-width="2"/>`;
+  // low exhaust grill in base cabinet, right
+  g+=`<rect x="804" y="404" width="52" height="34" fill="#dfe4e8" stroke="${ST}" stroke-width="2"/><g stroke="${ST}">`;for(let y=410;y<436;y+=6)g+=`<line x1="808" y1="${y}" x2="852" y2="${y}"/>`;g+=`</g>`;
+  if(P("vent"))g+=`<rect x="790" y="390" width="70" height="54" rx="2" fill="#7a8a96" stroke="${ST}" stroke-width="2"/><rect x="796" y="372" width="58" height="20" fill="#c9a87a" stroke="#8a6a3a"/><circle cx="800" cy="448" r="5" fill="#3a454d"/><circle cx="850" cy="448" r="5" fill="#3a454d"/>`;
+  // embalming machine on counter
+  g+=`<rect x="366" y="262" width="80" height="58" rx="5" fill="#cfd6db" stroke="${ST}" stroke-width="3"/><circle cx="384" cy="292" r="8" fill="#fff" stroke="${ST}"/><line x1="384" y1="292" x2="388" y2="286" stroke="#a3333d" stroke-width="2"/><rect x="400" y="286" width="34" height="8" rx="2" fill="#2f7d5b"/>`;
+  g+=`<rect x="378" y="200" width="56" height="62" rx="6" fill="${P("machine")?"#f2b4c4":"#d7ebf5"}" stroke="${ST}" stroke-width="2.5"/><rect x="380" y="226" width="52" height="34" fill="${P("machine")?"#e8738f":"#bcdcef"}"/>`;
+  if(P("machine"))g+=`<path d="M394,190 q12,-14 24,0" fill="none" stroke="#e8738f" stroke-width="2" opacity=".7"/><path d="M402,180 q8,-10 16,0" fill="none" stroke="#e8738f" stroke-width="2" opacity=".5"/><rect x="452" y="308" width="54" height="10" rx="3" fill="#9aa6af" stroke="${ST}" stroke-width="2"/>`;
+  else g+=`<rect x="374" y="192" width="64" height="12" rx="3" fill="#9aa6af" stroke="${ST}" stroke-width="2"/>`;
+  g+=`<path d="M446,300 Q420,360 300,392" fill="none" stroke="#8fc3dc" stroke-width="5"/>`;
+  // water control unit: base plate, tall swing spout, hydroaspirator, wrist-blade mixing levers
+  const CH='#dfe4e8';
+  g+=`<rect x="450" y="312" width="108" height="8" rx="1" fill="#c9d1d7" stroke="${ST}" stroke-width="2"/>`;
+  g+=`<path d="M472,312 V132 Q472,124 464,124 H410 Q404,124 404,130 V140" fill="none" stroke="${ST}" stroke-width="8" stroke-linecap="round"/><path d="M472,312 V132 Q472,124 464,124 H410 Q404,124 404,130 V140" fill="none" stroke="${CH}" stroke-width="4" stroke-linecap="round"/><rect x="400" y="140" width="9" height="6" rx="1" fill="${ST}"/>`;
+  g+=`<rect x="466" y="300" width="12" height="12" rx="2" fill="${CH}" stroke="${ST}" stroke-width="1.5"/><rect x="465" y="252" width="14" height="22" rx="3" fill="${CH}" stroke="${ST}" stroke-width="1.5"/><path d="M479,258 h10 q4,0 4,4 v4" fill="none" stroke="${ST}" stroke-width="3"/><circle cx="493" cy="268" r="3" fill="${ST}"/>`;
+  g+=`<rect x="508" y="300" width="22" height="12" rx="2" fill="${CH}" stroke="${ST}" stroke-width="1.5"/><rect x="511" y="196" width="16" height="106" rx="4" fill="${CH}" stroke="${ST}" stroke-width="2"/><line x1="516" y1="202" x2="516" y2="296" stroke="#ffffff" stroke-width="2"/><rect x="507" y="236" width="24" height="8" rx="2" fill="#c9d1d7" stroke="${ST}" stroke-width="1.5"/><path d="M527,214 h8 v14 h-6" fill="none" stroke="${ST}" stroke-width="3"/>`;
+  if(!P("hydro"))g+=`<path d="M509,196 q10,-14 20,0z" fill="${CH}" stroke="${ST}" stroke-width="2"/><rect x="515" y="178" width="8" height="8" rx="2" fill="${ST}"/><rect x="516" y="184" width="6" height="6" fill="${CH}" stroke="${ST}"/>`;
+  else g+=`<rect x="514" y="189" width="10" height="8" fill="#9aa6af" stroke="${ST}"/>`;
+  g+=`<rect x="536" y="300" width="18" height="12" rx="2" fill="${CH}" stroke="${ST}" stroke-width="1.5"/><path d="M540,302 L554,276" stroke="${ST}" stroke-width="5" stroke-linecap="round"/><path d="M540,302 L554,276" stroke="${CH}" stroke-width="2" stroke-linecap="round"/><path d="M547,304 L560,282" stroke="${ST}" stroke-width="5" stroke-linecap="round"/><path d="M547,304 L560,282" stroke="${CH}" stroke-width="2" stroke-linecap="round"/>`;
+  g+=`<path d="M531,240 Q560,250 548,330 Q540,380 640,398" fill="none" stroke="#cfe3ee" stroke-width="5"/><path d="M531,240 Q560,250 548,330 Q540,380 640,398" fill="none" stroke="#9fc7da" stroke-width="1.5"/>`;
+  // hand sink with plumbed eyewash and sign
+  g+=`<rect x="560" y="316" width="100" height="8" rx="3" fill="#b9bfc3"/><path d="M652,318 v-50 q0,-12 -12,-12 h-4" fill="none" stroke="${ST}" stroke-width="4"/>`;
+  g+=`<rect x="562" y="196" width="94" height="30" rx="3" fill="#2f9e62"/><circle cx="578" cy="211" r="9" fill="none" stroke="#fff" stroke-width="2"/><circle cx="578" cy="211" r="3.5" fill="#fff"/><text x="620" y="208" font-size="10" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">EYEWASH</text><text x="620" y="220" font-size="8" fill="#fff" text-anchor="middle" font-family="Arial">STATION</text>`;
+  g+=`<path d="M592,318 v-30" stroke="${ST}" stroke-width="6"/><path d="M560,276 h64 l-8,16 h-48z" fill="#e6c229" stroke="#8a6f0f" stroke-width="2"/><rect x="566" y="258" width="20" height="16" rx="3" fill="#2f9e62" stroke="#1f6e44" stroke-width="2"/><rect x="598" y="258" width="20" height="16" rx="3" fill="#2f9e62" stroke="#1f6e44" stroke-width="2"/><path d="M570,256 q6,-8 12,0 M602,256 q6,-8 12,0" fill="none" stroke="#9fd3b6" stroke-width="2"/><rect x="618" y="294" width="30" height="8" rx="3" fill="#e6c229" stroke="#8a6f0f" stroke-width="1.5"/><rect x="644" y="290" width="8" height="16" rx="2" fill="#e6c229" stroke="#8a6f0f"/>`;
+  if(P("eyewash"))g+=`<rect x="556" y="270" width="54" height="48" fill="#c9a87a" stroke="#8a6a3a" stroke-width="2"/><rect x="608" y="270" width="54" height="48" fill="#c9a87a" stroke="#8a6a3a" stroke-width="2"/><rect x="570" y="230" width="72" height="42" fill="#c9a87a" stroke="#8a6a3a" stroke-width="2"/><text x="606" y="255" font-size="11" text-anchor="middle" fill="#5e472a" font-family="Arial">FLUID</text>`;
+  // bottles and SDS binder on counter
+  [[684,"#e8738f"],[702,"#e8738f"],[720,"#e8738f"],[740,"#e6b54a"],[758,"#e6b54a"]].forEach(([x,col])=>{g+=`<rect x="${x-8}" y="288" width="16" height="32" rx="3" fill="${col}" stroke="${ST}" stroke-width="1.5"/><rect x="${x-5}" y="280" width="10" height="9" rx="1" fill="#3a454d"/>`;});
+  if(P("counter"))g+=`<rect x="770" y="284" width="18" height="36" rx="3" fill="#6cb4a4" stroke="${ST}" stroke-width="1.5"/><rect x="773" y="276" width="12" height="9" rx="1" fill="#3a454d"/><rect x="772" y="296" width="14" height="10" fill="#fff"/>`;
+  g+=`<rect x="796" y="262" width="44" height="58" rx="2" fill="#2b5c8a" stroke="#1b3a57" stroke-width="2"/><rect x="796" y="262" width="10" height="58" fill="#1f4a72"/><circle cx="801" cy="308" r="3.5" fill="#f7f7f6"/><rect x="800" y="270" width="3" height="10" fill="#f6e7a8"/><rect x="838" y="266" width="5" height="52" fill="#f7f7f6" stroke="#cfd5d9"/><rect x="810" y="272" width="26" height="20" fill="#fff"/><text x="823" y="286" font-size="10" fill="#1b3a57" text-anchor="middle" font-family="Arial" font-weight="700">SDS</text><text x="823" y="304" font-size="6" fill="#fff" text-anchor="middle" font-family="Arial">Safety Data</text>`;
+  // sharps container on wall: red bin with white syringe icon and SHARPS
+  g+=`<rect x="790" y="186" width="50" height="62" rx="4" fill="#d62828" stroke="#7a1f1f" stroke-width="2"/><rect x="796" y="190" width="38" height="8" rx="2" fill="#7a1f1f"/>`;
+  g+=`<g transform="rotate(-38 815 218)" fill="#fff"><rect x="802" y="214" width="20" height="8" rx="1"/><rect x="800" y="212" width="2.5" height="12"/><rect x="794" y="216.5" width="8" height="3"/><rect x="792" y="213" width="2.5" height="10"/><path d="M822,215 L827,218 L822,221Z"/><rect x="826" y="217.4" width="10" height="1.2"/></g><g stroke="#d62828" stroke-width="1"><line x1="812" y1="214" x2="815" y2="218"/><line x1="815" y1="212" x2="818" y2="216"/></g>`;
+  g+=`<ellipse cx="815" cy="232" rx="12" ry="1.8" fill="#fff"/><text x="815" y="243" font-size="8.5" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="700">SHARPS</text>`;
+  if(P("sharps"))g+=`<path d="M836,317 l26,-6 l-2,7z" fill="#e3e7ea" stroke="${ST}" stroke-width="2"/><path d="M842,315 l7,-1" stroke="#a3333d" stroke-width="2"/>`;
+  // hydraulic table
+  g+=`<rect x="410" y="428" width="60" height="70" fill="#b0bac2" stroke="${ST}" stroke-width="2"/><rect x="422" y="428" width="36" height="70" fill="#c9d1d7"/><rect x="300" y="498" width="280" height="22" rx="6" fill="#9aa6af" stroke="${ST}" stroke-width="2"/><circle cx="318" cy="530" r="10" fill="#3a454d"/><circle cx="562" cy="530" r="10" fill="#3a454d"/><rect x="560" y="516" width="40" height="8" rx="3" fill="#56636d"/>`;
+  g+=`<rect x="220" y="408" width="440" height="22" rx="6" fill="#d3d9dd" stroke="${ST}" stroke-width="3"/><rect x="226" y="404" width="428" height="8" rx="3" fill="#e9edf0" stroke="#9aa6af" stroke-width="1.5"/>`;
+  // head block and decedent
+  g+=`<rect x="232" y="392" width="32" height="14" rx="3" fill="#56636d"/>`;
+  if(P("table")){g+=`<path d="M262,394 Q262,370 284,372 L322,378 Q342,362 382,366 L522,370 Q562,370 602,382 L630,380 Q646,386 638,404 L262,406Z" fill="#f1cfae" stroke="#3a2a20" stroke-width="2"/><path d="M382,382 Q442,398 502,402" fill="none" stroke="#c99f7d" stroke-width="3"/>`;}
+  else{g+=`<circle cx="268" cy="382" r="18" fill="#f1cfae" stroke="#3a2a20" stroke-width="2"/><path d="M284,406 Q292,366 342,364 Q432,356 522,362 Q592,364 626,378 Q652,390 646,406Z" fill="#ffffff" stroke="#9aa6af" stroke-width="2"/><path d="M342,370 Q432,362 522,368" fill="none" stroke="#e3e7ea" stroke-width="2"/>`;}
+  g+=`<ellipse cx="498" cy="404" rx="12" ry="7" fill="#f1cfae" stroke="#3a2a20" stroke-width="1.5"/><rect x="480" y="398" width="9" height="12" rx="2" fill="#ffffff" stroke="#3b82c4" stroke-width="2"/>`;
+  if(!P("idband"))g+=`<rect x="469" y="398" width="9" height="12" rx="2" fill="#f6e7a8" stroke="#a87f17" stroke-width="2"/>`;
+  // overhead exhaust arm
+  const arm=(pts,hood)=>{let a=`<g stroke="#e9ecee" stroke-width="12" stroke-linecap="round" fill="none"><polyline points="${pts}"/></g><g stroke="#b9c2c8" stroke-width="2" fill="none"><polyline points="${pts}"/></g>`;pts.split(" ").slice(1,-1).forEach(p=>{const [x,y]=p.split(",");a+=`<circle cx="${x}" cy="${y}" r="8" fill="#56636d"/>`});a+=hood;return a};
+  g+=`<rect x="276" y="34" width="44" height="10" fill="#b9c2c8"/>`;
+  if(P("arm"))g+=arm("298,44 330,96 300,150 336,176",`<path d="M326,170 l30,-8 l14,22 l-36,10z" fill="#ffffff" stroke="#9aa6af" stroke-width="2"/>`);
+  else g+=arm("298,44 332,120 294,214 306,290",`<path d="M282,290 h48 l14,30 h-76z" fill="#ffffff" stroke="#9aa6af" stroke-width="2"/>`);
+  // flush sink at foot of table: floor-mounted porcelain bowl with flushometer, like a toilet
+  const PW='#f4f6f7';
+  g+=`<path d="M703,352 V420" stroke="${ST}" stroke-width="7"/><path d="M703,352 V420" stroke="#dfe4e8" stroke-width="3"/><rect x="694" y="372" width="18" height="22" rx="4" fill="#dfe4e8" stroke="${ST}" stroke-width="2"/><path d="M712,386 l18,-6" stroke="${ST}" stroke-width="4" stroke-linecap="round"/><rect x="697" y="346" width="12" height="8" rx="2" fill="#dfe4e8" stroke="${ST}" stroke-width="1.5"/>`;
+  g+=`<path d="M684,542 L722,542 L716,476 L690,476Z" fill="${PW}" stroke="${ST}" stroke-width="2"/><rect x="678" y="538" width="50" height="6" rx="2" fill="${PW}" stroke="${ST}" stroke-width="1.5"/>`;
+  g+=`<path d="M660,430 Q660,482 703,482 Q746,482 746,430Z" fill="${PW}" stroke="${ST}" stroke-width="2.5"/><path d="M670,440 Q676,470 703,472" fill="none" stroke="#dfe4e8" stroke-width="3"/>`;
+  if(P("sink"))g+=`<ellipse cx="703" cy="430" rx="43" ry="8" fill="${PW}" stroke="${ST}" stroke-width="2.5"/><ellipse cx="703" cy="431" rx="32" ry="5" fill="#d9b8bd"/><g fill="#d9b8bd"><circle cx="684" cy="414" r="2.5"/><circle cx="722" cy="410" r="3"/><circle cx="708" cy="402" r="2"/><circle cx="694" cy="406" r="1.8"/></g>`;
+  else g+=`<path d="M659,430 Q659,420 703,420 Q747,420 747,430 Q747,436 703,436 Q659,436 659,430Z" fill="#e3e7ea" stroke="${ST}" stroke-width="2.5"/><path d="M670,427 Q703,422 736,427" fill="none" stroke="#ffffff" stroke-width="2"/>`;
+  g+=`<path d="M650,418 Q672,420 690,428" fill="none" stroke="#b9c2c8" stroke-width="4"/>`;
+  // waste container
+  g+=`<rect x="742" y="476" width="58" height="70" rx="6" fill="#d62828" stroke="#7a1f1f" stroke-width="2"/>${bio(771,503,1.45)}<text x="771" y="537" font-size="10" textLength="50" lengthAdjust="spacingAndGlyphs" fill="#1b1b1b" text-anchor="middle" font-family="Arial" font-weight="700">BIOHAZARD</text>`;
+  if(P("waste"))g+=`<rect x="738" y="448" width="66" height="12" rx="3" fill="#a3333d" transform="rotate(-24 738 470)"/><path d="M752,478 q18,-26 44,-10 q-8,18 -26,14z" fill="#f2f2f2" stroke="#9aa6af"/>`;
+  else g+=`<rect x="738" y="468" width="66" height="10" rx="3" fill="#7a1f1f"/>`;
+  if(spots){
+    const POS={door:[106,370],arm:P("arm")?[350,140]:[306,250],table:[400,382],idband:[484,404],machine:[406,230],hydro:[712,366],sink:[701,432],vent:[830,421],eyewash:[559,290],sharps:[815,226],counter:[730,300],cooler:[272,260],waste:[771,512]};
+    ITEMS.forEach((it,ix)=>{const [x,y]=POS[it.id];const st=S.ins[it.id]||{};const done=st.done;const wr=st.wrong&&!st.pick;const pk=st.pick&&st.flag&&!done;
+      g+=`<g class="hs${done?" done":wr?" wrongspot":pk?" picked":""}${S.sel===it.id?" sel":""}" tabindex="0" role="button" data-h="${it.id}" aria-label="Point ${ix+1}">`;
+      if(!done&&!pk)g+=`<circle class="pulse" cx="${x}" cy="${y}" r="13"/>`;
+      g+=`<circle class="ring" cx="${x}" cy="${y}" r="13"/>`;
+      g+=done?`<path d="M${x-7} ${y} l5 6 l9 -11" stroke="#2f7d5b" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:wr?`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="#a85f17">!</text>`:pk?`<circle cx="${x}" cy="${y}" r="10" fill="#1b2329"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff" font-family="Arial">${ix+1}</text>`:`<text x="${x}" y="${y+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#b8325a" font-family="Arial">${ix+1}</text>`;
+      g+=`</g>`;});
+  }
+  return g+`</svg>`;
+}
+function instSvg(id){
+  const D='#56636d',M='#cfd6db',L='#eef1f3',P='#f1ece0';
+  const S2=b=>`<svg viewBox="0 0 160 60" aria-hidden="true">${b}</svg>`;
+  const knurl=(x,y,w,h)=>{let k=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="#b9c2c8" stroke="${D}" stroke-width="1.5"/>`;for(let i=x+3;i<x+w;i+=4)k+=`<line x1="${i}" y1="${y+1}" x2="${i-2}" y2="${y+h-1}" stroke="${D}" stroke-width=".8"/>`;return k};
+  const grip=(x,y,w,h)=>{let k=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${M}" stroke="${D}" stroke-width="1.5"/>`;for(let i=x+6;i<x+w-4;i+=4)k+=`<line x1="${i}" y1="${y+2}" x2="${i}" y2="${y+h-2}" stroke="#9aa6af" stroke-width="1"/>`;return k};
+  const hookEnd=eye=>`<path d="M84,30 L128,30" stroke="${D}" stroke-width="4" stroke-linecap="round"/><path d="M84,30 L128,30" stroke="${L}" stroke-width="1.5" stroke-linecap="round"/><path d="M128,30 Q150,30 150,42 Q150,52 139,51" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round"/>`+(eye?`<path d="M150,38 Q153,46 147,52 Q143,48 144,40Z" fill="${D}"/><ellipse cx="148" cy="45" rx="1.8" ry="3.5" fill="#fff"/>`:"");
+  const rings=`<ellipse cx="16" cy="17" rx="8" ry="7" fill="none" stroke="${D}" stroke-width="3"/><ellipse cx="16" cy="43" rx="8" ry="7" fill="none" stroke="${D}" stroke-width="3"/>`;
+  const m={
+   hook:`<path d="M8,26 Q8,22 14,22 L74,24 Q80,25 86,29 L86,31 Q80,35 74,36 L14,38 Q8,38 8,34Z" fill="${M}" stroke="${D}" stroke-width="1.8"/><path d="M20,28 Q46,26 70,29 Q70,31 70,31 Q46,34 20,32Z" fill="#fff" stroke="${D}" stroke-width="1.5"/><path d="M86,30 L142,30" stroke="${D}" stroke-width="3" stroke-linecap="round"/><path d="M142,30 L148,30 L144,42" fill="none" stroke="${D}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+   needle:`<path d="M8,25 L72,27 Q80,28 86,30 Q80,32 72,33 L8,35 Q5,30 8,25Z" fill="${M}" stroke="${D}" stroke-width="1.8"/><path d="M14,28 L70,29.5" stroke="#fff" stroke-width="1.5"/><path d="M86,30 L130,30" stroke="${D}" stroke-width="3" stroke-linecap="round"/><path d="M130,30 Q148,30 150,42 Q151,52 142,54" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round"/><ellipse cx="146.5" cy="48" rx="1.6" ry="3" fill="#fff" stroke="${D}" stroke-width=".8" transform="rotate(30 146.5 48)"/>`,
+   bistoury:`<rect x="10" y="26" width="70" height="9" rx="3" fill="#9aa6af" stroke="${D}" stroke-width="1.5"/><path d="M80,28 L90,28 Q122,26 150,40 Q122,34 90,34 L80,34Z" fill="${L}" stroke="${D}" stroke-width="1.5"/>`,
+   ascissors:rings+`<path d="M23,20 L70,29 L104,29" fill="none" stroke="${D}" stroke-width="3.5"/><path d="M23,40 L70,31 L104,31" fill="none" stroke="${D}" stroke-width="3.5"/><circle cx="70" cy="30" r="2.5" fill="${D}"/><path d="M102,27 L134,15 Q140,13 139,17 L104,31Z" fill="${L}" stroke="${D}" stroke-width="1.5"/><path d="M102,33 L130,22 Q133,21 132,24 L104,31Z" fill="${M}" stroke="${D}" stroke-width="1.5"/><circle cx="139" cy="15" r="2" fill="${L}" stroke="${D}"/>`,
+   hemostat:rings+`<path d="M23,20 L62,29 L136,29" fill="none" stroke="${D}" stroke-width="3"/><path d="M23,40 L62,31 L136,31" fill="none" stroke="${D}" stroke-width="3"/><circle cx="62" cy="30" r="2.5" fill="${D}"/><g stroke="${D}" stroke-width="1.5"><line x1="32" y1="22" x2="34" y2="27"/><line x1="36" y1="23" x2="38" y2="28"/><line x1="32" y1="38" x2="34" y2="33"/><line x1="36" y1="37" x2="38" y2="32"/></g><path d="M112,26 h16 v8 h-16z" fill="${L}" stroke="${D}" stroke-width="1.2"/><ellipse cx="120" cy="30" rx="4" ry="2.5" fill="#fff" stroke="${D}"/>`,
+   separator:`<path d="M6,34 Q6,22 20,21 L138,19 Q154,20 156,30 Q154,40 138,41 L20,39 Q6,38 6,34Z" fill="#2b2f33" stroke="#0f1214" stroke-width="2"/><path d="M18,25 L138,23" stroke="#6e7881" stroke-width="2.5" stroke-linecap="round"/><path d="M24,35 L134,36" stroke="#4a5259" stroke-width="1.2"/>`,
+   atube:`<path d="M14,22 L112,22 Q126,22 126,36 L126,40" fill="none" stroke="${D}" stroke-width="5" stroke-linecap="round"/><path d="M14,22 L112,22 Q126,22 126,36 L126,40" fill="none" stroke="${L}" stroke-width="2"/><ellipse cx="11" cy="22" rx="5" ry="4" fill="${M}" stroke="${D}" stroke-width="1.5"/><rect x="120" y="40" width="12" height="4" fill="#2b2f33"/><rect x="117" y="44" width="18" height="6" rx="1" fill="${M}" stroke="${D}" stroke-width="1.5"/><path d="M119,50 L133,50 L129,59 L123,59Z" fill="${L}" stroke="${D}" stroke-width="1.5"/>`,
+   stopcock:`<path d="M10,30 l8,-5 v10z M18,30 l8,-5 v10z M26,30 l8,-5 v10z" fill="${L}" stroke="${D}" stroke-width="1.2"/><rect x="34" y="25" width="22" height="10" fill="${L}" stroke="${D}" stroke-width="1.5"/><path d="M56,22 h34 q6,0 6,6 v12 h-46 v-12 q0,-6 6,-6z" fill="${L}" stroke="${D}" stroke-width="2"/><rect x="96" y="25" width="16" height="10" fill="${L}" stroke="${D}" stroke-width="1.5"/>`+knurl(112,23,22,14)+`<rect x="66" y="12" width="14" height="10" fill="${M}" stroke="${D}" stroke-width="1.5"/><rect x="42" y="4" width="46" height="9" rx="4" fill="${L}" stroke="${D}" stroke-width="2"/>`,
+   ytube:`<path d="M8,30 L16,24 L16,36Z M16,30 L24,24 L24,36Z M24,30 L32,24 L32,36Z M32,30 L40,24 L40,36Z" fill="${L}" stroke="${D}" stroke-width="1.3"/><path d="M40,22 L58,20 L66,30 L58,40 L40,38Z" fill="${M}" stroke="${D}" stroke-width="1.8"/><path d="M64,26 L112,10 M64,34 L112,50" stroke="${D}" stroke-width="7" stroke-linecap="round"/><path d="M64,26 L112,10 M64,34 L112,50" stroke="${L}" stroke-width="3"/><path d="M110,4 L130,6 L134,10 L130,14 L112,16Z M110,44 L130,46 L134,50 L130,54 L112,56Z" fill="${L}" stroke="${D}" stroke-width="1.5"/>`,
+   forceps:`<path d="M8,28 L110,26 L150,44" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8,32 L110,34 L148,48" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8,28 Q4,30 8,32" fill="none" stroke="${D}" stroke-width="4"/><g stroke="${D}" stroke-width="1">${[60,64,68,72,76,80,84].map(x=>`<line x1="${x}" y1="22" x2="${x}" y2="25"/><line x1="${x}" y1="35" x2="${x}" y2="38"/>`).join("")}</g><path d="M138,40 l4,2 M141,44 l4,2" stroke="${D}" stroke-width="1"/>`,
+   director:`<path d="M30,26 L150,29 Q154,30 150,31 L30,34Z" fill="${M}" stroke="${D}" stroke-width="1.8"/><path d="M34,30 L146,30" stroke="#7f8a93" stroke-width="1.5"/><path d="M34,26 L22,22 Q8,14 6,24 Q5,29 12,30 Q5,31 6,36 Q8,46 22,38 L34,34Z" fill="${M}" stroke="${D}" stroke-width="1.8"/><path d="M8,30 L20,30" stroke="${D}" stroke-width="3" stroke-linecap="round"/>`,
+   trocar:`<rect x="6" y="22" width="34" height="16" rx="6" fill="${L}" stroke="${D}" stroke-width="2"/><g stroke="#9aa6af" stroke-width="1">${[14,18,22,26,30].map(x=>`<line x1="${x}" y1="24" x2="${x}" y2="36"/>`).join("")}</g><rect x="2" y="26" width="6" height="8" rx="2" fill="${M}" stroke="${D}" stroke-width="1.2"/><rect x="40" y="26" width="8" height="8" fill="${M}" stroke="${D}" stroke-width="1.2"/><rect x="48" y="27" width="92" height="6" fill="${M}" stroke="${D}" stroke-width="1.5"/>`+knurl(136,26,6,8)+`<path d="M142,26 L156,30 L142,34Z" fill="#9aa6af" stroke="${D}" stroke-width="1.5"/><path d="M142,30 L156,30" stroke="${D}" stroke-width="1"/><g fill="#fff" stroke="${D}" stroke-width=".8"><ellipse cx="128" cy="30" rx="2.5" ry="1.6"/><ellipse cx="118" cy="30" rx="2.5" ry="1.6"/></g>`,
+   button:`<path d="M44,14 Q36,30 44,46 L50,46 Q42,30 50,14Z" fill="#ff3fa4" stroke="#9c1c5e" stroke-width="1.8"/><path d="M50,15 L56,17 L58,20 L64,20 L66,23 L72,23 L74,25 L80,25 L82,27 L88,27 L90,28.5 L96,28.5 L96,31.5 L90,31.5 L88,33 L82,33 L80,35 L74,35 L72,37 L66,37 L64,40 L58,40 L56,43 L50,45Z" fill="#ff5fb4" stroke="#9c1c5e" stroke-width="1.5" stroke-linejoin="round"/><path d="M96,28 Q104,26 106,30 Q104,34 96,32Z" fill="#ff5fb4" stroke="#9c1c5e" stroke-width="1.5"/><path d="M44,24 v12 M40,30 h8" stroke="#9c1c5e" stroke-width="2.2"/>`,
+   avplug:`<rect x="26" y="12" width="10" height="36" rx="3" fill="#f4f1ea" stroke="${D}" stroke-width="1.8"/><path d="M36,18 L44,16 L48,20 L56,17 L60,21 L68,19 L72,23 L80,21 L84,25 L92,24 L96,27 L106,27 L118,30 L106,33 L96,33 L92,36 L84,35 L80,39 L72,37 L68,41 L60,39 L56,43 L48,40 L44,44 L36,42Z" fill="#f4f1ea" fill-opacity=".9" stroke="${D}" stroke-width="1.6" stroke-linejoin="round"/><g stroke="#b9b2a2" stroke-width="1.2">${[44,56,68,80,92].map(x=>`<line x1="${x}" y1="${18+(x-36)*0.13}" x2="${x+4}" y2="${42-(x-36)*0.13}"/>`).join("")}</g><circle cx="31" cy="30" r="2.5" fill="#fff" stroke="${D}"/>`,
+   eyecap:`<path d="M30,40 Q30,14 60,14 Q90,14 90,40Z" fill="#c98c7c" stroke="#7a4a3e" stroke-width="2"/><path d="M96,42 Q96,22 120,22 Q144,22 144,42Z" fill="#dbe8ee" fill-opacity=".8" stroke="${D}" stroke-width="2"/><g fill="#7a4a3e">${[[40,30],[50,22],[60,20],[70,22],[80,30],[45,36],[60,30],[75,36]].map(([x,y])=>`<path d="M${x},${y} l2,-4 l2,4z"/>`).join("")}</g><path d="M104,34 Q120,26 136,34" fill="none" stroke="#9aa6af" stroke-width="1.2"/>`,
+   mouth:`<path d="M12,16 Q46,10 80,20 Q114,10 148,16 Q156,30 148,44 Q114,54 80,48 Q46,54 12,44 Q4,30 12,16Z" fill="#d89a8a" stroke="#7a4a3e" stroke-width="2"/><path d="M14,31 Q80,38 146,31" fill="none" stroke="#7a4a3e" stroke-width="1.6"/><g fill="#fff" stroke="#7a4a3e" stroke-width="1"><rect x="40" y="19" width="16" height="3" rx="1.5"/><rect x="104" y="19" width="16" height="3" rx="1.5"/><rect x="40" y="41" width="16" height="3" rx="1.5"/><rect x="104" y="41" width="16" height="3" rx="1.5"/><circle cx="64" cy="26" r="2.6"/><circle cx="96" cy="26" r="2.6"/><circle cx="64" cy="40" r="2.6"/><circle cx="96" cy="40" r="2.6"/></g><g fill="#9c5f52">${[[24,22],[30,38],[80,28],[80,42],[132,22],[128,38],[50,30],[110,30],[22,30],[138,30]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.4"/>`).join("")}</g>`,
+   scalpel:`<rect x="8" y="26" width="72" height="10" rx="4" fill="#2f9e62" stroke="#1f6e44" stroke-width="1.5"/><g stroke="#1f6e44" stroke-width="1">${[16,22,28,34,40,46].map(x=>`<line x1="${x}" y1="28" x2="${x}" y2="34"/>`).join("")}</g><rect x="76" y="25" width="16" height="12" rx="2" fill="#2f9e62" fill-opacity=".5" stroke="#1f6e44"/><path d="M80,30 L96,27 Q136,22 150,32 Q130,38 96,35 L80,34Z" fill="${L}" stroke="${D}" stroke-width="1.5"/><path d="M100,30 h14" stroke="#9aa6af" stroke-width="2" stroke-linecap="round"/>`,
+   nasal:`<path d="M10,30 L20,25 L20,35Z M20,30 L30,25 L30,35Z" fill="${L}" stroke="${D}" stroke-width="1.2"/>`+knurl(30,24,16,12)+`<path d="M46,30 L106,30 Q132,30 138,44 L140,48" fill="none" stroke="${D}" stroke-width="4" stroke-linecap="round"/><path d="M46,30 L106,30 Q132,30 138,44" fill="none" stroke="${L}" stroke-width="1.5"/><circle cx="140" cy="49" r="3.5" fill="${M}" stroke="${D}" stroke-width="1.5"/>`,
+   autopsy:`<path d="M44,30 L144,30" stroke="${D}" stroke-width="6" stroke-linecap="round"/><path d="M44,29 L144,29" stroke="${L}" stroke-width="2"/><rect x="144" y="26" width="8" height="8" rx="1" fill="#f2f2f2" stroke="${D}" stroke-width="1.2"/><path d="M152,28 h6 v4 h-6" fill="${M}" stroke="${D}"/><ellipse cx="28" cy="30" rx="10" ry="20" fill="${M}" stroke="${D}" stroke-width="2"/><ellipse cx="34" cy="30" rx="7" ry="17" fill="${L}" stroke="${D}" stroke-width="1.5"/><g fill="#3a454d"><circle cx="24" cy="20" r="2"/><circle cx="23" cy="30" r="2"/><circle cx="24" cy="40" r="2"/></g><rect x="38" y="27" width="8" height="6" fill="${M}" stroke="${D}"/>`
+  };return S2(m[id]);
+}
+
+/* ---------- state ---------- */
+const S={step:0,name:"",ci:0,sel:null,ins:{},insRound:0,fix:{},fixI:0,ppe:{sel:[],tries:0,log:[],done:false},inst:{i:0,log:{}},cur:null,path:[],ref:{diff:"",feedback:""},copied:false};
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function hashName(n){let h=0;for(const ch of n.trim().toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return h%CASES.length}
+const C=()=>CASES[S.ci];
+const isBad=id=>C().problems.includes(id);
+const SECT=["Sign in","Inspect","Gear up","Instruments","Scenarios"];
+function secDone(k){if(k===0)return !!S.mode;if(k===1)return !!S.find&&fDone();if(k===2)return S.ppe.done;if(k===3)return TASKS.every((t,i)=>S.inst.log[i]&&S.inst.log[i].done);if(k===4)return S.path.some(p=>p.done&&SC.nodes[p.id].o.some(o=>o.end&&o.ok));if(k===5)return S.copied;return false}
+function setSteps(){const rl=document.querySelector('#steps li[data-s="5"]');if(rl)rl.textContent=S.mode==="fun"?"Finish":"Report";
+ document.querySelectorAll("#steps li").forEach(li=>{const k=+li.dataset.s;const open=!!S.mode||k===0;li.className=(k===S.step?"on":secDone(k)?"done":"")+(open?" nav":"");li.tabIndex=open?0:-1;li.setAttribute("role","button");li.setAttribute("aria-current",k===S.step?"step":"false");
+  li.onclick=()=>{if(!open||k===S.step)return;S.step=k;if(k===4&&!S.cur)S.cur=SC.start;render()};li.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();li.onclick()}}})}
+function render(top){setSteps();document.body.classList.remove("modal-open");[vSign,vFind,vPPE,vInst,vScen,vReport][S.step]();if(top!==false)window.scrollTo({top:0})}
+function keep(){const y=window.scrollY;render(false);window.scrollTo({top:y});focusPrompt()}
+function focusPrompt(){const el=document.querySelector("[data-focus]");if(!el)return;if(el.dataset.focus==="find"&&innerWidth<820)return;const r=el.getBoundingClientRect();if(r.top<0||r.top>innerHeight*0.6){try{el.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){el.scrollIntoView()}}}
+function reset(ci){S.ci=ci;S.sel=null;S.find=null;S.ppe={sel:[],tries:0,log:[],done:false};S.inst={i:0,log:{},order:null,tray:null};S.cur=SC.start;S.path=[];S.ref={diff:"",feedback:""};S.copied=false}
+
+/* ---------- views ---------- */
+function vSign(){
+  app.innerHTML=`<section class="two">
+   <div class="room">${room({problems:[]},false)}</div>
+   <div class="panel stack">
+    <h2>Your first day in the prep room</h2>
+    <p>It's your first day in the NTCC prep room. Before anyone embalms, you'll find and inspect each part of the room, fix what's wrong, suit up, set your instrument tray, and handle what comes up during the day.</p>
+    <p class="muted">Wrong choices show you what would happen. Some lead to a harder situation you have to fix. Everything you choose is recorded in your report.</p>
+    ${S.mode?`<div class="note warn">You're already working on ${esc(C().home)}. Use the steps at the top to keep going. Choosing an option below starts over and clears your progress.</div>`:""}
+    <p class="qlabel">Are you completing this for an assignment or just playing for fun?</p>
+    <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name.startsWith("Practice ")?"":S.name)}"><span class="muted" style="font-size:.85rem">Needed for an assignment. Optional for fun.</span></div>
+    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.name.trim().length<3?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun">Just for fun</button></div>
+    <p class="muted" style="font-size:.88rem">For an assignment, you'll finish with a report to paste into the Week 2 Lab submission in Blackboard. For fun, you'll finish with your scores and can try another room.</p>
+   </div></section>`;
+  const nm=document.getElementById("nm"),go=document.getElementById("go");
+  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=S.name.trim().length<3});
+  go.onclick=()=>{S.mode="assign";reset(hashName(S.name));S.step=1;render()};
+  document.getElementById("fun").onclick=()=>{S.mode="fun";if(S.name.trim().length<1)S.name="Practice "+Math.floor(Math.random()*1e6);reset(S.name.startsWith("Practice ")?Math.floor(Math.random()*CASES.length):hashName(S.name));S.step=1;render()};
+}
+const INFO={
+ door:{label:"the prep room door",i:"Admittance to the prep room is by authorization only: licensees, registered students and trainees, and officials like the medical examiner. The door locks, carries a private sign, and the room is never a hallway to other parts of the building. (EHTP p. 60; p. 66)"},
+ arm:{label:"the local exhaust arm",i:"A local exhaust ventilation (LEV) arm captures formaldehyde vapor right at the source, on top of the room's general ventilation. Ventilation runs whenever someone is in the room. (EHTP p. 110)"},
+ table:{label:"the embalming table",i:"Stainless steel and porcelain tables resist stains, and hydraulic tables adjust in height. The decedent stays covered at all times, with a modesty cloth over the genitals. (EHTP p. 69; p. 15)"},
+ idband:{label:"the identification band",i:"Compare every ID on the body and the body bag with the funeral home record, then attach the funeral home's own ID. Identity is kept through every phase of care. (EHTP p. 14)"},
+ machine:{label:"the embalming machine",i:"A motorized centrifugal pump holds arterial solution in its tank and delivers it at a preset pressure and rate of flow. The tank lid stays on to hold in formaldehyde vapor. (EHTP p. 70; p. 48)"},
+ hydro:{label:"the hydroaspirator",i:"Water running through the hydroaspirator creates suction for cavity aspiration through the trocar. Its vacuum breaker keeps aspirated material out of the water supply if pressure drops. (EHTP p. 66)"},
+ sink:{label:"the flush sink",i:"Drainage from the table runs into the flush sink. A cover keeps blood and chemicals from splashing and becoming airborne. (EHTP p. 67; p. 39)"},
+ vent:{label:"the low exhaust vent",i:"Formaldehyde is heavier than air, so exhaust low near the foot of the table pulls vapor down and away from the embalmer while fresh air comes in high. (EHTP p. 68; p. 38)"},
+ eyewash:{label:"the eyewash station",i:"If chemicals splash into your eyes, you flush them at the eyewash right away. OSHA requires eyewash and drench shower equipment, and it has to be reachable in seconds. (EHTP p. 66; p. 46)"},
+ sharps:{label:"the sharps container",i:"Used scalpel blades, needles, and needle injector wires go in the sharps container. Its opening keeps anyone from reaching back in. (EHTP p. 73; p. 15)"},
+ counter:{label:"the chemicals and SDS binder",i:"Keep chemical bottles capped. A Safety Data Sheet for every hazardous chemical must be kept on site where employees can reach it. (EHTP p. 48; p. 46)"},
+ cooler:{label:"the refrigeration unit",i:"Mortuary refrigeration slows postmortem changes. It stays locked, keeps an entry and exit log, and never holds food or drinks. (EHTP p. 68; p. 39)"},
+ waste:{label:"the biohazard waste container",i:"Contaminated items like body bags and soiled supplies go in the biohazard container. The lid stays closed. (EHTP p. 15; p. 64)"}
+};
+function regions(c){const P=id=>c.problems.includes(id);
+ return {cooler:[[166,96,148,348]],door:[[56,170,100,274]],
+  arm:P("arm")?[[290,40,90,160]]:[[286,44,56,244],[266,284,82,40]],machine:[[366,188,82,134]],eyewash:[[554,194,110,130]],
+  counter:[[674,262,170,60]],sharps:[[784,182,62,70]],vent:P("vent")?[[788,368,74,80]]:[[800,400,60,42]],table:[[220,356,440,76],[410,428,60,72],[300,496,280,40]],
+  idband:[[462,392,48,22]],sink:[[656,342,94,204]],hydro:[[448,118,112,204]],waste:[[734,444,74,104]]};}
+function seeded(n){let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;return()=>{h=(h*1103515245+12345)>>>0;return h/4294967296}}
+function startFind(){const r=seeded(S.name.trim().toLowerCase()+C().code);const ids=ITEMS.map(i=>i.id);for(let i=ids.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+ S.find={order:ids,i:0,log:{},open:null};ids.forEach(id=>S.find.log[id]={misses:[],calls:[],fix:[],stage:"find"});}
+function perm(n,key){const r=seeded(S.name.trim().toLowerCase()+C().code+key);const a=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const fCur=()=>S.find.order[S.find.i];
+const fDone=()=>S.find.order.every(id=>S.find.log[id].stage==="done");
+function fMove(dir){const F=S.find,n=F.order.length;for(let k=1;k<=n;k++){const j=(F.i+dir*k+n*k)%n;if(F.log[F.order[j]].stage!=="done"){F.i=j;F.msg="";return}}}
+function overlay(c){const R=regions(c);let g="";
+ const order=["cooler","door","arm","machine","eyewash","counter","sharps","vent","table","sink","hydro","waste","idband"];
+ order.forEach(id=>{const lg=S.find.log[id];const found=lg&&lg.stage==="done";
+  g+=`<g class="rg${found?" found":""}${S.find.open===id?" open":""}" data-r="${id}" tabindex="0" role="button" aria-label="${found?esc(ITEMS.find(x=>x.id===id).name):"Object in the room"}">${R[id].map(([x,y,w,h])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`).join("")}</g>`;
+  if(found){const [x,y,w]=R[id][0];g+=`<g pointer-events="none"><circle cx="${x+w-4}" cy="${y+4}" r="9" fill="#2f7d5b"/><path d="M${x+w-9} ${y+4} l3.5 4 l6 -7" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></g>`}});
+ return g;}
+function liveCase(c){const L=S.find?S.find.log:{};return {...c,problems:c.problems.filter(id=>!(L[id]&&L[id].stage==="done"))}}
+function roomFind(c){const lc=liveCase(c);return room(lc,false).replace("</svg>",overlay(lc)+"</svg>")}
+const arrows=(id1,id2,l1,l2)=>`<span class="navar"><button class="arw" id="${id1}" aria-label="${l1}" title="${l1}">&#8249;</button><button class="arw" id="${id2}" aria-label="${l2}" title="${l2}">&#8250;</button></span>`;
+function vFind(){
+ const c=C();if(!S.find)startFind();const F=S.find;
+ const done=fDone();const target=done?null:fCur();const lg=target?F.log[target]:null;
+ const it=id=>ITEMS.find(x=>x.id===id);
+ const nd=F.order.filter(k=>F.log[k].stage==="done").length;
+ const prog=`<div class="stack" style="gap:6px"><span class="progress">${nd} of ${F.order.length} inspected</span><div class="bar"><span style="width:${nd/F.order.length*100}%"></span></div></div>`;
+ if(!(lg&&lg.stage==="fix"))F.modalFor=null;
+ const flash=F.flash?`<div class="note ok"><b>${esc(F.flash.n)}:</b> ${esc(F.flash.c)}</div>`:"";
+ let bar="",panel="",modal="";
+ if(done){
+  const shown=F.open?it(F.open):null;
+  bar=`<div class="findbar ok"><span>Inspection done. Click anything in the room to read about it.</span></div>`;
+  panel=flash+`<div class="note ok">You've inspected the whole room and fixed all ${c.problems.length} problems.</div><h2>Explore the room</h2><p>Click anything in the room to read about it again.</p>`+(shown?card(shown,true):"")+`<button class="btn" id="go">Suit up</button>`;
+ }else{
+  bar=`<div class="findbar" data-focus="find"><span class="fk">Item ${F.i+1} of ${F.order.length}</span><span class="ft">Find ${esc(INFO[target].label)}</span>${arrows("fprev","fnext","Previous item","Skip to next item")}${F.msg?`<span class="fm">${F.msg}</span>`:""}</div>`;
+  panel=flash+`<p class="muted">Click the item named above the room. Use the arrows to skip an item and come back to it.</p>`;
+  if(lg.stage==="fix"){
+   const x=it(target);const bad=isBad(target);const L=choiceList(x);const lastI=lg.fix.length?lg.fix[lg.fix.length-1]:null;const lo=lastI!=null?L[lastI]:null;
+   const still=F.modalFor===target;F.modalFor=target;modal=`<div class="mback${still?" still":""}"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="mhead"><span class="fk">Item ${F.i+1} of ${F.order.length}</span>${arrows("mprev","mnext","Previous item","Skip this item for now")}</div>
+    <div class="icard"><span class="ik">You found it</span><h3 id="mt">${esc(x.name)}</h3><p>${esc(INFO[x.id].i)}</p></div>
+    <div class="obs"><p><b>What you see:</b> ${esc(bad?x.bad:x.ok)}</p></div>
+    <p class="qlabel">What do you do?</p>${lo&&!lo.ok?`<div class="note warn fresh">${esc(lo.c)} Choose again.</div>`:""}
+    <div class="choices list">${perm(L.length,"fix"+target).map(i=>{const o=L[i];const t=lg.fix.includes(i);return `<button class="choice${t&&!o.ok?" wrong":""}" data-x="${i}" ${t?"disabled":""}>${esc(o.t)}</button>`}).join("")}</div>
+   </div></div>`;
+  }
+ }
+ app.innerHTML=`<section class="two roomwide">
+  <div class="room sticky">${bar}${roomFind(c)}<div class="legend" style="margin-top:6px"><span>NTCC prep room</span><span>Click or tap items in the room</span><span>Green check = inspected</span></div></div>
+  <div class="panel stack">${prog}${panel}</div></section>${modal}`;
+ document.body.classList.toggle("modal-open",!!modal);
+ app.querySelectorAll(".rg").forEach(g=>{const f=()=>clickRegion(g.dataset.r);g.onclick=f;g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}}});
+ app.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{const i=+b.dataset.x;lg.fix.push(i);const o=choiceList(it(target))[i];if(o.ok){lg.stage="done";F.flash={n:it(target).name,c:o.c};F.open=null;if(!fDone())fMove(1)}keep()});
+ const on=(id,fn)=>{const b=document.getElementById(id);if(b)b.onclick=fn};
+ on("fprev",()=>{fMove(-1);keep()});on("fnext",()=>{fMove(1);keep()});on("mprev",()=>{fMove(-1);keep()});on("mnext",()=>{fMove(1);keep()});
+ on("go",()=>{S.step=2;render()});
+ const m=app.querySelector(".modal");if(m){const b=m.querySelector(".choice:not([disabled])");try{(m.querySelector(".note.warn")||b).focus({preventScroll:true})}catch(e){}}
+}
+function card(x,full){const inf=INFO[x.id];return `<div class="icard"><span class="ik">${full?"About":"You found it"}</span><h3>${esc(x.name)}</h3><p>${esc(inf.i)}</p>${full?`<p class="muted" style="font-size:.88rem"><b>In this room:</b> ${esc(isBad(x.id)?x.bad:x.ok)}${isBad(x.id)?" You fixed this.":""}</p>`:""}</div>`}
+function clickRegion(id){const F=S.find;
+ if(fDone()){F.open=id;keep();return}
+ const target=fCur();const lg=F.log[target];
+ if(lg.stage==="fix")return;
+ if(id===target){lg.stage="fix";F.msg="";F.flash=null;keep();return}
+ if(F.log[id].stage==="done"){F.msg=`You already inspected ${esc(INFO[id].label)}. Keep looking.`;keep();return}
+ lg.misses.push(id);F.msg=`That's ${esc(INFO[id].label)}. Keep looking.`;keep();}
+function ppeFig(sel){const on=id=>sel.includes(id);const O='#3a454d';
+  let g=`<svg viewBox="0 0 240 420" role="img" aria-label="Embalmer wearing the selected PPE">`;
+  g+=`<ellipse cx="120" cy="404" rx="70" ry="8" fill="#000" opacity=".08"/>`;
+  // base: scrubs, skin, hair, shoes
+  g+=`<path d="M92,250 L90,384 L116,384 L120,262 L124,384 L150,384 L148,250Z" fill="#4f8f96" stroke="${O}" stroke-width="2"/>`;
+  g+=`<ellipse cx="103" cy="390" rx="17" ry="8" fill="#2b2f33"/><ellipse cx="137" cy="390" rx="17" ry="8" fill="#2b2f33"/>`;
+  g+=`<path d="M80,120 L58,246 L74,250 L94,160 L92,252 L148,252 L146,160 L166,250 L182,246 L160,120 Q140,108 120,108 Q100,108 80,120Z" fill="#5aa2a8" stroke="${O}" stroke-width="2"/><path d="M108,110 L120,130 L132,110" fill="none" stroke="${O}" stroke-width="2"/>`;
+  g+=`<rect x="110" y="94" width="20" height="18" fill="#e8b996"/>`;
+  g+=`<circle cx="60" cy="262" r="11" fill="#e8b996" stroke="${O}" stroke-width="1.5"/><circle cx="180" cy="262" r="11" fill="#e8b996" stroke="${O}" stroke-width="1.5"/>`;
+  g+=`<ellipse cx="120" cy="66" rx="28" ry="33" fill="#e8b996" stroke="${O}" stroke-width="2"/>`;
+  if(!on("cap"))g+=`<path d="M92,62 Q90,30 120,30 Q150,30 148,62 Q146,44 120,44 Q96,44 92,62Z" fill="#6b4a32"/>`;
+  g+=`<circle cx="109" cy="64" r="3" fill="${O}"/><circle cx="131" cy="64" r="3" fill="${O}"/>`;
+  if(!on("mask")&&!on("resp"))g+=`<path d="M112,84 Q120,90 128,84" fill="none" stroke="${O}" stroke-width="2"/><path d="M120,68 v8" stroke="#c9946f" stroke-width="2"/>`;
+  // lab coat
+  if(on("labcoat"))g+=`<path d="M78,118 L54,246 L72,252 L90,166 L86,300 L114,300 L118,124 L122,124 L126,300 L154,300 L150,166 L168,252 L186,246 L162,118 Q142,108 120,110 Q98,108 78,118Z" fill="#f7f7f5" stroke="${O}" stroke-width="2"/><path d="M104,112 L114,150 M136,112 L126,150" stroke="${O}" stroke-width="1.5"/><rect x="132" y="180" width="14" height="10" fill="none" stroke="#9aa6af"/>`;
+  // impervious gown
+  if(on("gown"))g+=`<path d="M76,116 L50,244 L72,252 L88,170 L82,322 L158,322 L152,170 L168,252 L190,244 L164,116 Q142,104 120,104 Q98,104 76,116Z" fill="#f0cf5a" fill-opacity=".95" stroke="${O}" stroke-width="2"/><path d="M100,108 Q120,118 140,108" fill="none" stroke="#b8952a" stroke-width="3"/><path d="M90,200 h60" stroke="#b8952a" stroke-width="2" stroke-dasharray="4 3"/>`;
+  // shoe covers
+  if(on("shoes"))g+=`<path d="M84,382 Q84,372 104,372 Q124,372 122,390 Q120,400 102,400 Q84,400 84,382Z" fill="#a9d1ee" stroke="${O}" stroke-width="1.5"/><path d="M118,382 Q118,372 138,372 Q158,372 156,390 Q154,400 136,400 Q118,400 118,382Z" fill="#a9d1ee" stroke="${O}" stroke-width="1.5"/>`;
+  // gloves
+  if(on("gloves")){g+=`<path d="M48,228 L72,232 L72,262 Q72,276 60,276 Q48,276 48,262Z" fill="#3b4fa8" stroke="${O}" stroke-width="1.5"/><path d="M168,232 L192,228 L192,262 Q192,276 180,276 Q168,276 168,262Z" fill="#3b4fa8" stroke="${O}" stroke-width="1.5"/>`}
+  else if(on("exam")){g+=`<circle cx="60" cy="262" r="12" fill="#9cc9f2" stroke="${O}" stroke-width="1.5"/><circle cx="180" cy="262" r="12" fill="#9cc9f2" stroke="${O}" stroke-width="1.5"/>`}
+  // face: mask or respirator
+  if(on("resp"))g+=`<path d="M100,74 Q120,66 140,74 L138,92 Q120,104 102,92Z" fill="#6c7780" stroke="${O}" stroke-width="2"/><circle cx="98" cy="88" r="9" fill="#d16b8a" stroke="${O}" stroke-width="1.5"/><circle cx="142" cy="88" r="9" fill="#d16b8a" stroke="${O}" stroke-width="1.5"/>`;
+  else if(on("mask"))g+=`<path d="M100,72 Q120,68 140,72 L140,90 Q120,100 100,90Z" fill="#cfe6f5" stroke="${O}" stroke-width="1.5"/><path d="M104,79 h32 M104,85 h32" stroke="#9fc1d8"/><path d="M100,76 L92,70 M140,76 L148,70" stroke="${O}" stroke-width="1.2"/>`;
+  if(on("goggles"))g+=`<rect x="96" y="54" width="48" height="18" rx="8" fill="#dff1f9" fill-opacity=".7" stroke="${O}" stroke-width="2.5"/><path d="M96,62 L90,60 M144,62 L150,60" stroke="${O}" stroke-width="2.5"/>`;
+  if(on("cap"))g+=`<path d="M86,58 Q80,22 120,20 Q160,22 154,58 Q148,46 120,46 Q92,46 86,58Z" fill="#a9d1ee" stroke="${O}" stroke-width="1.5"/><path d="M88,54 Q120,40 152,54" fill="none" stroke="#7fb3d6" stroke-width="2"/>`;
+  if(on("shield"))g+=`<rect x="84" y="36" width="72" height="10" rx="3" fill="#7d8b95"/><path d="M86,44 L154,44 L152,108 Q120,118 88,108Z" fill="#cfeaf7" fill-opacity=".45" stroke="#6a8ea3" stroke-width="2"/>`;
+  return g+`</svg>`}
+
+function vPPE(){
+  const p=S.ppe;
+  app.innerHTML=`<section class="stack">
+   <div class="two ppewrap"><div class="room ppefig">${ppeFig(p.sel)}<p class="muted" style="text-align:center;font-size:.85rem;margin-top:4px">What you have on</p></div><div class="panel stack">
+    <div class="qhead"><h2>Gear up</h2><span class="qcount">${p.tries?`Attempts: ${p.tries}`:""}</span></div>
+    <p>The room is ready. Select everything you put on before you embalm, then check. Leave out anything that doesn't belong.</p>
+    <div class="ppe">${PPE.map(x=>`<button data-p="${x.id}" class="${p.sel.includes(x.id)?"on":""}" ${p.done?"disabled":""} aria-pressed="${p.sel.includes(x.id)}"><span class="pn">${esc(x.n)}</span><span class="pd">${esc(x.d)}</span></button>`).join("")}</div>
+    ${p.msg?`<div class="note ${p.done?"ok":"warn"}">${p.msg}</div>`:""}
+    ${p.done?`<button class="btn" id="go">Set your instrument tray</button>`:`<button class="btn" id="check" ${p.sel.length?"":"disabled"}>Check my PPE</button>`}
+   </div></div></section>`;
+  app.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const id=b.dataset.p;p.sel=p.sel.includes(id)?p.sel.filter(x=>x!==id):[...p.sel,id];p.msg="";keep()});
+  const ck=document.getElementById("check");if(ck)ck.onclick=()=>{p.tries++;
+    const missing=PPE.filter(x=>x.need===1&&!p.sel.includes(x.id));if(!PPE.some(x=>x.need==="eye"&&p.sel.includes(x.id)))missing.push({n:"Eye protection"});const extra=PPE.filter(x=>!x.need&&p.sel.includes(x.id));
+    p.log.push({missing:missing.map(x=>x.n),extra:extra.map(x=>x.n)});
+    if(!missing.length&&!extra.length){p.done=true;p.msg="You're fully protected. A face shield or safety glasses protect your eyes. Either one is enough. Universal precautions apply to every decedent, so this is your gear on every case. (EHTP p. 33; p. 39)"}
+    else{p.msg=(missing.length?`<b>Missing ${missing.length} item${missing.length>1?"s":""}.</b> Look again at what protects your eyes, face, head, feet, and body. `:"")+extra.map(x=>`<br><b>${esc(x.n)}:</b> ${esc(x.c)}`).join("")}
+    keep()};
+  const go=document.getElementById("go");if(go)go.onclick=()=>{S.step=3;render()};
+}
+function vInst(){
+  const s=S.inst;if(!s.order){s.order=perm(TASKS.length,"tasks");s.tray=perm(INST.length,"tray")}
+  const ti=s.order[s.i];const t=TASKS[ti];const log=s.log[ti]||(s.log[ti]={tries:[],done:false});
+  const last=log.tries.length?log.tries[log.tries.length-1]:null;const isA=x=>x===t.a||(t.also||[]).includes(x);
+  const nDone=s.order.filter(k=>s.log[k]&&s.log[k].done).length;const all=nDone===TASKS.length;
+  app.innerHTML=`<section class="stack">
+   <div class="panel stack">
+    <div class="qhead"><h2>Instrument tray</h2><span class="qcount">${nDone} of ${TASKS.length} done</span></div>
+    <div class="dots" aria-label="Tasks">${s.order.map((k,j)=>`<button class="${s.log[k]&&s.log[k].done?"done":""}${j===s.i?" cur":""}" data-j="${j}" aria-label="Task ${j+1}">${j+1}</button>`).join("")}</div>
+    <div class="prompt" data-focus><div class="mhead"><span class="pk">Task ${s.i+1} of ${TASKS.length}</span>${arrows("iprev","inext","Previous task","Next task")}</div><p class="scene" style="margin:0">${esc(t.t)}</p>
+    ${last?`<div class="note ${isA(last)?"ok":"warn"}">${isA(last)?esc(t.c):`That's the ${esc(INST.find(x=>x.id===last).n.toLowerCase())}. Not the one for this job. Try again.`}</div>`:`<p class="muted" style="font-size:.88rem;margin:0">Click the instrument you reach for.</p>`}
+    ${all?`<button class="btn" id="go">Start the day</button>`:log.done?`<button class="btn" id="nx">Next task</button>`:""}</div>
+    <div class="tray">${s.tray.map(k=>{const x=INST[k];const tried=log.tries.includes(x.id);const right=log.done&&x.id===last&&isA(x.id);return `<button class="inst${right?" right":tried&&!isA(x.id)?" wrong":""}" data-x="${x.id}" ${log.done||tried?"disabled":""}>${instSvg(x.id)}<span>${esc(x.n)}</span></button>`}).join("")}</div>
+   </div></section>`;
+  const nextOpen=d=>{const n=TASKS.length;for(let k=1;k<=n;k++){const j=(s.i+d*k+n*k)%n;if(!(s.log[s.order[j]]&&s.log[s.order[j]].done)){s.i=j;return}}s.i=(s.i+d+n)%n};
+  app.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{log.tries.push(b.dataset.x);if(isA(b.dataset.x))log.done=true;keep()});
+  app.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{s.i=+b.dataset.j;keep()});
+  const on=(id,fn)=>{const b=document.getElementById(id);if(b)b.onclick=fn};
+  on("iprev",()=>{s.i=(s.i-1+TASKS.length)%TASKS.length;keep()});on("inext",()=>{s.i=(s.i+1)%TASKS.length;keep()});
+  on("nx",()=>{nextOpen(1);keep()});on("go",()=>{S.step=4;S.cur=SC.start;render()});
+}
+function curEntry(){let e=S.path.find(p=>p.id===S.cur);if(!e){e={id:S.cur,tries:[],done:false};S.path.push(e)}return e}
+function vScen(){
+  const node=SC.nodes[S.cur];const spill=S.cur==="s4"||S.cur==="s4x";const e=curEntry();const last=e.tries.length?node.o[e.tries[e.tries.length-1]]:null;
+  const trail=S.path.filter(p=>p.done).map(p=>{const nd=SC.nodes[p.id];return `<li class="${nd.ev==="Things got worse"||p.went!=null?"detour":""}">${esc(nd.t)}${p.went!=null?" (complication)":""}</li>`}).join("");
+  let fb="",nb="";
+  if(last){fb=last.ok?`<div class="note ok"><b>What happened:</b> ${esc(last.c)}</div>`:last.go?`<div class="note bad"><b>What happened:</b> ${esc(last.c)}</div>`:`<div class="note warn"><b>What happened:</b> ${esc(last.c)} Choose again.</div>`}
+  if(e.done)nb=`<button class="btn" id="go">${last.end?"Write your report":"Continue"}</button>`;else if(last&&last.go)nb=`<button class="btn" id="go">Deal with it</button>`;
+  app.innerHTML=`<section class="two">
+   <div class="stack">${spill?`<div class="room zoomwrap"><div class="zoomer${S.zoomed===S.cur?" in":""}" id="zoomer">${room(liveCase(C()),false).replace("</svg>",spillSvg(S.cur==="s4x")+"</svg>")}</div></div>`:`<div class="scenefig">${sceneSvg(S.cur)||room(liveCase(C()),false)}</div>`}<div class="panel stack"><h3>Your day so far</h3>${trail?`<ol class="trail">${trail}</ol>`:`<p class="muted">Just getting started.</p>`}</div></div>
+   <div class="panel stack">
+    <div class="qhead"><h2>${esc(node.t)}</h2><span class="qcount">${C().code}</span></div>
+    ${node.ev?`<span class="event">${esc(node.ev)}</span>`:""}
+    <div class="prompt" data-focus><p class="scene" style="margin:0">${esc(node.s)}</p>${fb}${nb}
+    <div class="${node.jugs?"jugs":"choices list"}">${perm(node.o.length,"sc"+S.cur).map(i=>{const o=node.o[i];const tried=e.tries.includes(i);const cls=e.done&&o.ok?" right":tried&&!o.ok?" wrong":"";const dis=e.done||tried||(last&&last.go)?"disabled":"";return node.jugs?`<button class="jug${cls}" data-i="${i}" ${dis}>${jugSvg(o.jug)}<span class="jn">${esc(o.n)}</span><span class="jt">${esc(o.t)}</span></button>`:`<button class="choice${cls}" data-i="${i}" ${dis}>${esc(o.t)}</button>`}).join("")}</div>
+    </div>
+   </div></section>`;
+  app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;e.tries.push(i);if(node.o[i].ok)e.done=true;keep()});
+  const z=document.getElementById("zoomer");if(z&&S.zoomed!==S.cur){requestAnimationFrame(()=>requestAnimationFrame(()=>{z.classList.add("in");S.zoomed=S.cur}))}
+  const go=document.getElementById("go");if(go)go.onclick=()=>{const l=node.o[e.tries[e.tries.length-1]];
+    if(l.go){e.done=true;e.went=e.tries[e.tries.length-1];S.cur=l.go;render()}else if(l.end){S.step=5;render()}else{S.cur=l.next;render()}};
+}
+function scores(){
+  const c=C();const L=S.find?S.find.log:{};const ids=ITEMS.map(i=>i.id);
+  const found1=ids.filter(id=>L[id]&&L[id].stage==="done"&&L[id].misses.length===0).length;
+  const misses=ids.reduce((a,id)=>a+(L[id]?L[id].misses.length:0),0);
+  const fix1=ids.filter(id=>L[id]&&L[id].fix.length===1).length;
+  const instFirst=TASKS.filter((t,i)=>S.inst.log[i]&&S.inst.log[i].done&&S.inst.log[i].tries.length===1).length;
+  const steps=S.path.filter(p=>p.done);const scFirst=steps.filter(p=>p.tries.length===1&&p.went==null).length;
+  const detours=S.path.filter(p=>SC.nodes[p.id].ev==="Things got worse").length;
+  return {found1,misses,fix1,instFirst,scFirst,scN:steps.length,detours,ppe:S.ppe.tries};
+}
+const words=s=>s.trim().split(/\s+/).filter(Boolean).length;
+const MINS={diff:25,feedback:10};
+function reportText(){
+  const c=C();const s=scores();const d=new Date();
+  let t=`MRTS 2244 WEEK 2 LAB: PREP ROOM READY\nStudent: ${S.name.trim()}\nCase: ${c.code}, ${c.home}${S.ci===hashName(S.name)?" (assigned case)":" (extra practice case)"}\nCompleted: ${d.toLocaleString()}\n`;
+  t+=`SCORES: Found on first click ${s.found1}/${ITEMS.length} (wrong clicks ${s.misses}) | Right call first try ${s.fix1}/${ITEMS.length} | PPE checks ${s.ppe} | Instruments ${s.instFirst}/${TASKS.length} first try | Scenarios ${s.scFirst}/${s.scN} first try | Complications caused ${s.detours}\n\n`;
+  t+=`ROOM INSPECTION\n`;S.find.order.forEach((id,n)=>{const it=ITEMS.find(x=>x.id===id);const l=S.find.log[id];const L=choiceList(it);const fin=L.find(o=>o.ok);t+=`${n+1}. ${it.name}: ${isBad(id)?"PROBLEM":"set up correctly"}`;if(l.misses.length)t+=` [clicked ${l.misses.map(m=>ITEMS.find(x=>x.id===m).name).join(", ")} first]`;t+=`\n`;if(isBad(id))t+=`   Fix: ${fin.t}\n`;if(l.fix.length>1)t+=`   Earlier choices: ${l.fix.slice(0,-1).map(j=>L[j].t).join(" | ")}\n`});
+  t+=`\nPPE: ${PPE.filter(x=>x.need===1||(x.need==="eye"&&S.ppe.sel.includes(x.id))).map(x=>x.n).join(", ")}\n`;S.ppe.log.slice(0,-1).forEach((l,i)=>{t+=`   Check ${i+1}: missing ${l.missing.length} item(s)${l.extra.length?`; also chose ${l.extra.join(", ")}`:""}\n`});
+  t+=`\nINSTRUMENTS\n`;TASKS.forEach((tk,i)=>{const l=S.inst.log[i];const n=INST.find(x=>x.id===(l&&l.done?l.tries[l.tries.length-1]:tk.a)).n;t+=`- ${n}`;if(l&&l.tries.length>1)t+=` [also chose ${l.tries.slice(0,-1).map(x=>INST.find(y=>y.id===x).n).join(", ")}]`;t+=`\n`});
+  t+=`\nSCENARIOS\n`;S.path.filter(p=>p.done).forEach((p,i)=>{const nd=SC.nodes[p.id];t+=`${i+1}. ${nd.t}${nd.ev==="Things got worse"?" (complication from an earlier choice)":""}\n`;
+    if(p.went!=null)t+=`   Chose: ${nd.o[p.went].t}\n   Result: ${nd.o[p.went].c} This caused a complication.\n`;else t+=`   Final: ${nd.o.find(o=>o.ok).t}\n`;
+    if(p.tries.length>1)t+=`   Earlier choices: ${p.tries.slice(0,-1).map(j=>nd.o[j].t).join(" | ")}\n`});
+  const f=k=>S.ref[k].trim()||"[Not written yet]";
+  t+=`\nWHAT I WOULD DO DIFFERENTLY\n${f("diff")}\n\nMY FEEDBACK ON THIS LAB\n${f("feedback")}\n`;
+  return t;
+}
+const missing=()=>Object.entries(MINS).filter(([k,n])=>words(S.ref[k])<n);
+const copyHint=()=>{const u=unfinished();return u.length?"Finish first: "+u.join(", "):missing().length?"Finish both boxes to copy":""};
+const unfinished=()=>[1,2,3,4].filter(k=>!secDone(k)).map(k=>SECT[k]);
+function vReport(){
+  if(S.mode==="fun")return vFun();
+  if(!S.find)startFind();
+  const s=scores();const c=C();
+  const box=(k,label,help)=>`<div class="stack" style="gap:6px"><label for="r_${k}">${label}</label><p class="muted" style="font-size:.88rem">${help}</p><textarea id="r_${k}" data-k="${k}">${esc(S.ref[k])}</textarea><span class="progress" id="w_${k}">${words(S.ref[k])} of ${MINS[k]} words</span></div>`;
+  app.innerHTML=`<section class="stack">
+   <div class="panel stack">
+    <h2>Your report</h2>${unfinished().length?`<div class="note warn">You haven't finished ${unfinished().join(", ")}. Use the steps at the top to go back. You can copy your report once every section is done.</div>`:""}
+    <div class="score"><div><b>${s.found1}/${ITEMS.length}</b><small>Found on first click</small></div><div><b>${s.fix1}/${ITEMS.length}</b><small>Right call, first try</small></div><div><b>${s.instFirst}/${TASKS.length}</b><small>Instruments, first try</small></div><div><b>${s.detours}</b><small>Complications caused</small></div></div>
+    ${box("diff","1. What would you do differently?","Think beyond the choices you were given. What would you change about how this room is set up or run, or how you handled the day?")}
+    ${box("feedback","2. Your feedback on this lab","What helped you learn? What was confusing? What would you change about this assignment?")}
+   </div>
+   <div class="reportbox"><div class="bar2"><span>Your report: copy all of this into Blackboard</span><span class="row" style="gap:10px"><span id="chint" style="font-size:.82rem">${copyHint()}</span><button class="btn" id="copy" ${copyHint()?"disabled":""}>Copy report</button></span></div><pre class="report" id="rep">${esc(reportText())}</pre></div>
+   <div class="note warn" id="cmsg" hidden></div>
+   <div class="panel stack" id="another" ${S.copied?"":"hidden"}><h3>Try another room</h3><p class="muted">Paste this report into Blackboard first. Starting a new room clears it.</p><div class="row">${CASES.map((cc,i)=>i===S.ci?"":`<button class="btn ghost" data-ci="${i}">${esc(cc.home)}</button>`).join("")}</div></div>
+   <p class="muted">Paste the report into the Week 2 Lab submission in Blackboard. If the copy button doesn't work, click in the report, press Ctrl+A (Cmd+A on a Mac), then Ctrl+C.</p>
+  </section>`;
+  const cm=document.getElementById("cmsg");
+  app.querySelectorAll("textarea[data-k]").forEach(ta=>ta.addEventListener("input",()=>{const k=ta.dataset.k;S.ref[k]=ta.value;document.getElementById("w_"+k).textContent=`${words(S.ref[k])} of ${MINS[k]} words`;document.getElementById("rep").textContent=reportText();const h=copyHint();document.getElementById("copy").disabled=!!h;document.getElementById("chint").textContent=h}));
+  const done=()=>{cm.className="note ok";cm.textContent="Copied. Paste it into the Week 2 Lab submission in Blackboard.";cm.hidden=false;S.copied=true;document.getElementById("another").hidden=false};
+  document.getElementById("copy").onclick=()=>{try{navigator.clipboard.writeText(reportText()).then(done,()=>sel(cm))}catch(e){sel(cm)}};
+  app.querySelectorAll("#another [data-ci]").forEach(b=>b.onclick=()=>{reset(+b.dataset.ci);S.step=1;render()});
+}
+function vFun(){
+  const s=scores();const c=C();
+  app.innerHTML=`<section class="stack"><div class="panel stack">
+   <h2>Nice work. You finished ${esc(c.home)}.</h2>
+   <div class="score"><div><b>${s.found1}/${ITEMS.length}</b><small>Found on first click</small></div><div><b>${s.fix1}/${ITEMS.length}</b><small>Right call, first try</small></div><div><b>${s.instFirst}/${TASKS.length}</b><small>Instruments, first try</small></div><div><b>${s.scFirst}/${s.scN}</b><small>Scenarios, first try</small></div><div><b>${s.detours}</b><small>Complications caused</small></div></div>
+   <p class="muted">You played for fun, so there's no report to submit. If this is for a grade, go back to Sign in and choose For an assignment.</p>
+   <h3>Try another room</h3><div class="row" style="flex-wrap:wrap;gap:8px">${CASES.map((cc,i)=>`<button class="btn ${i===S.ci?"":"ghost"}" data-ci="${i}">${esc(cc.home)}${i===S.ci?" again":""}</button>`).join("")}</div>
+  </div></section>`;
+  app.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>{reset(+b.dataset.ci);S.step=1;render()});
+}
+function sel(m){const r=document.createRange();r.selectNodeContents(document.getElementById("rep"));const s=getSelection();s.removeAllRanges();s.addRange(r);m.className="note ok";m.textContent="The report is selected. Press Ctrl+C (Cmd+C on a Mac) to copy it.";m.hidden=false;S.copied=true;const a=document.getElementById("another");if(a)a.hidden=false}
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="a"&&document.getElementById("rep")&&document.activeElement.tagName!=="TEXTAREA"&&document.activeElement.tagName!=="INPUT"){e.preventDefault();const r=document.createRange();r.selectNodeContents(document.getElementById("rep"));const s=getSelection();s.removeAllRanges();s.addRange(r)}});
+render();
+</script>
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script></body></html>

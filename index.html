@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>MRTS 2244 Labs</title><meta name="theme-color" content="#1b2329"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="2244 Labs"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column; header, then a list of lab cards in week order, then install help */
+:root{--bg:#eef1f3;--surface:#ffffff;--ink:#1b2329;--muted:#56636d;--line:#cdd5db;--accent:#b8325a;--ok:#2f7d5b;
+--f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;--f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#12171b;--surface:#1b2227;--ink:#e6ebee;--muted:#97a4ad;--line:#2f3a41;--accent:#e56c90;--ok:#5fc295;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12171b;--surface:#1b2227;--ink:#e6ebee;--muted:#97a4ad;--line:#2f3a41;--accent:#e56c90;--ok:#5fc295;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px;display:flex;flex-direction:column;gap:22px}
+header{border-bottom:2px solid var(--ink);padding-bottom:12px}
+.course{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--f-display);font-weight:700;font-size:2.6rem;line-height:1;margin:2px 0 0}
+h2{font-family:var(--f-display);font-weight:700;font-size:1.5rem;margin:0;line-height:1.1}
+p{margin:0;max-width:62ch}
+.labs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.lab{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;color:inherit;text-decoration:none}
+.lab:hover,.lab:focus-visible{border-color:var(--accent);outline:none}
+.wk{font-family:var(--f-display);font-weight:700;font-size:2rem;line-height:1;text-align:center;border-right:1px solid var(--line);padding-right:12px}
+.wk small{display:block;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.lab p{color:var(--muted);font-size:.9rem}
+.lab .ch{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.help{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:8px;font-size:.9rem;color:var(--muted)}
+.help b{color:var(--ink)}
+</style>
+<div class="wrap">
+ <header><div class="course">NTCC Funeral Service Education</div><h1>MRTS 2244 Labs</h1></header>
+ <p>Pick the lab your instructor assigned. Enter your full name as it appears in Blackboard, finish the lab, then copy your report into the matching Blackboard submission.</p>
+ <ul class="labs">
+  <li><a class="lab" href="week02.html"><div class="wk"><small>Week</small>2</div><div><div class="ch">EHTP Ch. 1 to 4</div><h2>Prep Room Ready</h2><p>Inspect a preparation room, fix what's wrong, suit up, set an instrument tray, and handle a day of safety scenarios.</p></div></a></li>
+  <li><a class="lab" href="week12.html"><div class="wk"><small>Week</small>12</div><div><div class="ch">Moisture considerations</div><h2>Moisture Case Lab</h2><p>Examine a decedent, build and mix your tank, and embalm a case with edema, dehydration, or both.</p></div></a></li>
+ </ul>
+ <div class="help">
+  <p><b>Use it like an app.</b> On an iPhone, open this page in Safari, tap Share, then Add to Home Screen. On Android, open it in Chrome, tap the menu, then Install app or Add to Home screen.</p>
+  <p>Your work isn't saved if you close a lab before you copy your report.</p>
+ </div>
+</div>
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script></body></html>

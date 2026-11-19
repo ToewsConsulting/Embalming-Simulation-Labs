@@ -1,0 +1,801 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Moisture Case Lab</title><meta name="theme-color" content="#1b2329"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="2244 Labs"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style><style>.homelink{display:inline-block;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-decoration:none;margin-bottom:4px}.homelink:hover{color:var(--accent)}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: case-file strip on top, one working step at a time; exam = prep table chart beside zoom + exam panel */
+:root{
+  --bg:#eef1f3; --surface:#ffffff; --ink:#1b2329; --muted:#56636d; --line:#cdd5db;
+  --accent:#b8325a; --ok:#2f7d5b; --ok-soft:#e1f1e9; --warn:#a85f17; --warn-soft:#f8ecdf; --bad:#a3333d; --bad-soft:#f7e3e5;
+  --table:#d9dfe4; --table-edge:#aab4bc;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171b; --surface:#1b2227; --ink:#e6ebee; --muted:#97a4ad; --line:#2f3a41;
+  --accent:#e56c90; --ok:#5fc295; --ok-soft:#173027; --warn:#e3a35a; --warn-soft:#38291a; --bad:#ec7c86; --bad-soft:#3a1d21;
+  --table:#2a3238; --table-edge:#46525b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171b; --surface:#1b2227; --ink:#e6ebee; --muted:#97a4ad; --line:#2f3a41;
+  --accent:#e56c90; --ok:#5fc295; --ok-soft:#173027; --warn:#e3a35a; --warn-soft:#38291a; --bad:#ec7c86; --bad-soft:#3a1d21;
+  --table:#2a3238; --table-edge:#46525b; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+*{box-sizing:border-box}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:20px}
+header.tag{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.tag h1{font-family:var(--f-display);font-weight:700;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em}
+.tag .course{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.steps{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.steps li{font-family:var(--f-display);font-size:.95rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--line);border-radius:3px;color:var(--muted);background:var(--surface)}
+.steps li.on{border-color:var(--accent);color:var(--accent)}
+.steps li.done{color:var(--ok);border-color:var(--ok)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;min-width:0}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.6rem;margin:0;line-height:1.1;text-wrap:balance}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.2rem;margin:0;letter-spacing:.02em}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+label{font-weight:600;font-size:.92rem}
+input[type=text],textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;width:100%}
+textarea{min-height:150px;resize:vertical}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;background:var(--accent);color:var(--surface);border:0;border-radius:4px;padding:10px 18px;align-self:flex-start}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.file{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:0}
+.file div{background:var(--surface);padding:10px 12px;min-width:0}
+.file dt{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.file dd{margin:2px 0 0;font-weight:500}
+.request{border-left:3px solid var(--accent);padding:6px 0 6px 14px;font-style:italic}
+.two{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:minmax(0,1fr)}}
+.chart{background:var(--table);border:1px solid var(--table-edge);border-radius:10px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chart svg{width:100%;max-width:470px;height:auto;display:block}
+.legend{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.zoomrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:460px){.zoomrow{grid-template-columns:minmax(0,1fr)}}
+.zoom{background:var(--table);border:1px solid var(--table-edge);border-radius:8px;overflow:hidden;max-width:220px}
+.zoom svg{display:block;width:100%;height:auto}
+.spot{cursor:pointer}
+.spot .ring{fill:#ffffff;fill-opacity:.55;stroke:#b8325a;stroke-width:3.5}
+.spot .core{fill:#b8325a}
+.spot.sel .ring{stroke-width:6;fill-opacity:.2}
+.spot.done .ring{stroke:#2f7d5b;fill:#e1f1e9;fill-opacity:.9}
+.spot.wrongspot .ring{stroke:#a85f17;fill:#f8ecdf;fill-opacity:.95}
+.spot.wrongspot .pulse{stroke:#a85f17}
+.spot.picked .ring{stroke:#1b2329;fill:#ffffff;fill-opacity:.85}
+.choice.picked{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.spot:focus{outline:none}
+.spot:focus-visible .ring{stroke-width:6}
+.pulse{fill:none;stroke:#b8325a;stroke-width:3;opacity:.6;transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.7}to{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:0}}
+.progress{font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--ok);transition:width .3s}
+.obs{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.choices.list{grid-template-columns:minmax(0,1fr)}
+.choice{text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px 12px;line-height:1.4}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.choice.right{border-color:var(--ok);background:var(--ok-soft)}
+.choice:disabled{cursor:default}
+.note{border-radius:4px;padding:10px 14px;font-size:.93rem}
+.note.warn{background:var(--warn-soft);border:1px solid var(--warn)}
+.note.bad{background:var(--bad-soft);border:1px solid var(--bad)}
+.note.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.event{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--bad);border:1px solid var(--bad);border-radius:3px;padding:2px 8px;align-self:flex-start}
+.scene{font-size:1.02rem}
+.findings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;font-size:.88rem}
+.findings li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0}
+.findings .v{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);text-align:right}
+.trail{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.trail li{border-left:3px solid var(--ok);padding:2px 0 2px 10px}
+.trail li.detour{border-left-color:var(--bad)}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.qcount{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.score{display:flex;gap:12px;flex-wrap:wrap}
+.score div{border:1px solid var(--line);border-radius:4px;padding:8px 14px;background:var(--bg)}
+.score b{font-family:var(--f-display);font-size:1.6rem;display:block;line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.reportbox{border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+.reportbox .bar2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--ink);color:var(--bg);padding:8px 12px}
+.reportbox .bar2 span{font-family:var(--f-display);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.reportbox .btn{background:var(--bg);color:var(--ink)}
+pre.report{font-family:var(--f-mono);font-size:.8rem;line-height:1.55;background:var(--surface);padding:16px;white-space:pre-wrap;word-break:break-word;max-height:520px;overflow:auto;margin:0;user-select:text}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.two.wide{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)}
+@media (max-width:820px){.two.wide{grid-template-columns:minmax(0,1fr)}}
+.shelfwrap{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:14px;align-items:start}
+@media (max-width:560px){.shelfwrap{grid-template-columns:minmax(0,1fr)}}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;background:var(--table);border:1px solid var(--table-edge);border-bottom:8px solid var(--table-edge);border-radius:6px;padding:10px}
+.bottle{display:flex;flex-direction:column;align-items:center;gap:2px;background:transparent;border:2px solid transparent;border-radius:6px;padding:6px 4px;color:var(--ink);text-align:center;transition:transform .15s}
+.bottle svg{width:54px;height:auto;display:block}
+.bottle:hover:not(:disabled){transform:translateY(-3px);border-color:var(--accent)}
+.bottle:disabled{cursor:default}
+.bottle.in{opacity:.45}
+.bottle.no{border-color:var(--warn);background:var(--warn-soft)}
+.bottle .bn{font-family:var(--f-display);font-weight:600;font-size:.95rem;line-height:1.1}
+.bottle .bs{font-size:.74rem;line-height:1.2;color:var(--muted)}
+.bottle .bt{font-family:var(--f-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ok)}
+.bottle .bt.x{color:var(--warn)}
+.tank{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--bg)}
+.tankimg svg{width:110px;height:auto;display:block;margin:0 auto}
+details.calc{border:1px solid var(--line);border-radius:6px;padding:10px 14px;background:var(--bg)}
+details.calc summary{font-family:var(--f-display);font-weight:600;font-size:1.1rem;letter-spacing:.03em;cursor:pointer}
+.seg{gap:0}
+.segb{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;font-size:.88rem}
+.segb:first-child{border-radius:4px 0 0 4px}.segb:last-child{border-radius:0 4px 4px 0;border-left:0}
+.segb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.cgrid label{display:flex;flex-direction:column;gap:4px;font-size:.85rem}
+.cgrid input{padding:8px 10px}
+.cgrid select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px}
+.calcout{font-family:var(--f-mono);font-size:.95rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.mixer{display:grid;grid-template-columns:130px minmax(0,1fr);gap:16px;border:2px solid var(--ink);border-radius:6px;padding:14px;background:var(--bg)}
+@media (max-width:520px){.mixer{grid-template-columns:minmax(0,1fr)}}
+.mixer .tankimg svg{width:120px}
+.stps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stp{display:flex;flex-direction:column;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.stl{font-size:.8rem;font-weight:600}
+.sv{font-family:var(--f-display);font-weight:600;font-size:1.25rem;min-width:5.5em;text-align:center;font-variant-numeric:tabular-nums}
+.ssub{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.sb{width:34px;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font-size:1.2rem;line-height:1}
+.sb:hover:not(:disabled){border-color:var(--accent)}
+.sb:disabled{opacity:.4;cursor:not-allowed}
+.gauge{display:flex;flex-direction:column;gap:3px}
+.gtrack{position:relative;height:16px;background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.gband{position:absolute;top:0;bottom:0;background:var(--ok-soft);border-left:2px solid var(--ok);border-right:2px solid var(--ok)}
+.gfill{position:absolute;left:0;top:4px;bottom:4px;background:var(--muted);border-radius:0 2px 2px 0;transition:width .2s}
+.gfill.in{background:var(--ok)}.gfill.low,.gfill.high,.gfill.over{background:var(--warn)}
+.gticks{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
+.strength{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.strength b{font-family:var(--f-display);font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
+.strength.in b{color:var(--ok)}.strength.low b,.strength.high b,.strength.over b{color:var(--warn)}
+.formula{font-family:var(--f-mono);font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.chips li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:4px 4px 4px 10px;font-size:.86rem}
+.rm{font-size:.78rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:3px;padding:3px 8px}
+.rm:hover{border-color:var(--accent)}
+.tipbox{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 6px 6px 0;background:var(--surface);padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.tipbox .tk{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.tipbox p{margin:0;font-size:.92rem}
+.tipbox .wt{font-weight:600}
+.tipbox ul{margin:0;padding-left:20px;font-size:.92rem;display:flex;flex-direction:column;gap:3px}
+.tipbox ul.wn{color:var(--muted);font-size:.86rem}
+.tipbox .src{font-size:.78rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header class="tag">
+    <div>
+      <a class="homelink" href="./">&larr; All labs</a><div class="course">MRTS 2244 Technical Procedures I &middot; Week 12 Lab</div>
+      <h1>Moisture Case Lab</h1>
+    </div>
+    <ol class="steps" id="steps" aria-label="Lab progress">
+      <li data-s="0">Sign in</li><li data-s="1">Case file</li><li data-s="2">Examine</li><li data-s="3">Embalm</li><li data-s="4">Report</li>
+    </ol>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ---------- content ---------- */
+const OPTS=["No moisture-related finding","Pitting edema","Non-pitting (solid) edema","Dehydration","Desiccation","Emaciation","Skin slip and blisters","Ascites","Lung purge","Stomach purge"];
+const REGIONS=[
+ {id:"face",name:"Face and eyes",x:336,y:122},
+ {id:"mouth",name:"Mouth and nose",x:300,y:170},
+ {id:"chest",name:"Chest",x:300,y:300},
+ {id:"abd",name:"Abdomen",x:300,y:440},
+ {id:"rarm",name:"Right arm and hand",x:150,y:612},
+ {id:"larm",name:"Left arm and hand",x:450,y:612},
+ {id:"rleg",name:"Right leg and foot",x:250,y:850},
+ {id:"lleg",name:"Left leg and foot",x:350,y:850}
+];
+
+const CASES=[
+{
+ code:"W12-A",
+ look:{sex:"m",head:64,hair:"#6d5a48",hairStyle:"short",eyes:"puffy",lips:"normal",cheeks:"puffy",purge:true,abd:true,arm:46,rhand:1,lhand:1.35,lIV:true,thigh:72,lower:88,gloss:true,pits:true,blisters:true,ekg:true},
+ file:{Decedent:"Male, 74",Cause:"Congestive heart failure; chronic kidney disease",Place:"Hospital",Interval:"6 hours, refrigerated",Weight:"Heavier than his normal weight, per family",Service:"Open casket, viewing in 3 days"},
+ request:"His face got so puffy at the end. We want him to look like himself again.",
+ exam:{
+  face:{o:"Eyelids and cheeks are puffy and tight. Pressing below the eye leaves a dent that fills back slowly.",a:"Pitting edema"},
+  mouth:{o:"Pink, frothy fluid at both nostrils and the corner of the mouth. More appears when the chest is pressed.",a:"Lung purge"},
+  chest:{o:"Skin intact and normal in color. No swelling over the sternum. Three EKG pads.",a:"No moisture-related finding"},
+  abd:{o:"Distended and tense. Tapping one flank sends a fluid wave you can feel on the other side.",a:"Ascites"},
+  rarm:{o:"Arm and hand are normal size. Skin returns when pinched.",a:"No moisture-related finding"},
+  larm:{o:"Back of the hand and fingers swollen around a taped IV site. A fingertip press leaves a dent that stays.",a:"Pitting edema"},
+  rleg:{o:"Lower leg tense and shiny. Several fluid-filled blisters on the shin. The top layer of skin shifts when rubbed and has torn in two spots.",a:"Skin slip and blisters"},
+  lleg:{o:"Lower leg and foot swollen and shiny. Pressing leaves a deep pit that stays several seconds. Skin is intact.",a:"Pitting edema"}
+ },
+ start:"a1",
+ nodes:{
+  a1:{t:"Purge before injection",s:"Before you start, pink froth is running from the nose and mouth. He died of congestive heart failure, so more lung purge is likely during injection.",o:[
+   {t:"Clean the face, coat the face and lips with massage cream, and let the purge continue during injection. Pack the nose after embalming.",ok:1,next:"a1b",c:"With heart failure, lung purge is expected. Massage cream protects the skin, letting the purge continue relieves pressure, and packing after embalming keeps the nostrils clear during injection. (EHTP p. 320; p. 231)"},
+   {t:"Pack the nose tightly with cotton now, before injection.",c:"Packing the nose before injection gave the purge nowhere to go. Blood and fluid forced out of the nostrils during injection. (EHTP p. 231)"},
+   {t:"Wipe it away and start injecting. Deal with the face at the end.",c:"Purge kept running over unprotected skin during injection. The skin around the mouth and nose discolored. (EHTP p. 330)"}]},
+  a1b:{t:"The abdomen",s:"The abdomen is tense and distended. Tapping one flank sends a fluid wave to the other side.",o:[
+   {t:"Relieve it now, before injection: make a small incision in the inguinal or hypogastric area and drain the ascites with a drain tube or trocar kept just under the abdominal wall.",ok:1,next:"a1c",c:"A tense abdomen presses on the vessels and can block distribution and drainage. Removing the pressure first lets the arterial solution and drainage move. (EHTP p. 311; p. 216)"},
+   {t:"Leave it for cavity treatment after arterial injection.",go:"a1bx",c:"You started injection with the abdomen still tense."},
+   {t:"Push the trocar deep toward the spine to reach all the fluid.",c:"Going deep risks piercing the large vessels of the trunk. Keep the trocar just under the anterior abdominal wall. (EHTP p. 311)"}]},
+  a1bx:{t:"Poor distribution",ev:"Things got worse",s:"Ten minutes into injection, drainage is weak, the legs aren't clearing, and purge is pouring from the nose and mouth.",o:[
+   {t:"Stop injecting. Relieve the ascites through a small inguinal incision with a drain tube or trocar, then resume.",ok:1,next:"a1c",c:"Ascites pressure was blocking drainage and pushing out purge. Relieving it lets injection continue. (EHTP p. 311; p. 319)"},
+   {t:"Turn up the pressure to push past it.",c:"More pressure against a tense abdomen made the purge worse and the face started to swell."},
+   {t:"Keep going and aspirate everything at the end.",c:"The lower body never cleared and purge soaked the head block."}]},
+  a1c:{t:"The right leg",s:"Before you inject, look at the right shin again: fluid-filled blisters, and loose skin that slides when rubbed.",o:[
+   {t:"Disinfect, open and drain the blisters, remove all loose skin now, and apply cavity fluid compresses or autopsy gel to the raw areas.",ok:1,next:"aG",c:"Loose skin is removed before arterial injection. Compresses start preserving and drying the raw tissue while you embalm. (EHTP p. 296; p. 310)"},
+   {t:"Leave the blisters and skin alone until after arterial injection.",c:"Solution leaked into the blisters and under the loose skin during injection. More skin slipped. (EHTP p. 296)"},
+   {t:"Cover the leg with massage cream.",c:"Cream keeps the area wet. Raw areas need to dry. (EHTP p. 305)"}]},
+  aG:{t:"Starting injection",s:"He died of congestive heart failure with edema and kidney disease. How do you start the arterial injection?",o:[
+   {t:"Start with a mild first gallon to clear the blood congestion and discolorations, then switch to stronger solution for the rest.",ok:1,next:"a2",c:"With heart failure, a mild first gallon clears the congestion. Stronger solutions follow to meet the preservative demand of the edema. (EHTP p. 319)"},
+   {t:"Use the strong solution from the very first ounce.",c:"The strong solution set the blood in place before it drained. The face and neck stayed congested and dark. (EHTP p. 319)"},
+   {t:"Run a full gallon of pre-injection fluid first.",c:"In renal failure, pre-injection can make tissues swell easily. The face and hands puffed up. (EHTP p. 336)"}]},
+  a2:{type:"shelf",waterless:1,t:"Trunk tank",s:"After the mild first gallon, build the strong tank for the trunk and legs. Click bottles to add them. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b3",co:"b5"},next:"aM",mix:{gal:2,min:4,max:6,co:[1,3],good:"Strong enough to counteract the secondary dilution from the edema and the nitrogenous wastes from kidney failure. (EHTP p. 308; p. 313)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206) Kidney wastes also neutralize formaldehyde. (EHTP p. 313)",high:"It firmed, but it wasted fluid and started to gray the tissues."},fb:{
+   b9:"Not for this case. With kidney failure, pre-injection may not be advised because the tissues swell easily. (EHTP p. 336)",
+   b1:"This adds moisture to tissue that is already waterlogged. The face and legs would swell more. (EHTP p. 309)",
+   b2:"A medium index gets diluted by all the extra tissue water. With kidney failure, a high-index fluid is advised. (EHTP p. 313)",
+   b3:"Right pick. A high index stays strong enough after the edema dilutes it, and kidney failure calls for high-index fluid. (EHTP p. 313)",
+   b4:"Humectants hold moisture in. That is the opposite of what this body needs.",
+   b5:"Right pick. Edema corrective makes the solution hypertonic, which draws edema out of the tissue spaces into the drainage. (EHTP p. 117)",
+   b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
+   b8:"Tissue builder fills sunken areas. His face is swollen, not sunken."}},
+  aM:{t:"Injection method",s:"How will you inject this body? Keep the swollen face and the family's request in mind.",o:[
+   {t:"One-point injection: inject from the right common carotid and drain from the right internal jugular",c:"From one site you can't hold strong solution back from the head. By the time the trunk got enough, the face was overinjected and swollen."},
+   {t:"Restricted cervical injection: raise both common carotids, inject the trunk with the tubes to the head left open, then inject the head separately with a milder solution",ok:1,next:"a4",c:"Restricted cervical injection lets you send strong solution to the trunk while controlling what reaches the face. It is the recommended method for generalized edema. (EHTP p. 309; p. 183)"},
+   {t:"Six-point injection from the start",c:"Six-point injection is for when distribution fails. Six incisions up front on a body with edema gave you six more places to leak. (EHTP p. 308)"},
+   {t:"Inject from the right femoral only, toward the head",c:"You had no control over how much strong solution reached the face. The face swelled before the trunk was done."}]},
+  a4:{t:"Raising the vessel",ev:"Complication",s:"You raise the right common carotid. It feels hard and gritty, which is less common in the carotid. When you start to insert the arterial tube, you feel it catch on a thick, hard spot.",o:[
+   {t:"Don't force it. Choose a part of the artery without fatty deposits, use a smaller arterial tube, secure it with an arterial hemostat or thick cotton ligature, and start at low pressure and a slow rate.",ok:1,next:"a6",c:"Forcing a tube into a sclerotic artery can slough the lining and block it. An unaffected spot, a smaller tube, and a gentle start protect the vessel. (EHTP p. 315)"},
+   {t:"Push the tube through and start the machine.",go:"a4x",c:"The lining tore and the wall cracked."},
+   {t:"Raise the pressure to push past the hard spot.",go:"a4x",c:"The weakened wall split under the pressure."},
+   {t:"Give up on the carotids and inject from the right femoral.",c:"The femoral is more often sclerotic than the carotid, and you lose the control of the face that restricted cervical injection gives you. (EHTP p. 315; p. 183)"}]},
+  a4x:{t:"Leak in the neck",ev:"Things got worse",s:"Solution is pooling under the skin of the neck. The right side of the neck is swelling.",o:[
+   {t:"Stop the machine, tie off the damaged section, express the fluid toward the incision, and re-cannulate the artery in an unaffected area with a smaller tube.",ok:1,next:"a6",c:"Stopping fast limits the swelling. A fresh, unaffected spot and a smaller tube let you keep the restricted cervical plan. (EHTP p. 315)"},
+   {t:"Turn the pressure up so more solution gets past the leak.",c:"The neck swelled badly and the right side of the face distorted."},
+   {t:"Keep injecting and cover it with cosmetics later.",c:"Cosmetics cannot hide a swollen neck. The collar no longer fit."}]},
+  a6:{t:"Drainage",ev:"Complication",s:"You are injecting the trunk. Drainage from the right internal jugular vein is slow and thick with clots.",o:[
+   {t:"Keep drainage continuous and use angular spring forceps to remove the clots from the right atrium.",ok:1,next:"a5",c:"Continuous drainage removes edema in this case. Angular spring forceps reach heavy clots in the right atrium. (EHTP p. 309; p. 320)"},
+   {t:"Close the drainage until the clots break up on their own.",c:"Pressure built with nowhere to go. Swelling and purge increased."},
+   {t:"Increase the pressure to push the clots out.",go:"a6x",c:"Pressure is building against blocked drainage."}]},
+  a6x:{t:"Face swelling",ev:"Things got worse",s:"The neck veins are bulging and the face is swelling and darkening.",o:[
+   {t:"Lower the pressure, clear the clots with angular spring forceps, and open drainage from the left internal jugular too.",ok:1,next:"a5",c:"Lower pressure stops the swelling. Draining from both internal jugulars is recommended when the face has severe edema. (EHTP p. 309; p. 320)"},
+   {t:"Keep the pressure up. It will break through.",c:"The face distended further and the eyelids no longer closed."},
+   {t:"Massage the face hard to push the fluid out.",c:"Heavy massage on swollen, fragile skin tore the surface."}]},
+  a5:{t:"Injecting the head",ev:"Watch the face",s:"The trunk is done. You are injecting the head with a milder solution through the carotids toward the head. A small volume is in. The eyelids are starting to puff.",o:[
+   {t:"Stop the head injection. The tissue is firming. Close off the carotid tubes and move on.",ok:1,next:"a7",c:"In edematous tissue a small volume goes a long way. Overinjecting the head distends the face. (EHTP p. 309)"},
+   {t:"Keep going until the full gallon is in.",c:"The eyelids distended and the face no longer looked like him."},
+   {t:"Close the drainage so the face firms faster.",c:"Closing drainage pushed more fluid into the face. The swelling got worse."}]},
+  a7:{t:"The left leg",s:"The strong tank is running. The right leg is clearing and taking dye. The left leg shows no dye and isn't firming.",o:[
+   {t:"Keep injecting while you massage along the left femoral artery and behind the knee, flex the leg, and turn the foot inward to squeeze the muscles. Watch for dye.",ok:1,next:"a7m",c:"Massage and manipulation along the arterial route can pull solution into an area that isn't receiving it. Don't overdo it. Too much manipulation can cause swelling, dehydration, and skin slip. (EHTP p. 204; p. 196)"},
+   {t:"Stop and raise the left femoral right away.",c:"That may come next. First try massage and manipulation while the general injection runs. Sectional injection is for areas that still don't receive solution after that. (EHTP p. 153; p. 204)"},
+   {t:"Massage cream into the leg.",c:"Cream holds moisture in. It does nothing for distribution. The leg stayed soft and wet."},
+   {t:"Reinject from the right side at higher pressure.",c:"The solution followed the easier path and never reached the left leg."}]},
+  a7m:{t:"After massage",s:"After several minutes of massage and flexing, some dye shows in the left thigh. The lower leg is still soft and swollen, with no dye.",o:[
+   {t:"Raise the left femoral and inject the left leg separately with strong solution. Elevate the leg and wrap it with an elastic bandage from the foot up.",ok:1,next:"a8",c:"Massage helped the thigh but didn't reach the lower leg. It doesn't always work. Areas that still don't receive solution get sectional injection. Elevating and wrapping pushes edema toward the pelvic cavity where it can be aspirated. (EHTP p. 153; p. 310)"},
+   {t:"Keep massaging harder until the lower leg clears.",c:"Over-manipulating edematous tissue can cause swelling, dehydration, and skin slip. The lower leg needs its own injection. (EHTP p. 204; p. 153)"},
+   {t:"Call it done. Some dye made it into the leg.",c:"Areas that don't receive solution even after massage need sectional injection. The lower leg would stay soft. (EHTP p. 153)"}]},
+  a8:{t:"Checking the right leg",s:"Injection is done. The raw areas on the right shin are still moist and soft.",o:[
+   {t:"Continue the compresses or inject cavity fluid hypodermically, give the chemicals time, clean them away, dry with a hair dryer, then use autopsy gel, powder, and plastic garments.",ok:1,next:"a9",c:"Raw areas need preserving and drying before dressing. Plastic garments with powder protect the clothing. (EHTP pp. 296 to 297)"},
+   {t:"Cover them with massage cream and dress him.",c:"Cream kept the areas wet. They leaked through the clothing at the viewing."},
+   {t:"Leave them. The arterial solution took care of it.",c:"The arterial solution didn't fully reach the raw areas. They stayed soft and leaked."}]},
+  a9:{t:"Cavity treatment",s:"Arterial injection is done. The abdomen still holds fluid, and a little purge has returned at the nose.",o:[
+   {t:"Aspirate thoroughly, inject a full amount of undiluted cavity fluid, then reaspirate and reinject. Clean and pack the nose with cotton.",ok:1,end:1,c:"Ascites dilutes cavity fluid, and kidney failure needs thorough cavity treatment, so reaspiration and reinjection are best practice. Pack the nose after embalming. (EHTP pp. 308, 314, 320)"},
+   {t:"Leave the abdomen alone. It will go down on its own.",c:"It did not go down. The abdomen stayed distended and purge came back at the viewing."},
+   {t:"Aspirate once and use the normal amount of cavity fluid.",c:"The leftover ascites diluted the cavity fluid. Gas and odor developed before the funeral. (EHTP p. 308)"},
+   {t:"Cover the nose with cosmetics.",c:"Cosmetics do not stop purge. Fluid stained the pillow."}]}
+ }
+},
+{
+ code:"W12-B",
+ look:{sex:"f",head:47,hair:"#c4c0ba",hairStyle:"long",eyes:"sunken",lips:"dry",cheeks:"hollow",temples:true,purge:false,abd:false,arm:30,rhand:.85,lhand:1.25,lIV:true,thigh:46,lower:36,ribs:true,port:true,wrinkledR:true},
+ file:{Decedent:"Female, 81",Cause:"Metastatic cancer",Place:"Home, under hospice care",Interval:"10 hours, not refrigerated",Weight:"Lost a lot of weight in the last months",Service:"Open casket, viewing in 2 days"},
+ request:"She stopped eating weeks ago. Please don't let her look so thin and tired.",
+ exam:{
+  face:{o:"Cheeks and temples hollow. The bones of the face stand out. Eyes sit back in the sockets.",a:"Emaciation"},
+  mouth:{o:"Lips are dry, hard, and brown, with the edges starting to curl.",a:"Desiccation"},
+  chest:{o:"Ribs show through the skin. A port sits below the right clavicle with no swelling around it.",a:"No moisture-related finding"},
+  abd:{o:"Flat and soft. No distention.",a:"No moisture-related finding"},
+  rarm:{o:"Skin stays up in a ridge after you pinch it. Fingertips are wrinkled.",a:"Dehydration"},
+  larm:{o:"Hand and wrist puffy around a taped IV site where the line leaked into the tissue. Pressing leaves a pit.",a:"Pitting edema"},
+  rleg:{o:"Thin but unremarkable. No swelling or skin breaks.",a:"No moisture-related finding"},
+  lleg:{o:"Thin but unremarkable. No swelling or skin breaks.",a:"No moisture-related finding"}
+ },
+ start:"b1",
+ nodes:{
+  b1:{t:"Before injection",s:"The prep room is cool and dry. Her face and lips are drying out in the room air while you set up.",o:[
+   {t:"Apply a light coat of massage cream to the face, lips, and hands, and keep the body covered.",ok:1,next:"b2",c:"Massage cream and coverings slow surface drying during and after embalming. (EHTP p. 304; p. 306)"},
+   {t:"Leave the face uncovered so you can watch it during injection.",c:"Air moving across the body dried the lips and eyelids further. (EHTP p. 306)"},
+   {t:"Wipe the face with solvent to clean it.",c:"Solvent dehydrates the skin. The lips cracked. (EHTP p. 305)"}]},
+  b2:{type:"shelf",t:"Build your tank",s:"Look back at your findings. Click bottles to add them to the tank. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b1",co:"b4"},next:"bM",mix:{gal:2,min:2,max:2.5,co:"eq",good:"A 2 to 2.5% solution preserves her for a 2-day wait without over-drying. (EHTP p. 304; p. 306)",low:"Too weak to preserve her for a 2-day wait. Areas stayed soft and began to discolor. (EHTP p. 306)",high:"It pulled moisture from her face and fingers. The wrinkling and browning got worse. (EHTP p. 151)"},fb:{
+   b9:"It can help condition the vessels and clear drug residue from her cancer treatment, but it is not a humectant. Your humectant co-injection is what fills out the hollow tissue.",
+   b1:"Right pick. A lower index lets you keep the strength mild to moderate without over-drying her. (EHTP p. 151)",
+   b2:"It would work at a mild strength, but the lower index gives you more room to add volume without over-drying. There is a better fit on the shelf.",
+   b3:"A high index pulls more moisture out of tissue that is already dry. Her face would wrinkle and darken. (EHTP p. 151)",
+   b4:"Right pick. Humectant adds and holds moisture. Use about the same amount as the arterial fluid. Too much humectant has the opposite effect and dehydrates. (EHTP p. 306)",
+   b5:"Edema corrective removes water. She needs more moisture, not less. The swollen hand gets treated separately.",
+   b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
+   b8:"Tissue builder fills hollows, but it goes in by hypodermic after arterial injection. It never goes in the tank. (EHTP p. 118)"}},
+  bM:{t:"Injection method",s:"How will you inject her? The family wants her to look less thin.",o:[
+   {t:"One-point injection from the right common carotid and right internal jugular",c:"It preserved her, but injecting so close to the face filled the right side first. The face came out uneven. (EHTP p. 182)"},
+   {t:"Split injection: inject from the right femoral artery toward the head, and drain from the right internal jugular with restricted drainage",ok:1,next:"b4",c:"Injecting from the femoral lets solution reach both carotids at once. The distance slows it down, so the face fills out gradually and evenly. (EHTP p. 182; pp. 461 to 462)"},
+   {t:"Restricted cervical injection",c:"Restricted cervical injection is made to hold solution back from the face. She needs the opposite. (EHTP p. 183)"},
+   {t:"Six-point injection from the start",c:"Her skin is thin and fragile. Six incisions gave you six places to leak, with no distribution problem to fix."}]},
+  b4:{t:"Raising the vessel",ev:"Look closely",s:"You open the right femoral incision. The first vessel you lift is thin-walled, bluish, and flattens when you press it. It sits medial to a thicker, rounder vessel.",o:[
+   {t:"That is the femoral vein. Leave it, since you're draining from the jugular. The artery is the thicker vessel lateral to it.",ok:1,next:"b5",c:"The femoral artery lies lateral to the femoral vein. Arteries have thick walls and hold their shape; veins are thin and collapse. (EHTP p. 135; p. 140)"},
+   {t:"Insert the arterial tube into it and start injecting.",go:"b4x",c:"You are injecting into the vein."},
+   {t:"Close up. The artery must be blocked, so move to the carotid.",c:"The artery was right there, lateral to the vein. You lost the benefit of split injection for her face."}]},
+  b4x:{t:"Wrong vessel",ev:"Things got worse",s:"Solution is going into the femoral vein. Nothing reaches the face, the leg is swelling, and drainage at the jugular looks like solution.",o:[
+   {t:"Stop, remove the tube, tie off the vein, and cannulate the femoral artery lateral to it.",ok:1,next:"b5",c:"Stopping early limits the swelling. Now the artery carries solution out to the tissues and the jugular brings blood back. (EHTP p. 135)"},
+   {t:"Keep injecting. It will find its way.",c:"Solution ran straight back to the heart through the veins. The leg swelled and nothing was preserved."},
+   {t:"Raise the pressure.",c:"The leg swelled tight and solution leaked from the incision."}]},
+  b5:{t:"Drainage",s:"Injection is running from the femoral toward the head. How do you manage drainage at the jugular?",o:[
+   {t:"Continuous drainage the whole time",go:"b5x",c:"Most of the humectant solution is running straight out with the drainage."},
+   {t:"Restricted or intermittent drainage, then close drainage completely for the last of the solution",ok:1,next:"b5m",c:"Restricting drainage builds pressure so solution enters and stays in the facial tissues. Closing it for the last portion helps fill out the features. (EHTP p. 117; p. 462)"},
+   {t:"No drainage at all from the start",c:"The blood stayed in the vessels. The face and neck discolored."}]},
+  b5x:{t:"Lips and fingers drying",ev:"Things got worse",s:"Her lips, fingertips, and the backs of her hands are wrinkling and darkening during injection.",o:[
+   {t:"Switch to intermittent drainage, then close drainage for the last of the solution. Reapply massage cream.",ok:1,next:"b5m",c:"With continuous drainage, humectant solutions pull moisture from the lips and fingers. Intermittent drainage holds the humectant in the tissues. (EHTP p. 117)"},
+   {t:"Add more humectant to the tank.",c:"Too much humectant has the opposite effect. The drying got worse. (EHTP p. 306)"},
+   {t:"Massage the hands and face hard to push fluid in.",c:"Heavy massage moves fluid out of those areas. The fingers dried more. (EHTP p. 306)"}]},
+  b5m:{t:"The fingers",s:"Injection is running. The fingertips on her right hand are still pale and haven't taken any dye.",o:[
+   {t:"Lower the right arm over the side of the table, massage along the radial and ulnar arteries, then the sides of the fingers, and press the nail beds. Keep it gentle.",ok:1,next:"b6",c:"Lowering the arm expands the vessels, and massage along the arterial route draws solution into the fingers. She's already dehydrated, so avoid over-manipulation. It doesn't always work, but here the fingertips pinked up. (EHTP p. 204)"},
+   {t:"Raise the arm above the table so gravity helps.",c:"Lowering the hand below the table expands the vessels. Raising it does the opposite. (EHTP p. 204)"},
+   {t:"Turn the pressure up as high as it goes.",c:"A big pressure jump swelled the face before the fingers cleared. Try positioning and massage first. (EHTP p. 204)"},
+   {t:"Inject the fingertips with tissue builder now.",c:"Tissue builder goes in after arterial injection, and the fingers still need preservative first. (EHTP p. 118)"}]},
+  b6:{t:"The left hand",ev:"Watch the hand",s:"The body is done. The left hand, where the IV leaked, is still swollen.",o:[
+   {t:"Switch the whole tank to a strong, dehydrating solution and reinject.",c:"The hand improved, but the rest of her dried out. The face wrinkled."},
+   {t:"Elevate the arm, inject it separately with a stronger solution, squeeze edema out through the IV puncture, and seal it with super adhesive.",ok:1,next:"b7",c:"The arm can be injected separately after the body. Fluid can be squeezed out through needle punctures, then sealed. (EHTP pp. 310 to 311)"},
+   {t:"Lance the back of the hand and leave it to drain.",c:"Lancing a visible hand left openings that leaked and showed at the viewing. (EHTP p. 311)"},
+   {t:"Leave it. It will go down by itself.",c:"The humectant solution added more moisture. The hand stayed swollen."}]},
+  b7:{t:"Hollow features",s:"Injection is done. The face filled out some, but the temples are still a little hollow.",o:[
+   {t:"Inject a small amount of tissue builder by hypodermic needle into the temples, being careful not to overfill.",ok:1,next:"b8",c:"Tissue builder is injected after arterial embalming to restore sunken areas. It's almost impossible to remove once it's in. (EHTP pp. 118 to 119)"},
+   {t:"Reopen the femoral and inject more arterial solution into the head.",c:"The face firmed more but didn't fill out. The extra preservative dried the tissue."},
+   {t:"Leave it. Cosmetics will hide the hollows.",c:"The shadows from the hollows still showed under the chapel lights."}]},
+  b8:{t:"Lips and hands",s:"You're finishing up. The lips are hard, brown, and curling at the edges, and the fingertips are wrinkled.",o:[
+   {t:"Reapply massage cream to the face and hands. The lips are desiccated and can't be rehydrated, so restore them with wax and opaque cosmetics. Fill the fingertips with tissue builder.",ok:1,end:1,c:"Moisture cannot be restored to desiccated tissue. Restorative wax and opaque cosmetics cover it. Tissue builder smooths wrinkled fingertips. (EHTP p. 305; p. 304)"},
+   {t:"Soak the lips with massage cream overnight to rehydrate them.",c:"Desiccated tissue can't be rehydrated. The lips looked the same in the morning. (EHTP p. 305)"},
+   {t:"Use a strong cavity fluid compress on the lips.",c:"The compress dried and darkened the lips further."}]}
+ }
+},
+{
+ code:"W12-C",
+ look:{sex:"m",head:64,hair:"#d0ccc5",hairStyle:"fringe",eyes:"normal",lips:"dry",cheeks:"puffy",temples:false,purge:false,abd:false,arm:40,rhand:1,lhand:1,lIV:false,thigh:62,lower:86,gloss:true,pits:true,wrinkledR:true},
+ file:{Decedent:"Male, 88",Cause:"Complications of stroke; bedfast 3 months",History:"Long-term steroid therapy for COPD",Place:"Nursing home",Interval:"5 hours, refrigerated",Service:"Open casket, viewing tomorrow evening"},
+ request:"The steroids made his face so round. We know he won't look like he used to, but we'd like him to look rested.",
+ exam:{
+  face:{o:"Cheeks, jaw, and neck are full and round. The tissue feels firm, and pressing it leaves no dent.",a:"Non-pitting (solid) edema"},
+  mouth:{o:"Lips dry and brown at the edges. The edges feel hard.",a:"Desiccation"},
+  chest:{o:"Skin intact. No swelling or skin breaks.",a:"No moisture-related finding"},
+  abd:{o:"Soft, not distended. No fluid wave.",a:"No moisture-related finding"},
+  rarm:{o:"Skin on the back of the hand stays up in a ridge when pinched. Fingertips are wrinkled.",a:"Dehydration"},
+  larm:{o:"Normal size. Skin intact.",a:"No moisture-related finding"},
+  rleg:{o:"Lower leg, ankle, and foot swollen, heavy, and shiny. Pressing leaves a pit that stays.",a:"Pitting edema"},
+  lleg:{o:"Lower leg, ankle, and foot swollen and shiny. A fingertip press leaves a dent that stays. Skin intact.",a:"Pitting edema"}
+ },
+ start:"c1",
+ nodes:{
+  c1:{t:"The plan",s:"His face has solid edema from the steroids and his legs have pitting edema. What is your plan?",o:[
+   {t:"One-point injection with one strong, high-index solution for the whole body",c:"The legs firmed, but the large volume of strong solution reaching the face made it firmer and grayer without bringing it down."},
+   {t:"One-point injection with a large volume of mild solution",c:"Mild solution in large volume swelled the face more and the legs never firmed."},
+   {t:"Restricted cervical injection for the trunk and arms, a small separate injection to the head, and a stronger separate injection to each leg",ok:1,next:"c2",c:"Restricted cervical injection keeps extra solution out of the swollen face, and the legs get their own strong injection. (EHTP p. 183; p. 310)"},
+   {t:"Inject only the legs and rely on cavity treatment for the rest",c:"The head and upper body were never arterially preserved. The face discolored by the next day."}]},
+  c2:{t:"Vessels",s:"Which vessels support that plan?",o:[
+   {t:"Right common carotid only",c:"From one point you can't control what reaches the face or change strength for the legs."},
+   {t:"Both common carotids and the right internal jugular for the trunk, arms, and head, plus the femoral arteries for the legs",ok:1,next:"c2h",c:"Both carotids give you restricted cervical injection, and the femorals give you separate control of the legs. The carotids are rarely sclerotic in an older body. (EHTP p. 183; p. 315)"},
+   {t:"Radial arteries only",c:"The radials are small and far from the legs and face. You had no control of distribution."},
+   {t:"Right femoral only, toward the head",c:"Injecting toward the head from the femoral sends solution to both sides of the face at once. That is the opposite of what a swollen face needs."}]},
+  c2h:{type:"shelf",t:"Trunk, arms, and head tank",s:"Build the tank for the trunk, arms, and head. Look at your findings. You need one arterial fluid. Decide whether this tank needs a co-injection. Then mix it to the right strength.",need:{art:"b2",co:null},next:"c2l",mix:{gal:2,min:4,max:5,good:"Strong enough to counteract the secondary dilution from the edema without being harsh on the face. (EHTP p. 308)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"Too strong for the face. It firmed and grayed the swollen tissue without bringing it down."},fb:{
+   b9:"Optional. It can help condition the vessels in an older body. It won't change the solid edema.",
+   b1:"Its built-in humectants add moisture. The face is already full of fluid inside the cells. Use a general-purpose fluid mixed to at least 4%.",
+   b2:"Right pick. A general-purpose fluid mixed to at least 4% counters the secondary dilution without the harshness of a high index on the face.",
+   b3:"A high index is harsh for the face and isn't needed for the trunk. Save it for the leg tank.",
+   b4:"Humectant adds moisture, and the face is already swollen. Treat the dry fingertips with tissue builder after embalming instead. (EHTP p. 311)",
+   b5:"Edema corrective draws fluid out from between the cells. Solid edema is inside the cells and doesn't respond, so it won't help the face. (EHTP p. 307)",
+   b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
+   b8:"Tissue builder goes in by hypodermic after arterial injection, never in the tank. (EHTP p. 118)"}},
+  c2l:{type:"shelf",waterless:1,t:"Leg tank",s:"Now build a separate tank for the swollen legs. You need one arterial fluid and one co-injection. Then mix it to the right strength.",need:{art:"b3",co:"b5"},next:"c4",mix:{gal:1,min:4,max:6,co:[0.5,1.5],good:"Strong enough to counteract the secondary dilution from the pitting edema in the legs. (EHTP p. 308; p. 309)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"It firmed the legs, but you wasted fluid you didn't need."},fb:{
+   b9:"It can help solution move past poor circulation in a bedfast patient. It does not replace the edema corrective.",
+   b1:"This adds moisture to legs that are already swollen. They would never firm.",
+   b2:"A medium index gets diluted by the fluid in the legs. They would stay soft.",
+   b3:"Right pick. A high index stays strong enough after the tissue water dilutes it.",
+   b4:"Humectants hold moisture in. The legs need water drawn out.",
+   b5:"Right pick. The legs have pitting edema, so edema corrective can draw it out of the tissue spaces into the drainage. (EHTP p. 117; p. 307)",
+   b7:"Cavity fluid is far too harsh to inject arterially. It can be injected into the legs by infant trocar after arterial injection. (EHTP p. 310)",
+   b8:"Tissue builder fills sunken areas. His legs are swollen, not sunken."}},
+  c4:{t:"The right femoral",ev:"Complication",s:"You raise the right femoral artery. It is hard and white, like a pipe, and the lumen is completely blocked. The tube won't pass.",o:[
+   {t:"Don't force it. A completely blocked artery can't be used. Inject that leg from below the blockage, through the popliteal or anterior tibial artery, and treat by hypodermic if needed.",ok:1,next:"c5",c:"With a fully blocked lumen, the artery can't be used for injection. A lower injection point gets solution to the lower leg, and hypodermic treatment covers what it misses. (EHTP p. 315; p. 305)"},
+   {t:"Keep pushing the tube and start the machine.",go:"c4x",c:"The lining tore and the wall cracked."},
+   {t:"Inject the right leg from the left femoral at high pressure.",c:"Solution does not cross from one leg to the other. The right leg got nothing."},
+   {t:"Skip the right leg. The trunk injection will reach it.",c:"The blockage stopped the solution. The right lower leg stayed soft and began to discolor."}]},
+  c4x:{t:"Leak in the thigh",ev:"Things got worse",s:"Solution is leaking into the tissue around the femoral incision. The upper thigh is swelling.",o:[
+   {t:"Stop, tie off the damaged section, express the fluid from the incision, and inject the leg from the popliteal or anterior tibial artery.",ok:1,next:"c5",c:"Stopping fast limits the swelling, and the lower vessel gets solution past the blockage. (EHTP p. 315)"},
+   {t:"Raise the pressure to get past the blockage.",c:"The leak got worse and the thigh swelled more."},
+   {t:"Keep going. The swelling will be under the clothes.",c:"Solution leaked through the incision onto the clothing at the viewing."}]},
+  c5:{t:"The face",ev:"Watch the face",s:"The trunk and arms are done. You are injecting a small volume to the head. The face is firming, but it is just as round as before.",o:[
+   {t:"Stop when the features are firm. Solid edema won't come down with arterial or mechanical treatment, so set the features well and rely on cosmetics.",ok:1,next:"c6",c:"Solid edema is fluid inside the cells. It cannot be removed by arterial or mechanical means, so more injection only adds swelling. (EHTP pp. 307 to 308)"},
+   {t:"Channel the face with a hypodermic needle and press the fluid out.",go:"c5x",c:"Nothing is draining, and fluid is seeping from the needle holes."},
+   {t:"Keep injecting a hypertonic solution to pull the swelling out.",c:"Hypertonic solution draws fluid from between the cells, not from inside them. The face firmed harder and grayed. (EHTP p. 307)"},
+   {t:"Excise the deep tissue of the cheeks to reduce them.",c:"The book cautions against this. Getting an even result is hard, and leakage is a major concern. (EHTP p. 308)"}]},
+  c5x:{t:"Leaking face",ev:"Things got worse",s:"The face is still round, and clear fluid is seeping from the needle punctures.",o:[
+   {t:"Stop channeling. Seal each puncture with a drop of super adhesive, dry the area, and protect the face with massage cream.",ok:1,next:"c6",c:"Channeling works on pitting edema, not solid edema. Sealing the punctures stops the leak before cosmetics. (EHTP p. 308; p. 311)"},
+   {t:"Make more punctures so it drains faster.",c:"More holes meant more leakage and more places for cosmetics to fail."},
+   {t:"Cover the punctures with cosmetics and move on.",c:"Fluid kept seeping through the cosmetics during the viewing."}]},
+  c6:{t:"Drainage for the legs",s:"You are injecting the legs with the strong solution. How do you handle drainage?",o:[
+   {t:"Restricted drainage so the solution stays in the legs",go:"c6x",c:"Fluid is building up in the legs with nowhere to go."},
+   {t:"Continuous drainage, with the legs elevated, pausing the injection now and then",ok:1,next:"c7",c:"Continuous drainage removes edema. Pausing lets the edema move into the vessels, and elevation helps it drain. (EHTP pp. 309 to 310)"},
+   {t:"No drainage at all",c:"The legs swelled and darkened."}]},
+  c6x:{t:"Legs swelling",ev:"Things got worse",s:"The legs are tighter and shinier than when you started, and fluid is weeping from an old needle puncture.",o:[
+   {t:"Open drainage, elevate the legs, and massage and squeeze them from the feet toward the heart.",ok:1,next:"c7",c:"Squeezing the limbs toward the heart and elevating them moves edema into the veins and out with the drainage. (EHTP p. 310)"},
+   {t:"Raise the pressure to force the solution through.",c:"The legs swelled more and the skin started to split."},
+   {t:"Keep going and fix it with plastic stockings.",c:"Stockings hide leaks but don't stop the swelling. Fluid soaked the casket bedding."}]},
+  c7:{t:"Finishing the legs",s:"The legs are firm but still heavy with fluid.",o:[
+   {t:"Massage cream on both legs",c:"Cream holds moisture in. The legs stayed wet and swollen."},
+   {t:"Elevate the legs and wrap them with an elastic bandage from the foot up. Place wicks in the femoral incisions and let them work for several hours, then close as usual and dress with autopsy gel, powder, and plastic stockings.",ok:1,next:"c8",c:"Elevating and wrapping push edema up out of the legs, and wicks draw it out over several hours. Giving them time before you close means less fluid is left to leak. (EHTP p. 310; pp. 312 to 313)"},
+   {t:"Close the incisions right away and dress him.",c:"The edema had nowhere to go. It leaked through the incisions onto the clothing."}]},
+  c8:{t:"Lips and hands",s:"Last step. The lips are dry, brown, and hard at the edges, and the right fingertips are wrinkled.",o:[
+   {t:"Reapply massage cream to the face and hands. Restore the desiccated lips with wax and opaque cosmetics, and fill the wrinkled fingertips with a little tissue builder.",ok:1,end:1,c:"Desiccated tissue can't be rehydrated, so it is restored. Tissue builder smooths wrinkled fingers. (EHTP p. 305; pp. 310 to 311)"},
+   {t:"Soak the lips with massage cream to rehydrate them.",c:"Desiccated tissue can't be rehydrated. The lips looked the same the next day. (EHTP p. 305)"},
+   {t:"Inject tissue builder into the cheeks to even out the face.",c:"The face is already swollen. Tissue builder made it rounder."}]}
+ }
+}];
+
+const ADAMS="Jack Adams, Waterless Embalming: A Valuable Technique, Spring 2010, pp. 4 to 6";
+const WATERLESS={
+ a2:{lead:"For an edema case like this one, consider a waterless solution. No tap water is added. Co-injections take its place, so the solution penetrates more evenly and you control the case instead of the case controlling you. (EHTP p. 114; Adams, 2010)",
+  title:"Adams's edema guideline, per batch, no water added",
+  recipe:["3 bottles arterial fluid","3 bottles co-injection that breaks up arterial obstacles and stimulates drainage","3 bottles water conditioner","1½ bottles edema corrective"],
+  notes:["Use restricted cervical injection with both carotids for difficult cases. It gives you the most control of the head.","Reevaluate after each gallon. Make it stronger or add co-injection as the tissue tells you.","Leave out humectant. Adams uses it on every case except edematous ones.","These are guidelines. They change with the body in front of you and with embalmer preference."]},
+ c2l:{lead:"Adams describes a body like this one: the head may need a moderate solution while the legs are extremely edematous. He uses a waterless solution with co-injection to shrink and dry the edematous legs. (Adams, 2010)",
+  title:"Adams's extreme edema guideline for the affected part, no water added",
+  recipe:["1 or 2 bottles high-index arterial fluid with active dye","1 bottle of a second high-index arterial fluid","1 bottle water conditioner","1 or 1½ bottles edema corrective"],
+  notes:["The rest of the body can get a very strong solution or the waterless solution for difficult cases.","Reevaluate after each gallon.","Treat the facial skin with massage cream during and after injection.","The textbook gives a similar waterless example: 16 oz of a 30-index or higher arterial, 16 oz co-injection, 4 oz water conditioner, and dye (EHTP p. 336)."]}
+};
+const BOTTLES=[
+ {id:"b1",cat:"art",tag:"16",name:"Arterial fluid",sub:"Index 16, humectant formula",desc:"Low-index arterial with humectants built in. Made for dehydrated or emaciated bodies.",color:"#f2a3b8"},
+ {id:"b2",cat:"art",tag:"24",name:"Arterial fluid",sub:"Index 24, general purpose",desc:"Medium-index arterial for routine cases.",color:"#e8738f"},
+ {id:"b3",cat:"art",tag:"32",name:"Arterial fluid",sub:"Index 32, high index",desc:"Strong arterial for tissue that is hard to preserve.",color:"#c43e5f"},
+ {id:"b4",cat:"co",tag:"HUM",name:"Co-injection",sub:"Humectant restorative",desc:"Goes in the tank to add and hold moisture in the tissues.",color:"#bfe3c6"},
+ {id:"b5",cat:"co",tag:"EDM",name:"Co-injection",sub:"Edema corrective",desc:"Goes in the tank to draw excess water out of the tissues.",color:"#9cc7e8"},
+ {id:"b6",cat:"neutral",tag:"DYE",name:"Active dye",sub:"Optional additive",desc:"Colors the solution so you can track distribution.",color:"#d1202f"},
+ {id:"b7",cat:"other",tag:"CAV",name:"Cavity fluid",sub:"High index, trocar only",desc:"Strong chemical for cavity treatment after arterial injection.",color:"#e6b54a"},
+ {id:"b9",cat:"aid",tag:"PRE",name:"Pre/co-injection",sub:"Vascular conditioner",desc:"Makes tissue and cell membranes more receptive to arterial fluid. Thins the blood, breaks up clots and fatty deposits, and keeps blood cells from clumping so solution flows and drains better. Helps clear drug and chemotherapy residue, postmortem discoloration, and jaundice, and helps restore normal moisture balance in the cells. Used as a pre-injection or added to the tank.",color:"#f6e7a8"},
+ {id:"b8",cat:"other",tag:"TB",name:"Tissue builder",sub:"Hypodermic use",desc:"Injected with a needle after arterial injection to fill sunken areas.",color:"#f3efe6"}
+];
+/* ---------- drawing ---------- */
+const SK="#f1cfae",OL="#3a2a20";
+function figure(c,o){
+  const k=c?c.look:{sex:"m",head:54,hair:"#6d5a48",hairStyle:"short",eyes:"normal",lips:"normal",cheeks:"normal",arm:40,rhand:1,lhand:1,thigh:60,lower:48};
+  const id=o.id||"f";const vb=o.vb||"0 0 600 1000";
+  const lim=(pts,ws)=>{let a="",b="";for(let i=0;i<ws.length;i++){const d=`M${pts[i][0]},${pts[i][1]} L${pts[i+1][0]},${pts[i+1][1]}`;a+=`<path d="${d}" stroke="${OL}" stroke-width="${ws[i]+6}" stroke-linecap="round" fill="none"/>`;b+=`<path d="${d}" stroke="${SK}" stroke-width="${ws[i]}" stroke-linecap="round" fill="none"/>`}return a+b};
+  let g=`<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${o.label||"Decedent on the preparation table, anterior view. The decedent's right is on your left."}">`;
+  g+=`<defs><linearGradient id="gl${id}" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`;
+  g+=`<rect x="70" y="10" width="460" height="985" rx="40" fill="#c7cfd5" stroke="#9aa6af" stroke-width="3"/><rect x="88" y="26" width="424" height="953" rx="30" fill="#dde3e7"/>`;
+  g+=`<ellipse cx="300" cy="985" rx="18" ry="6" fill="#9aa6af"/>`;
+  // legs
+  const th=k.thigh,lo=k.lower;
+  g+=lim([[258,590],[252,760],[248,930]],[th,lo])+lim([[342,590],[348,760],[352,930]],[th,lo]);
+  g+=`<ellipse cx="246" cy="958" rx="${lo/2+6}" ry="22" fill="${SK}" stroke="${OL}" stroke-width="3"/><ellipse cx="354" cy="958" rx="${lo/2+6}" ry="22" fill="${SK}" stroke="${OL}" stroke-width="3"/>`;
+  if(k.gloss){g+=`<path d="M${240-lo*.15},780 L${238-lo*.15},920" stroke="url(#gl${id})" stroke-width="${lo*.35}" stroke-linecap="round"/><path d="M${358+lo*.12},780 L${360+lo*.12},920" stroke="url(#gl${id})" stroke-width="${lo*.35}" stroke-linecap="round"/>`;}
+  if(k.pits){g+=`<g fill="#c99f7d"><circle cx="262" cy="880" r="4"/><circle cx="252" cy="900" r="3.5"/><circle cx="342" cy="885" r="4"/><circle cx="352" cy="905" r="3.5"/></g>`;}
+  if(k.blisters){g+=`<g stroke="#b59a5c" stroke-width="2"><path d="M232,800 q12,-10 24,0 q6,14 -4,22 q-14,4 -22,-6 z" fill="#f4a993"/><path d="M262,858 q10,-8 18,0 q4,12 -6,16 q-12,0 -12,-16z" fill="#f4a993"/></g><g fill="#fbf1cf" stroke="#b59a5c" stroke-width="2"><circle cx="246" cy="836" r="9"/><circle cx="262" cy="822" r="6"/><circle cx="236" cy="868" r="7"/><circle cx="256" cy="892" r="10"/></g><g fill="#fff" opacity=".7"><circle cx="243" cy="833" r="2.5"/><circle cx="252" cy="888" r="3"/></g>`;}
+  // arms
+  const aw=k.arm;
+  g+=lim([[208,250],[170,420],[152,575]],[aw,aw*.9])+lim([[392,250],[430,420],[448,575]],[aw,aw*.9]);
+  const hand=(cx,s,iv,wr)=>{let h=`<ellipse cx="${cx}" cy="${612+ (s-1)*10}" rx="${26*s}" ry="${40*s}" fill="${SK}" stroke="${OL}" stroke-width="3"/>`;
+    h+=`<g stroke="#b9936f" stroke-width="1.8"><line x1="${cx-10*s}" y1="${626+(s-1)*10}" x2="${cx-10*s}" y2="${646+(s-1)*14}"/><line x1="${cx}" y1="${628+(s-1)*10}" x2="${cx}" y2="${650+(s-1)*14}"/><line x1="${cx+10*s}" y1="${626+(s-1)*10}" x2="${cx+10*s}" y2="${646+(s-1)*14}"/></g>`;
+    if(s>1.1)h+=`<ellipse cx="${cx+6}" cy="${600}" rx="${10*s}" ry="${16*s}" fill="#fff" opacity=".35"/>`;
+    if(iv)h+=`<rect x="${cx-16}" y="588" width="34" height="18" rx="2" fill="#fff" stroke="#888" stroke-width="2" transform="rotate(-8 ${cx} 597)"/><line x1="${cx-6}" y1="597" x2="${cx+12}" y2="595" stroke="#8fc3dc" stroke-width="3"/>`;
+    if(wr)h+=`<g stroke="#a07c5c" stroke-width="1.4" fill="none"><path d="M${cx-14},648 q2,3 4,0 q2,3 4,0"/><path d="M${cx-4},652 q2,3 4,0 q2,3 4,0"/><path d="M${cx+6},648 q2,3 4,0 q2,3 4,0"/><path d="M${cx-12},636 q3,2 6,0"/><path d="M${cx+4},638 q3,2 6,0"/></g>`;
+    return h};
+  g+=hand(150,k.rhand,false,k.wrinkledR)+hand(450,k.lhand,k.lIV,false);
+  // torso
+  const tw=k.sex==="f"?0:0;
+  g+=`<path d="M206,246 Q240,228 280,232 L320,232 Q360,228 394,246 Q404,290 392,350 L380,460 Q378,520 366,580 L234,580 Q222,520 220,460 L208,350 Q196,290 206,246Z" fill="${SK}" stroke="${OL}" stroke-width="3"/>`;
+  if(k.ribs){g+=`<g fill="none" stroke="#c49b78" stroke-width="2.4"><path d="M236,300 Q268,318 292,306"/><path d="M234,330 Q266,348 292,336"/><path d="M236,360 Q266,378 292,366"/><path d="M364,300 Q332,318 308,306"/><path d="M366,330 Q334,348 308,336"/><path d="M364,360 Q334,378 308,366"/></g><path d="M240,430 Q300,404 360,430" fill="none" stroke="#c49b78" stroke-width="2.4"/>`;}
+  if(k.abd){g+=`<ellipse cx="300" cy="455" rx="118" ry="98" fill="${SK}" stroke="${OL}" stroke-width="3"/><ellipse cx="270" cy="420" rx="42" ry="26" fill="#fff" opacity=".35"/><circle cx="300" cy="470" r="5" fill="#c99f7d"/>`;}
+  else{g+=`<circle cx="300" cy="470" r="4" fill="#c99f7d"/>`;}
+  if(k.ekg){g+=`<g fill="#fff" stroke="#888" stroke-width="2"><circle cx="256" cy="280" r="11"/><circle cx="344" cy="280" r="11"/><circle cx="362" cy="372" r="11"/></g><g fill="#888"><circle cx="256" cy="280" r="3"/><circle cx="344" cy="280" r="3"/><circle cx="362" cy="372" r="3"/></g>`;}
+  if(k.port){g+=`<rect x="238" y="258" width="26" height="22" rx="6" fill="#ead2bd" stroke="${OL}" stroke-width="2"/><circle cx="251" cy="269" r="4" fill="#c49b78"/>`;}
+  if(k.sex==="f"){g+=`<path d="M214,384 Q300,402 386,384 L382,418 Q300,436 218,418Z" fill="#cfe0ea" stroke="#6f8fa3" stroke-width="3"/>`;}
+  // drape
+  g+=`<path d="M226,560 L374,560 L384,668 Q356,684 332,668 L300,628 L268,668 Q244,684 216,668Z" fill="#cfe0ea" stroke="#6f8fa3" stroke-width="3"/>`;
+  // neck & head
+  g+=`<rect x="274" y="196" width="52" height="46" fill="${SK}" stroke="${OL}" stroke-width="3"/><rect x="277" y="226" width="46" height="18" fill="${SK}"/>`;
+  const hr=k.head;
+  g+=`<ellipse cx="${300-hr-6}" cy="128" rx="10" ry="18" fill="${SK}" stroke="${OL}" stroke-width="3"/><ellipse cx="${300+hr+6}" cy="128" rx="10" ry="18" fill="${SK}" stroke="${OL}" stroke-width="3"/>`;
+  if(k.hairStyle==="long")g+=`<path d="M${300-hr-14},120 Q${300-hr-22},40 300,36 Q${300+hr+22},40 ${300+hr+14},120 L${300+hr+18},228 Q${300+hr},240 ${300+hr-6},206 L${300-hr+6},206 Q${300-hr},240 ${300-hr-18},228Z" fill="${k.hair}" stroke="${OL}" stroke-width="3"/>`;
+  g+=`<ellipse cx="300" cy="130" rx="${hr}" ry="78" fill="${SK}" stroke="${OL}" stroke-width="3"/>`;
+  if(k.hairStyle==="short")g+=`<path d="M${300-hr+2},118 Q${300-hr},50 300,52 Q${300+hr},50 ${300+hr-2},118 Q${300+hr-12},80 300,76 Q${300-hr+12},80 ${300-hr+2},118Z" fill="${k.hair}" stroke="${OL}" stroke-width="3"/>`;
+  if(k.hairStyle==="long")g+=`<path d="M${300-hr+2},112 Q${300-hr},50 300,52 Q${300+hr},50 ${300+hr-2},112 Q${300+18},70 300,72 Q${300-18},70 ${300-hr+2},112Z" fill="${k.hair}" stroke="${OL}" stroke-width="2"/>`;
+  if(k.hairStyle==="fringe")g+=`<path d="M${300-hr+2},128 Q${300-hr-4},90 ${300-hr+14},78 L${300-hr+20},112Z" fill="${k.hair}" stroke="${OL}" stroke-width="2"/><path d="M${300+hr-2},128 Q${300+hr+4},90 ${300+hr-14},78 L${300+hr-20},112Z" fill="${k.hair}" stroke="${OL}" stroke-width="2"/><path d="M276,70 q24,-8 48,0" stroke="#c9b9a6" stroke-width="2" fill="none"/>`;
+  // temples, cheeks
+  if(k.temples)g+=`<ellipse cx="${300-hr+10}" cy="104" rx="10" ry="16" fill="#9c7a60" opacity=".35"/><ellipse cx="${300+hr-10}" cy="104" rx="10" ry="16" fill="#9c7a60" opacity=".35"/>`;
+  if(k.cheeks==="hollow")g+=`<ellipse cx="${300-hr+14}" cy="158" rx="12" ry="20" fill="#9c7a60" opacity=".4"/><ellipse cx="${300+hr-14}" cy="158" rx="12" ry="20" fill="#9c7a60" opacity=".4"/>`;
+  if(k.cheeks==="puffy")g+=`<ellipse cx="${300-hr+22}" cy="150" rx="20" ry="16" fill="#fff" opacity=".35"/><ellipse cx="${300+hr-22}" cy="150" rx="20" ry="16" fill="#fff" opacity=".35"/>`;
+  // eyes
+  if(k.eyes==="puffy"){g+=`<ellipse cx="276" cy="124" rx="19" ry="12" fill="#f7dcc4" stroke="${OL}" stroke-width="2"/><ellipse cx="324" cy="124" rx="19" ry="12" fill="#f7dcc4" stroke="${OL}" stroke-width="2"/><path d="M262,124 Q276,128 290,124 M310,124 Q324,128 338,124" stroke="${OL}" stroke-width="2.5" fill="none"/><path d="M260,140 Q276,148 292,140 M308,140 Q324,148 340,140" stroke="#c99f7d" stroke-width="2" fill="none"/><ellipse cx="270" cy="119" rx="6" ry="3" fill="#fff" opacity=".7"/><ellipse cx="318" cy="119" rx="6" ry="3" fill="#fff" opacity=".7"/>`;}
+  else if(k.eyes==="sunken"){g+=`<ellipse cx="277" cy="122" rx="17" ry="13" fill="#7a5a48" opacity=".55"/><ellipse cx="323" cy="122" rx="17" ry="13" fill="#7a5a48" opacity=".55"/><path d="M264,122 Q277,127 290,122 M310,122 Q323,127 336,122" stroke="${OL}" stroke-width="2.5" fill="none"/>`;}
+  else g+=`<path d="M264,122 Q277,127 290,122 M310,122 Q323,127 336,122" stroke="${OL}" stroke-width="2.5" fill="none"/>`;
+  g+=`<path d="M300,128 Q294,150 304,156" stroke="${OL}" stroke-width="2.5" fill="none"/>`;
+  // lips
+  if(k.lips==="dry")g+=`<path d="M280,176 Q290,170 300,173 Q310,170 320,176 Q310,184 300,182 Q290,184 280,176Z" fill="#8e5d3f" stroke="#5e3a26" stroke-width="2"/><path d="M282,176 l3,-3 l3,3 l3,-3 l3,3 l3,-3 l3,3 l3,-3 l3,3 l3,-3 l3,3 l3,-3 l3,3" stroke="#5e3a26" stroke-width="1.4" fill="none"/>`;
+  else g+=`<path d="M282,176 Q300,186 318,176" stroke="#9a5a52" stroke-width="3" fill="none"/>`;
+  if(k.purge)g+=`<g stroke="#d48a96" stroke-width="1.2"><circle cx="292" cy="158" r="4" fill="#fbe3e7"/><circle cx="299" cy="161" r="3" fill="#fff"/><circle cx="308" cy="158" r="4" fill="#fbe3e7"/><circle cx="314" cy="178" r="4" fill="#fbe3e7"/><circle cx="320" cy="183" r="3" fill="#fff"/><circle cx="317" cy="189" r="3.5" fill="#f6c9d1"/><circle cx="324" cy="178" r="2.5" fill="#fff"/></g>`;
+  g+=`<text x="100" y="56" font-family="IBM Plex Mono,monospace" font-size="18" fill="#56636d">R</text><text x="488" y="56" font-family="IBM Plex Mono,monospace" font-size="18" fill="#56636d">L</text>`;
+  if(o.spots){
+    REGIONS.forEach(r=>{const st=S.exam[r.id];const done=st&&st.done;const wr=st&&st.wrong;const pk=st&&st.pick;
+      g+=`<g class="spot${done?" done":wr?" wrongspot":pk?" picked":""}${S.sel===r.id?" sel":""}" tabindex="0" role="button" data-r="${r.id}" aria-label="${esc(r.name)}${done?", correct":wr?", wrong, answer again":pk?", answered":", not answered"}">`;
+      if(!done&&!pk)g+=`<circle class="pulse" cx="${r.x}" cy="${r.y}" r="18"/>`;
+      g+=`<circle class="ring" cx="${r.x}" cy="${r.y}" r="18"/>`;
+      g+=done?`<path d="M${r.x-8} ${r.y} l6 7 l11 -13" stroke="#2f7d5b" stroke-width="4" fill="none" stroke-linecap="round"/>`:wr&&!pk?`<text x="${r.x}" y="${r.y+7}" text-anchor="middle" font-size="20" font-weight="700" fill="#a85f17">!</text>`:pk?`<circle cx="${r.x}" cy="${r.y}" r="8" fill="#1b2329"/>`:`<circle class="core" cx="${r.x}" cy="${r.y}" r="5"/>`;
+      g+=`</g>`;});
+  }
+  return g+`</svg>`;
+}
+const ZOOM={face:"200 40 200 180",mouth:"230 110 140 120",chest:"180 220 240 200",abd:"160 330 280 240",rarm:"80 520 160 170",larm:"360 520 160 170",rleg:"170 740 160 260",lleg:"270 740 160 260"};
+
+/* ---------- state ---------- */
+const S={step:0,name:"",ci:0,sel:null,exam:{},cur:null,path:[],finished:false,ref:{diff:"",feedback:""},calc:{mode:"oz",index:"",strength:"",oz:"",size:"",unit:"gal"},calcOpen:false};
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function hashName(n){let h=0;for(const ch of n.trim().toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return h%CASES.length}
+const C=()=>CASES[S.ci];
+function setSteps(){document.querySelectorAll("#steps li").forEach(li=>{const s=+li.dataset.s;li.className=s===S.step?"on":s<S.step?"done":""})}
+function render(top){setSteps();[vSignIn,vFile,vExam,vTreat,vReport][S.step]();if(top!==false)window.scrollTo({top:0})}
+function keep(){const y=window.scrollY;render(false);window.scrollTo({top:y})}
+
+/* ---------- views ---------- */
+function vSignIn(){
+  app.innerHTML=`<section class="two">
+   <div class="chart">${figure(null,{id:"s"})}<div class="legend"><span>Supine, anterior view</span><span>R = decedent's right</span></div></div>
+   <div class="panel stack">
+    <h2>Pre-embalming analysis and treatment: moisture</h2>
+    <p>You'll get a case file for one decedent. Examine the body at each marked point and identify what you find. Then embalm the case, making each decision as it comes up. Things won't always go to plan.</p>
+    <p class="muted">Wrong choices show you what would happen on the table. Some send you down a harder path you have to fix. Every choice is recorded in your case report.</p>
+    <p class="muted">At the end you'll copy your case report and paste it into the Week 12 Lab submission in Blackboard.</p>
+    <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name)}"></div>
+    <button class="btn" id="go" ${S.name.trim().length<3?"disabled":""}>Open case file</button>
+   </div></section>`;
+  const nm=document.getElementById("nm"),go=document.getElementById("go");
+  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=S.name.trim().length<3});
+  go.onclick=()=>{S.ci=hashName(S.name);S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()};
+}
+
+function vFile(){
+  const c=C();
+  app.innerHTML=`<section class="two">
+   <div class="chart">${figure(c,{id:"c"})}<div class="legend"><span>${c.code}</span><span>R = decedent's right</span></div></div>
+   <div class="panel stack">
+    <div class="qhead"><h2>Case file ${c.code}</h2><span class="qcount">${esc(S.name)}</span></div>
+    <dl class="file">${Object.entries(c.file).map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+    <div class="stack" style="gap:6px"><h3>Family request</h3><p class="request">"${esc(c.request)}"</p></div>
+    <p class="muted">Look at the body and read the file before you examine. The cause of death and the time since death are clues.</p>
+    <button class="btn" id="go">Begin examination</button>
+   </div></section>`;
+  document.getElementById("go").onclick=()=>{S.step=2;render()};
+}
+
+const examDone=()=>REGIONS.every(r=>S.exam[r.id]&&S.exam[r.id].done);
+function vExam(){
+  const c=C();const ex=id=>S.exam[id]||(S.exam[id]={tries:[],done:false,pick:null,wrong:false});
+  REGIONS.forEach(r=>ex(r.id));
+  const ready=REGIONS.every(r=>S.exam[r.id].done||S.exam[r.id].pick);
+  const nDone=REGIONS.filter(r=>S.exam[r.id].done).length;
+  const nPicked=REGIONS.filter(r=>S.exam[r.id].done||S.exam[r.id].pick).length;
+  const round=S.examRound||0;const nWrong=REGIONS.filter(r=>S.exam[r.id].wrong).length;
+  let status="";
+  if(round&&!examDone())status=`<div class="note warn">${nDone} of ${REGIONS.length} correct. Points marked in orange are wrong. Go back to each one, look again, and pick a new answer. Then check again.</div>`;
+  if(examDone())status=`<div class="note ok">All ${REGIONS.length} findings are correct${round>1?` (it took ${round} checks)`:" on the first check"}.</div>`;
+  let side;
+  if(!S.sel){side=`<div class="stack"><h2>Examination</h2><p>Click each marked point on the body. Read what you see and feel, then pick the condition. You won't see if you're right until you check all of them.</p><p class="muted">Some points have no moisture-related finding. You still have to examine them.</p></div>`;}
+  else{
+    const r=REGIONS.find(x=>x.id===S.sel);const e=c.exam[r.id];const st=S.exam[r.id];
+    const tried=st.tries.filter(t=>t!==e.a);
+    side=`<div class="stack"><div class="qhead"><h2>${r.name}</h2><span class="qcount">${st.done?"Correct":st.wrong?"Wrong, pick again":st.pick?"Answered":"Not answered"}</span></div>
+     <div class="zoomrow"><div class="zoom">${figure(c,{id:"z",vb:ZOOM[r.id],label:"Close view of "+r.name})}</div><div class="obs"><p>${esc(e.o)}</p></div></div>
+     <p style="font-weight:600">What is this?</p>
+     <div class="choices">${OPTS.map(o=>{const was=tried.includes(o);const right=st.done&&o===e.a;const on=!st.done&&st.pick===o;return `<button class="choice${right?" right":was?" wrong":on?" picked":""}" data-o="${esc(o)}" ${st.done||was?"disabled":""} aria-pressed="${on}">${esc(o)}</button>`}).join("")}</div>
+     ${st.done?`<div class="note ok">Correct: ${esc(e.a)}.</div>`:""}
+     ${!st.done&&nextOpen()?`<button class="btn ghost" id="nextspot">Next point</button>`:""}
+    </div>`;}
+  app.innerHTML=`<section class="two">
+   <div class="chart">${figure(c,{id:"e",spots:true})}<div class="legend"><span>R = decedent's right</span><span>Pulsing = not answered</span><span>Orange = wrong</span></div></div>
+   <div class="panel stack">
+    <div class="stack" style="gap:6px"><span class="progress">${nPicked} of ${REGIONS.length} answered${round?`, ${nDone} correct`:""}</span><div class="bar"><span style="width:${nPicked/REGIONS.length*100}%"></span></div></div>
+    ${status}
+    ${side}
+    ${examDone()?`<button class="btn" id="go">Start embalming</button>`:`<button class="btn" id="check" ${ready?"":"disabled"}>${round?"Check again":"Check my answers"}</button>${ready?"":`<p class="muted" style="font-size:.85rem">Answer every point to check your work.</p>`}`}
+   </div></section>`;
+  app.querySelectorAll(".spot").forEach(s=>{const f=()=>{S.sel=s.dataset.r;keep()};s.onclick=f;s.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}}});
+  app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{const st=S.exam[S.sel];st.pick=b.dataset.o;keep()});
+  const ns=document.getElementById("nextspot");if(ns)ns.onclick=()=>{S.sel=nextOpen();keep()};
+  const ck=document.getElementById("check");
+  if(ck)ck.onclick=()=>{S.examRound=(S.examRound||0)+1;
+    REGIONS.forEach(r=>{const st=S.exam[r.id];if(st.done||!st.pick)return;st.tries.push(st.pick);
+      if(st.pick===c.exam[r.id].a){st.done=true;st.wrong=false}else{st.wrong=true}st.pick=null});
+    S.sel=null;keep()};
+  const go=document.getElementById("go");if(go)go.onclick=()=>{S.step=3;render()};
+}
+function nextOpen(){const i=REGIONS.findIndex(r=>r.id===S.sel);for(let k=1;k<=REGIONS.length;k++){const r=REGIONS[(i+k)%REGIONS.length];const st=S.exam[r.id];if(!st.done&&!st.pick)return r.id}return null}
+
+function curEntry(){let e=S.path.find(p=>p.id===S.cur);if(!e){e={id:S.cur,tries:[],done:false};S.path.push(e)}return e}
+function bottleSvg(b){
+  const dark=["b3","b6"].includes(b.id);
+  return `<svg viewBox="0 0 60 112" aria-hidden="true"><rect x="22" y="2" width="16" height="12" rx="2" fill="#4a5560"/><rect x="25" y="14" width="10" height="8" fill="#dfe5ea" stroke="#8796a2"/><path d="M14,34 Q14,22 25,22 L35,22 Q46,22 46,34 L46,104 Q46,110 40,110 L20,110 Q14,110 14,104Z" fill="#eef3f6" stroke="#8796a2" stroke-width="2"/><path d="M16,46 L44,46 L44,103 Q44,108 39,108 L21,108 Q16,108 16,103Z" fill="${b.color}"/><rect x="18" y="58" width="24" height="30" rx="2" fill="#ffffff" stroke="#8796a2"/><text x="30" y="77" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="${b.tag.length>2?9:12}" font-weight="600" fill="#1b2329">${b.tag}</text></svg>`;
+}
+const BOTTLE_OZ=16;
+function tankArts(e){return (e.items||[]).map(id=>BOTTLES.find(b=>b.id===id)).filter(b=>b.cat==="art")}
+function tankCos(e){return (e.items||[]).map(id=>BOTTLES.find(b=>b.id===id)).filter(b=>b.cat==="co")}
+function mixOf(e,node){
+  const arts=tankArts(e);const artB=arts.length===1?arts[0]:null;const hasCo=tankCos(e).length>0;
+  const idx=artB?+artB.tag:0;const tank=e.gal*128;const aoz=artB?e.artN*BOTTLE_OZ:0;const coz=hasCo?e.coN*BOTTLE_OZ:0;
+  const st=tank>0&&idx?aoz*idx/tank:0;const has=id=>(e.items||[]).includes(id);
+  return {artB,idx,tank,aoz,coz,st,water:Math.max(0,tank-aoz-coz-(has("b9")?8:0)-(has("b6")?1:0)),over:aoz+coz>tank,multiArt:arts.length>1,hasCo};
+}
+const fmt=n=>(Math.round(n*100)/100).toString();
+const bt=n=>`${fmt(n)} bottle${n===1?"":"s"}`;
+function tankSvg(e,node){
+  const m=mixOf(e,node);const art=m.artB;
+  const frac=Math.min(1,e.gal/3);const h=118*frac;const top=150-h;
+  let col=art?art.color:"#cfe3ee";
+  return `<svg viewBox="0 0 140 170" aria-hidden="true"><rect x="18" y="16" width="104" height="138" rx="8" fill="#eef3f6" stroke="#8796a2" stroke-width="3"/><rect x="22" y="${top}" width="96" height="${h}" rx="4" fill="${col}" opacity="${art?Math.min(.95,.35+m.st/8):.7}"/><g stroke="#8796a2" stroke-width="1.5"><line x1="110" y1="${150-118/3}" x2="120" y2="${150-118/3}"/><line x1="110" y1="${150-236/3}" x2="120" y2="${150-236/3}"/><line x1="110" y1="32" x2="120" y2="32"/></g><text x="102" y="${153-118/3}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">1</text><text x="102" y="${153-236/3}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">2</text><text x="102" y="35" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">3</text><rect x="56" y="154" width="28" height="12" fill="#4a5560"/></svg>`;
+}
+function coRule(mx){if(!mx.co)return null;return mx.co==="eq"?"about the same amount of co-injection as arterial fluid (within half a bottle)":`${fmt(mx.co[0])} to ${fmt(mx.co[1])} bottles of co-injection`}
+function coOk(e,mx){if(!mx.co)return true;if(mx.co==="eq")return Math.abs(e.coN-e.artN)<=0.5;return e.coN>=mx.co[0]&&e.coN<=mx.co[1]}
+function vShelf(c,node,e){
+  if(e.gal==null){e.gal=node.mix.gal;e.artN=0;e.coN=0.5;e.misses=0;e.items=[];}
+  const lastB=e.last?BOTTLES.find(b=>b.id===e.last):null;
+  let fb="";
+  if(lastB&&!e.lockMsg){const good=lastB.id===node.need.art||lastB.id===node.need.co||lastB.cat==="aid";const neu=lastB.cat==="neutral";
+    const txt=neu?"Dye is optional. It helps you see where the solution goes, but it does not solve a moisture problem.":(node.fb[lastB.id]||"");
+    fb=`<div class="note ${good||neu?"ok":"warn"}"><b>${esc(lastB.name)}, ${esc(lastB.sub)}.</b> ${esc(lastB.desc)}<br>${esc(txt)}${good||neu?"":" Remove it from the tank."}</div>`;}
+  const inTank=id=>e.items.includes(id);
+  const m=mixOf(e,node);const mx=node.mix;const scale=8;
+  const zone=!m.artB?"":m.over?"over":m.st<mx.min?"low":m.st>mx.max?"high":"in";
+  const zoneTxt={"":m.multiArt?"Use only one arterial fluid in the tank.":"Add an arterial fluid to see the strength.",over:"The chemicals take up more than the whole tank. Use a bigger tank or fewer bottles.",low:"Below the range for this case.",high:"Above the range for this case.",in:"In range for this case."}[zone];
+  const stepper=(key,label,val,sub,dis)=>`<div class="stp"><span class="stl">${label}</span><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="sb" data-k="${key}" data-d="-1" ${dis||e.done?"disabled":""} aria-label="Less ${label}">&minus;</button><span class="sv">${val}</span><button class="sb" data-k="${key}" data-d="1" ${dis||e.done?"disabled":""} aria-label="More ${label}">+</button></div><span class="ssub">${sub}</span></div>`;
+  const shelfHtml=`<div class="shelf">${BOTTLES.map(b=>{const t=inTank(b.id);const wrong=e.tries.includes(b.id)&&!t;return `<button class="bottle${t?" in":""}${wrong?" no":""}" data-b="${b.id}" ${t||e.done?"disabled":""} aria-label="${esc(b.name+", "+b.sub)}">${bottleSvg(b)}<span class="bn">${esc(b.name)}</span><span class="bs">${esc(b.sub)}</span>${t?`<span class="bt">In tank</span>`:wrong?`<span class="bt x">Tried</span>`:""}</button>`}).join("")}</div>`;
+  const chips=e.items.length?`<ul class="chips">${e.items.map(id=>{const b=BOTTLES.find(x=>x.id===id);return `<li><span>${esc(b.name)}, ${esc(b.sub)}</span>${e.done?"":`<button class="rm" data-rm="${id}" aria-label="Remove ${esc(b.sub)}">Remove</button>`}</li>`}).join("")}</ul>`:`<p class="muted" style="font-size:.85rem">The tank is empty. Click bottles on the shelf to add them.</p>`;
+  const mixer=`<div class="mixer">
+    <div class="tankimg">${tankSvg(e,node)}</div>
+    <div class="stack" style="gap:12px;min-width:0">
+     <h3>Your tank</h3>
+     ${chips}
+     <div class="stps">
+      ${stepper("gal","Tank size",fmt(e.gal)+" gal",m.tank+" oz",false)}
+      ${stepper("artN","Arterial fluid",bt(e.artN),m.artB?`${m.aoz} oz, index ${m.idx}`:"Add one arterial first",!m.artB)}
+      ${stepper("coN","Co-injection",bt(e.coN),m.hasCo?`${m.coz} oz`:node.need.co?"Add a co-injection first":"None in this tank",!m.hasCo)}
+     </div>
+     <div class="gauge">
+      <div class="gtrack"><div class="gband" style="left:${mx.min/scale*100}%;width:${(mx.max-mx.min)/scale*100}%"></div><div class="gfill ${zone}" style="width:${Math.min(100,m.st/scale*100)}%"></div></div>
+      <div class="gticks">${[0,2,4,6,8].map(v=>`<span>${v}%</span>`).join("")}</div>
+     </div>
+     <div class="strength ${zone}"><b>${m.artB?fmt(m.st)+"%":"--"}</b><span>${zoneTxt}</span></div>
+     <p class="formula">${m.artB?`(${m.aoz} oz arterial x ${m.idx} index) / ${m.tank} oz tank = ${fmt(m.st)}%`:"Strength = (ounces of arterial x index) / total ounces in the tank"}</p>
+     <p class="muted" style="font-size:.82rem">Each bottle is ${BOTTLE_OZ} oz. 1 gallon = 128 oz. Water fills the rest of the tank${m.artB?` (about ${Math.round(m.water)} oz)`:""}. Dye and the vascular conditioner are small additions and don't change the strength. Mild is 1 to 1.99%, moderate is 2 to 3.99%, and strong is 4% and up (EHTP p. 111).</p>
+     ${e.done?"":`<button class="btn" id="lock" ${m.artB&&(node.need.co?m.hasCo:true)&&!m.over&&e.artN>0?"":"disabled"}>Lock in this tank</button>`}
+    </div></div>`;
+  let lockFb="";
+  if(e.lockMsg)lockFb=`<div class="note ${e.done?"ok":"warn"}"><b>On the table:</b> ${esc(e.lockMsg)}</div>`;
+  const WL=WATERLESS[S.cur];if(e.done&&WL)lockFb+=`<div class="tipbox"><span class="tk">Another option: waterless embalming</span><p>${esc(WL.lead)}</p><p class="wt">${esc(WL.title)}:</p><ul>${WL.recipe.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><ul class="wn">${WL.notes.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><p class="src">Source: ${esc(ADAMS)}</p></div>`;
+  return `${shelfHtml}${fb}${mixer}${lockFb}`;
+}
+function vTreat(){
+  const c=C();const node=c.nodes[S.cur];const e=curEntry();const shelf=node.type==="shelf";
+  const last=!shelf&&e.tries.length?node.o[e.tries[e.tries.length-1]]:null;
+  const trail=S.path.filter(p=>p.done).map(p=>{const nd=c.nodes[p.id];return `<li class="${nd.ev==="Things got worse"||p.went!=null?"detour":""}">${esc(nd.t)}${p.went!=null?" (complication)":""}</li>`}).join("");
+  let fb="",nextBtn="";
+  if(!shelf){
+    if(last){
+      if(last.ok)fb=`<div class="note ok"><b>On the table:</b> ${esc(last.c)}</div>`;
+      else if(last.go)fb=`<div class="note bad"><b>On the table:</b> ${esc(last.c)}</div>`;
+      else fb=`<div class="note warn"><b>On the table:</b> ${esc(last.c)} Choose again.</div>`;
+    }
+    if(e.done)nextBtn=`<button class="btn" id="go">${last.end?"Write the case report":"Continue"}</button>`;
+    else if(last&&last.go)nextBtn=`<button class="btn" id="go">Deal with it</button>`;
+  } else if(e.done) nextBtn=`<button class="btn" id="go">Continue</button>`;
+  const body=shelf?vShelf(c,node,e):`<div class="choices list">${node.o.map((o,i)=>{const tried=e.tries.includes(i);return `<button class="choice${e.done&&o.ok?" right":tried&&!o.ok?" wrong":""}" data-i="${i}" ${e.done||tried||(last&&last.go)?"disabled":""}>${esc(o.t)}</button>`}).join("")}</div>`;
+  app.innerHTML=`<section class="two${shelf?" wide":""}">
+   <div class="stack">
+    ${shelf?"":`<div class="chart">${figure(c,{id:"t"})}</div>`}
+    <div class="panel stack"><h3>Steps completed</h3>${trail?`<ol class="trail">${trail}</ol>`:`<p class="muted">None yet.</p>`}</div>
+    <div class="panel stack" style="gap:4px"><h3>Your examination findings</h3><ul class="findings">${REGIONS.map(r=>`<li><span>${r.name}</span><span class="v">${esc(c.exam[r.id].a)}</span></li>`).join("")}</ul></div>
+   </div>
+   <div class="panel stack">
+    <div class="qhead"><h2>${esc(node.t)}</h2><span class="qcount">${c.code}</span></div>
+    ${node.ev?`<span class="event">${esc(node.ev)}</span>`:""}
+    <p class="scene">${esc(node.s)}</p>
+    ${body}${fb}${nextBtn}
+   </div></section>`;
+  if(shelf){
+    app.querySelectorAll(".bottle").forEach(b=>b.onclick=()=>{const id=b.dataset.b;const bo=BOTTLES.find(x=>x.id===id);e.last=id;e.lockMsg=null;
+      if(!e.items.includes(id))e.items.push(id);
+      if(bo.cat!=="neutral"&&bo.cat!=="aid"&&!e.tries.includes(id))e.tries.push(id);
+      keep()});
+    app.querySelectorAll(".rm").forEach(b=>b.onclick=()=>{e.items=e.items.filter(x=>x!==b.dataset.rm);e.last=null;e.lockMsg=null;keep()});
+    app.querySelectorAll(".sb").forEach(b=>b.onclick=()=>{const k=b.dataset.k,d=+b.dataset.d;const lim={gal:[1,3,.5],artN:[0,6,.5],coN:[.5,4,.5]}[k];
+      e[k]=Math.min(lim[1],Math.max(lim[0],Math.round((e[k]+d*lim[2])*100)/100));e.lockMsg=null;keep()});
+    const lock=document.getElementById("lock");
+    if(lock)lock.onclick=()=>{const m=mixOf(e,node);const mx=node.mix;e.last=null;
+      const wrong=e.items.filter(id=>{const bo=BOTTLES.find(x=>x.id===id);return bo.cat!=="neutral"&&bo.cat!=="aid"&&id!==node.need.art&&id!==node.need.co});
+      if(wrong.length){e.misses++;e.lockMsg=`The tank has the wrong chemical for this case: ${wrong.map(id=>BOTTLES.find(x=>x.id===id).sub).join(", ")}. ${node.fb[wrong[0]]||""} Fix the tank and lock it in again.`}
+      else if(m.st<mx.min){e.misses++;e.lockMsg=`${fmt(m.st)}% is too weak. ${mx.low} Adjust the tank and lock it in again.`}
+      else if(m.st>mx.max){e.misses++;e.lockMsg=`${fmt(m.st)}% is too strong. ${mx.high} Adjust the tank and lock it in again.`}
+      else if(!coOk(e,mx)){e.misses++;e.lockMsg=`The strength is right, but ${bt(e.coN)} of co-injection is off for this tank. Use ${coRule(mx)}. ${mx.co==="eq"?"The book recommends equal amounts of co-injection and arterial fluid, and too much humectant dehydrates (EHTP p. 306).":"How much edema corrective to use depends on how severe the edema is (EHTP p. 117)."} Adjust and lock it in again.`}
+      else{e.done=true;e.aid=e.items.includes("b9");e.dye=e.items.includes("b6");e.final={gal:e.gal,artN:e.artN,coN:e.coN,st:m.st,aoz:m.aoz,coz:m.coz,idx:m.idx};e.lockMsg=`${fmt(m.st)}%${node.need.co?` with ${bt(e.coN)} of co-injection`:""} is right for this case. ${mx.good}`}
+      keep()};
+  } else app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;e.tries.push(i);if(node.o[i].ok)e.done=true;keep()});
+  const go=document.getElementById("go");
+  if(go)go.onclick=()=>{
+    if(shelf){S.cur=node.next;render();return}
+    const l=node.o[e.tries[e.tries.length-1]];
+    if(l.go){e.done=true;e.went=e.tries[e.tries.length-1];S.cur=l.go;render()} else if(l.end){S.finished=true;S.step=4;render()} else {S.cur=l.next;render()}};
+}
+const wrongShelf=(p,nd)=>p.tries.filter(id=>id!==nd.need.art&&id!==nd.need.co);
+function scores(){
+  const c=C();const ex=REGIONS.filter(r=>S.exam[r.id]&&S.exam[r.id].tries.length===1).length;
+  const steps=S.path.filter(p=>p.done);
+  const tr=steps.filter(p=>{const nd=c.nodes[p.id];return nd.type==="shelf"?(wrongShelf(p,nd).length===0&&!p.misses):(p.tries.length===1&&p.went==null)}).length;
+  const detours=S.path.filter(p=>c.nodes[p.id].ev==="Things got worse").length;
+  return {ex,exN:REGIONS.length,tr,trN:steps.length,detours};
+}
+function words(s){return s.trim().split(/\s+/).filter(Boolean).length}
+const MINS={diff:25,feedback:10};
+function reportText(){
+  const c=C();const s=scores();const d=new Date();const bn=id=>{const b=BOTTLES.find(x=>x.id===id);return b.name+" ("+b.sub+")"};
+  let t=`MRTS 2244 WEEK 12 LAB: MOISTURE CASE REPORT\n`;
+  t+=`Student: ${S.name.trim()}\nCase file: ${c.code}${S.ci===hashName(S.name)?" (assigned case)":" (extra practice case)"}\nCompleted: ${d.toLocaleString()}\n`;
+  const tm=S.path.filter(p=>p.done&&c.nodes[p.id].type==="shelf").reduce((a,p)=>a+(p.misses||0),0);
+  t+=`SCORES: Exam ${s.ex}/${s.exN} on first check (${S.examRound||1} check${(S.examRound||1)>1?"s":""}) | Decisions ${s.tr}/${s.trN} on first try | Complications caused ${s.detours} | Tanks rejected ${tm}\n\n`;
+  t+=`DECEDENT\n`;Object.entries(c.file).forEach(([k,v])=>t+=`${k}: ${v}\n`);
+  t+=`Family request: "${c.request}"\n\n`;
+  t+=`PRE-EMBALMING ANALYSIS (correct on first check: ${s.ex} of ${s.exN})\n`;
+  REGIONS.forEach(r=>{const st=S.exam[r.id];t+=`- ${r.name}: ${c.exam[r.id].a}`;if(st.tries.length>1)t+=` [${st.tries.length} attempts; also chose ${st.tries.slice(0,-1).join(", ")}]`;t+=`\n`});
+  t+=`\nEMBALMING DECISIONS (correct on first try: ${s.tr} of ${s.trN}; complications caused by choices: ${s.detours})\n`;
+  S.path.filter(p=>p.done).forEach((p,i)=>{const nd=c.nodes[p.id];
+    t+=`${i+1}. ${nd.t}${nd.ev==="Things got worse"?" (complication from an earlier choice)":""}\n`;
+    if(nd.type==="shelf"){const f=p.final;t+=`   Chemicals: ${bn(nd.need.art)}${nd.need.co?" + "+bn(nd.need.co):""}${p.aid?" + vascular conditioner":""}${p.dye?" + active dye":""}\n   Mix: ${fmt(f.gal)} gal tank (${f.gal*128} oz), ${bt(f.artN)} arterial (${f.aoz} oz)${nd.need.co?`, ${bt(f.coN)} co-injection (${f.coz} oz)`:""}\n   Strength: (${f.aoz} x ${f.idx}) / ${f.gal*128} = ${fmt(f.st)}%\n`;if(p.misses)t+=`   Tanks locked in wrong first: ${p.misses}\n`;const w=wrongShelf(p,nd);if(w.length)t+=`   Wrong bottles tried: ${w.map(bn).join(" | ")}\n`;}
+    else if(p.went!=null){t+=`   Chose: ${nd.o[p.went].t}\n   Result: ${nd.o[p.went].c} This caused a complication.\n`;if(p.tries.length>1)t+=`   Earlier choices: ${p.tries.slice(0,-1).map(j=>nd.o[j].t).join(" | ")}\n`;}
+    else{t+=`   Final: ${nd.o.find(o=>o.ok).t}\n`;if(p.tries.length>1)t+=`   Earlier choices: ${p.tries.slice(0,-1).map(j=>nd.o[j].t).join(" | ")}\n`;}});
+  const f=(k,blank)=>S.ref[k].trim()||blank;
+  t+=`\nWHAT I WOULD DO DIFFERENTLY\n${f("diff","[Not written yet]")}\n`;
+  t+=`\nMY FEEDBACK ON THIS LAB\n${f("feedback","[Not written yet]")}\n`;
+  return t;
+}
+function missing(){return Object.entries(MINS).filter(([k,n])=>words(S.ref[k])<n)}
+function vReport(){
+  const s=scores();
+  const box=(k,label,help)=>`<div class="stack" style="gap:6px"><label for="r_${k}">${label}</label>${help?`<p class="muted" style="font-size:.88rem">${help}</p>`:""}<textarea id="r_${k}" data-k="${k}">${esc(S.ref[k])}</textarea><span class="progress" id="w_${k}">${words(S.ref[k])} of ${MINS[k]} words</span></div>`;
+  app.innerHTML=`<section class="stack">
+   <div class="panel stack">
+    <h2>Case report</h2>
+    <div class="score"><div><b>${s.ex}/${s.exN}</b><small>Analysis, first check</small></div><div><b>${s.tr}/${s.trN}</b><small>Decisions, first try</small></div><div><b>${s.detours}</b><small>Complications caused</small></div></div>
+    ${box("diff","1. What would you do differently?","Think beyond the choices you were given. What would you add, change, or try on this case if you were in the prep room? Products, techniques, timing, anything.")}
+    ${box("feedback","2. Your feedback on this lab","What helped you learn? What was confusing? What would you change about this assignment?")}
+   </div>
+   <div class="reportbox">
+    <div class="bar2"><span>Your report: copy all of this into Blackboard</span><span class="row" style="gap:10px"><span id="chint" style="font-size:.82rem">${missing().length?"Finish both boxes to copy":""}</span><button class="btn" id="copy" ${missing().length?"disabled":""}>Copy report</button></span></div>
+    <pre class="report" id="rep">${esc(reportText())}</pre>
+   </div>
+   <div class="note warn" id="cmsg" hidden></div>
+   <div class="panel stack" id="another" ${S.copied?"":"hidden"}><h3>Try another case</h3><p class="muted">Paste this report into Blackboard first. Starting a new case clears it.</p><div class="row">${CASES.map((cc,i)=>i===S.ci?"":`<button class="btn ghost" data-ci="${i}">Case ${cc.code}</button>`).join("")}</div></div>
+   <p class="muted">Paste the report into the Week 12 Lab submission in Blackboard. If the copy button doesn't work, click in the report, press Ctrl+A (Cmd+A on a Mac) to select it, then Ctrl+C to copy.</p>
+   <button class="btn ghost" id="back">Back to the last decision</button>
+  </section>`;
+  const cm=document.getElementById("cmsg");
+  app.querySelectorAll("textarea[data-k]").forEach(ta=>ta.addEventListener("input",()=>{const k=ta.dataset.k;S.ref[k]=ta.value;document.getElementById("w_"+k).textContent=`${words(S.ref[k])} of ${MINS[k]} words`;document.getElementById("rep").textContent=reportText();const m=missing().length;document.getElementById("copy").disabled=!!m;document.getElementById("chint").textContent=m?"Finish both boxes to copy":"";if(!m&&cm.className.includes("warn"))cm.hidden=true}));
+  document.getElementById("copy").onclick=()=>{
+    const m=missing();
+    if(m.length){const names={diff:"what you would do differently",feedback:"your feedback"};cm.className="note warn";cm.textContent="Finish these before you copy: "+m.map(([k,n])=>`${names[k]} (${n} words minimum)`).join(", ")+".";cm.hidden=false;document.getElementById("r_"+m[0][0]).focus();return}
+    const txt=reportText();const done=()=>{cm.className="note ok";cm.textContent="Copied. Paste it into the Week 12 Lab submission in Blackboard.";cm.hidden=false;S.copied=true;document.getElementById("another").hidden=false};
+    try{navigator.clipboard.writeText(txt).then(done,()=>sel(cm))}catch(e){sel(cm)}};
+  document.getElementById("back").onclick=()=>{S.step=3;render()};
+  app.querySelectorAll("#another [data-ci]").forEach(b=>b.onclick=()=>{S.ci=+b.dataset.ci;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.copied=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()});
+}
+function sel(m){const pre=document.getElementById("rep");const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);m.className="note ok";m.textContent="The report is selected. Press Ctrl+C (Cmd+C on a Mac) to copy it.";m.hidden=false;S.copied=true;const a=document.getElementById("another");if(a)a.hidden=false}
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="a"&&document.activeElement&&document.activeElement.tagName!=="TEXTAREA"&&document.activeElement.tagName!=="INPUT"&&document.getElementById("rep")){e.preventDefault();const r=document.createRange();r.selectNodeContents(document.getElementById("rep"));const s=getSelection();s.removeAllRanges();s.addRange(r)}});
+render();
+</script>
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script></body></html>
