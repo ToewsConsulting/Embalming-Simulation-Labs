@@ -149,7 +149,7 @@ details.calc summary{font-family:var(--f-display);font-weight:600;font-size:1.1r
 .gtrack{position:relative;height:16px;background:var(--surface);border:1px solid var(--line);border-radius:3px;overflow:hidden}
 .gband{position:absolute;top:0;bottom:0;background:var(--ok-soft);border-left:2px solid var(--ok);border-right:2px solid var(--ok)}
 .gfill{position:absolute;left:0;top:4px;bottom:4px;background:var(--muted);border-radius:0 2px 2px 0;transition:width .2s}
-.gfill.in{background:var(--ok)}.gfill.low,.gfill.high,.gfill.over{background:var(--warn)}
+.gfill.open{background:var(--muted)}.gfill.in{background:var(--ok)}.gfill.low,.gfill.high,.gfill.over{background:var(--warn)}
 .gticks{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.68rem;color:var(--muted)}
 .strength{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .strength b{font-family:var(--f-display);font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
@@ -172,6 +172,8 @@ details.calc summary{font-family:var(--f-display);font-weight:600;font-size:1.1r
 .casepick .cd{font-size:.82rem;color:var(--muted)}
 .casepick:hover{border-color:var(--accent)}
 .casepick.on{border-color:var(--accent);background:var(--bg);box-shadow:inset 0 0 0 1px var(--accent)}
+.steps li.nav{cursor:pointer}
+.steps li.nav:hover,.steps li.nav:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
 </style>
 
 <div class="wrap">
@@ -239,7 +241,7 @@ const CASES=[
    {t:"Start with a mild first gallon to clear the blood congestion and discolorations, then switch to stronger solution for the rest.",ok:1,next:"a2",c:"With heart failure, a mild first gallon clears the congestion. Stronger solutions follow to meet the preservative demand of the edema. (EHTP p. 319)"},
    {t:"Use the strong solution from the very first ounce.",c:"The strong solution set the blood in place before it drained. The face and neck stayed congested and dark. (EHTP p. 319)"},
    {t:"Run a full gallon of pre-injection fluid first.",c:"In renal failure, pre-injection can make tissues swell easily. The face and hands puffed up. (EHTP p. 336)"}]},
-  a2:{type:"shelf",waterless:1,t:"Trunk tank",s:"After the mild first gallon, build the strong tank for the trunk and legs. Click bottles to add them. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b3",co:"b5"},next:"aM",mix:{gal:2,min:4,max:6,co:[1,3],good:"Strong enough to counteract the secondary dilution from the edema and the nitrogenous wastes from kidney failure. (EHTP p. 308; p. 313)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206) Kidney wastes also neutralize formaldehyde. (EHTP p. 313)",high:"It firmed, but it wasted fluid and started to gray the tissues."},fb:{
+  a2:{type:"shelf",waterless:1,sd:1,t:"Trunk tank",s:"After the mild first gallon, build the strong tank for the trunk and legs. Click bottles to add them. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b3",co:"b5"},next:"aM",mix:{gal:2,min:4,max:6,co:[1,3],good:"Strong enough to counteract the secondary dilution from the edema and the nitrogenous wastes from kidney failure. (EHTP p. 308; p. 313)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206) Kidney wastes also neutralize formaldehyde. (EHTP p. 313)",high:"It firmed, but it wasted fluid and started to gray the tissues."},fb:{
    b9:"Not for this case. With kidney failure, pre-injection may not be advised because the tissues swell easily. (EHTP p. 336)",
    b1:"This adds moisture to tissue that is already waterlogged. The face and legs would swell more. (EHTP p. 309)",
    b2:"A medium index gets diluted by all the extra tissue water. With kidney failure, a high-index fluid is advised. (EHTP p. 313)",
@@ -392,7 +394,7 @@ const CASES=[
    {t:"Both common carotids and the right internal jugular for the trunk, arms, and head, plus the femoral arteries for the legs",ok:1,next:"c2h",c:"Both carotids give you restricted cervical injection, and the femorals give you separate control of the legs. The carotids are rarely sclerotic in an older body. (EHTP p. 183; p. 315)"},
    {t:"Radial arteries only",c:"The radials are small and far from the legs and face. You had no control of distribution."},
    {t:"Right femoral only, toward the head",c:"Injecting toward the head from the femoral sends solution to both sides of the face at once. That is the opposite of what a swollen face needs."}]},
-  c2h:{type:"shelf",t:"Trunk, arms, and head tank",s:"Build the tank for the trunk, arms, and head. Look at your findings. You need one arterial fluid. Decide whether this tank needs a co-injection. Then mix it to the right strength.",need:{art:"b2",co:null},next:"c2l",mix:{gal:2,min:4,max:5,good:"Strong enough to counteract the secondary dilution from the edema without being harsh on the face. (EHTP p. 308)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"Too strong for the face. It firmed and grayed the swollen tissue without bringing it down."},fb:{
+  c2h:{type:"shelf",sd:1,t:"Trunk, arms, and head tank",s:"Build the tank for the trunk, arms, and head. Look at your findings. You need one arterial fluid. Decide whether this tank needs a co-injection. Then mix it to the right strength.",need:{art:"b2",co:null},next:"c2l",mix:{gal:2,min:4,max:5,good:"Strong enough to counteract the secondary dilution from the edema without being harsh on the face. (EHTP p. 308)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"Too strong for the face. It firmed and grayed the swollen tissue without bringing it down."},fb:{
    b9:"Optional. It can help condition the vessels in an older body. It won't change the solid edema.",
    b1:"Its built-in humectants add moisture. The face is already full of fluid inside the cells. Use a general-purpose fluid mixed to at least 4%.",
    b2:"Right pick. A general-purpose fluid mixed to at least 4% counters the secondary dilution without the harshness of a high index on the face.",
@@ -401,7 +403,7 @@ const CASES=[
    b5:"Edema corrective draws fluid out from between the cells. Solid edema is inside the cells and doesn't respond, so it won't help the face. (EHTP p. 307)",
    b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
    b8:"Tissue builder goes in by hypodermic after arterial injection, never in the tank. (EHTP p. 118)"}},
-  c2l:{type:"shelf",waterless:1,t:"Leg tank",s:"Now build a separate tank for the swollen legs. You need one arterial fluid and one co-injection. Then mix it to the right strength.",need:{art:"b3",co:"b5"},next:"c4",mix:{gal:1,min:4,max:6,co:[0.5,1.5],good:"Strong enough to counteract the secondary dilution from the pitting edema in the legs. (EHTP p. 308; p. 309)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"It firmed the legs, but you wasted fluid you didn't need."},fb:{
+  c2l:{type:"shelf",waterless:1,sd:1,t:"Leg tank",s:"Now build a separate tank for the swollen legs. You need one arterial fluid and one co-injection. Then mix it to the right strength.",need:{art:"b3",co:"b5"},next:"c4",mix:{gal:1,min:4,max:6,co:[0.5,1.5],good:"Strong enough to counteract the secondary dilution from the pitting edema in the legs. (EHTP p. 308; p. 309)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"It firmed the legs, but you wasted fluid you didn't need."},fb:{
    b9:"It can help solution move past poor circulation in a bedfast patient. It does not replace the edema corrective.",
    b1:"This adds moisture to legs that are already swollen. They would never firm.",
    b2:"A medium index gets diluted by the fluid in the legs. They would stay soft.",
@@ -548,7 +550,12 @@ const app=document.getElementById("app");
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function hashName(n){let h=0;for(const ch of n.trim().toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return h%CASES.length}
 const C=()=>CASES[S.ci];
-function setSteps(){document.querySelectorAll("#steps li").forEach(li=>{const s=+li.dataset.s;li.className=s===S.step?"on":s<S.step?"done":""})}
+const SECT=["Sign in","Case file","Examine","Embalm","Report"];
+function secDone(k){if(k===0)return !!S.mode;if(k===1)return !!S.mode;if(k===2)return !!S.mode&&examDone();if(k===3)return !!S.finished;if(k===4)return !!S.copied;return false}
+function setSteps(){const rl=document.querySelector('#steps li[data-s="4"]');if(rl)rl.textContent=S.mode==="fun"?"Finish":"Report";
+ document.querySelectorAll("#steps li").forEach(li=>{const k=+li.dataset.s;const open=(!!S.mode&&(k!==3||examDone()))||k===0;if(k===3&&S.mode&&!examDone())li.title="Finish the exam first";else li.removeAttribute("title");li.className=(k===S.step?"on":secDone(k)?"done":"")+(open?" nav":"");li.tabIndex=open?0:-1;li.setAttribute("role","button");li.setAttribute("aria-current",k===S.step?"step":"false");
+  li.onclick=()=>{if(!open||k===S.step)return;S.step=k;render()};li.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();li.onclick()}}})}
+function startCase(ci){S.ci=ci;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.copied=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()}
 function render(top){setSteps();[vSignIn,vFile,vExam,vTreat,vReport][S.step]();if(top!==false)window.scrollTo({top:0})}
 function keep(){const y=window.scrollY;render(false);window.scrollTo({top:y})}
 
@@ -560,16 +567,19 @@ function vSignIn(){
     <h2>Pre-embalming analysis and treatment: moisture</h2>
     <p>Choose a case file below. Examine the body at each marked point and identify what you find. Then embalm the case, making each decision as it comes up. Things won't always go to plan.</p>
     <p class="muted">Wrong choices show you what would happen on the table. Some send you down a harder path you have to fix. Every choice is recorded in your case report.</p>
-    <p class="muted">At the end you'll copy your case report and paste it into the Week 12 Lab submission in Blackboard.</p>
+    ${S.mode?`<div class="note warn">You're already working on Case ${esc(C().code.slice(-1))}. Use the steps at the top to keep going. Choosing an option below starts over and clears your progress.</div>`:""}
     <div class="stack" style="gap:6px"><span class="qlabel" style="font-weight:600">Choose your case</span><div class="cases" role="radiogroup" aria-label="Choose your case">${CASES.map((cc,i)=>`<button class="casepick${S.pick===i?" on":""}" role="radio" aria-checked="${S.pick===i}" data-pick="${i}"><span class="cn">Case ${cc.code.slice(-1)}</span><span class="cd">${esc(cc.file.Decedent)}. ${esc(cc.file.Cause)}</span></button>`).join("")}</div></div>
-    <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name)}"></div>
-    <button class="btn" id="go" ${S.name.trim().length<3||S.pick==null?"disabled":""}>Open case file</button>
+    <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name.startsWith("Practice ")?"":S.name)}"><span class="muted" style="font-size:.85rem">Needed for an assignment. Optional for fun.</span></div>
+    <p style="font-weight:600">Are you completing this for an assignment or just playing for fun?</p>
+    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.name.trim().length<3||S.pick==null?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun" ${S.pick==null?"disabled":""}>Just for fun</button></div>
+    <p class="muted" style="font-size:.88rem">For an assignment, you'll finish with a case report to paste into the Week 12 Lab submission in Blackboard. For fun, you'll finish with your scores and can try another case.</p>
    </div></section>`;
   const nm=document.getElementById("nm"),go=document.getElementById("go");
-  const ready=()=>S.name.trim().length>=3&&S.pick!=null;
-  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=!ready()});
-  app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.pick;app.querySelectorAll("[data-pick]").forEach(x=>{const on=+x.dataset.pick===S.pick;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});go.disabled=!ready()});
-  go.onclick=()=>{S.ci=S.pick;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()};
+  const fun=document.getElementById("fun");const upd=()=>{go.disabled=S.name.trim().length<3||S.pick==null;fun.disabled=S.pick==null};
+  nm.addEventListener("input",()=>{S.name=nm.value;upd()});
+  app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.pick;app.querySelectorAll("[data-pick]").forEach(x=>{const on=+x.dataset.pick===S.pick;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});upd()});
+  go.onclick=()=>{S.mode="assign";startCase(S.pick)};
+  fun.onclick=()=>{S.mode="fun";if(S.name.trim().length<1)S.name="Practice "+Math.floor(Math.random()*1e6);startCase(S.pick)};
 }
 
 function vFile(){
@@ -661,11 +671,11 @@ function vShelf(c,node,e){
     const txt=neu?"Dye is optional. It helps you see where the solution goes, but it does not solve a moisture problem.":(node.fb[lastB.id]||"");
     fb=`<div class="note ${good||neu?"ok":"warn"}"><b>${esc(lastB.name)}, ${esc(lastB.sub)}.</b> ${esc(lastB.desc)}<br>${esc(txt)}${good||neu?"":" Remove it from the tank."}</div>`;}
   const inTank=id=>e.items.includes(id);
-  const m=mixOf(e,node);const mx=node.mix;const scale=8;
-  const zone=!m.artB?"":m.over?"over":m.st<mx.min?"low":m.st>mx.max?"high":"in";
-  const zoneTxt={"":m.multiArt?"Use only one arterial fluid in the tank.":"Add an arterial fluid to see the strength.",over:"The chemicals take up more than the whole tank. Use a bigger tank or fewer bottles.",low:"Below the range for this case.",high:"Above the range for this case.",in:"In range for this case."}[zone];
+  const m=mixOf(e,node);const mx=node.mix;const scale=8;const showRange=e.misses>0||e.done;
+  const zone=!m.artB?"":m.over?"over":!showRange?"open":m.st<mx.min?"low":m.st>mx.max?"high":"in";
+  const zoneTxt={"":m.multiArt?"Use only one arterial fluid in the tank.":"Add an arterial fluid to see the strength.",over:"The chemicals take up more than the whole tank. Use a bigger tank or fewer bottles.",open:"Lock in the tank when you think the strength is right for this case.",low:"Below the range for this case.",high:"Above the range for this case.",in:"In range for this case."}[zone];
   const stepper=(key,label,val,sub,dis)=>`<div class="stp"><span class="stl">${label}</span><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="sb" data-k="${key}" data-d="-1" ${dis||e.done?"disabled":""} aria-label="Less ${label}">&minus;</button><span class="sv">${val}</span><button class="sb" data-k="${key}" data-d="1" ${dis||e.done?"disabled":""} aria-label="More ${label}">+</button></div><span class="ssub">${sub}</span></div>`;
-  const shelfHtml=`<div class="shelf">${BOTTLES.map(b=>{const t=inTank(b.id);const wrong=e.tries.includes(b.id)&&!t;return `<button class="bottle${t?" in":""}${wrong?" no":""}" data-b="${b.id}" ${t||e.done?"disabled":""} aria-label="${esc(b.name+", "+b.sub)}">${bottleSvg(b)}<span class="bn">${esc(b.name)}</span><span class="bs">${esc(b.sub)}</span>${t?`<span class="bt">In tank</span>`:wrong?`<span class="bt x">Tried</span>`:""}</button>`}).join("")}</div>`;
+  const shelfHtml=`<div class="shelf">${BOTTLES.filter(b=>b.cat!=="other").map(b=>{const t=inTank(b.id);const wrong=e.tries.includes(b.id)&&!t;return `<button class="bottle${t?" in":""}${wrong?" no":""}" data-b="${b.id}" ${t||e.done?"disabled":""} aria-label="${esc(b.name+", "+b.sub)}">${bottleSvg(b)}<span class="bn">${esc(b.name)}</span><span class="bs">${esc(b.sub)}</span>${t?`<span class="bt">In tank</span>`:wrong?`<span class="bt x">Tried</span>`:""}</button>`}).join("")}</div>`;
   const chips=e.items.length?`<ul class="chips">${e.items.map(id=>{const b=BOTTLES.find(x=>x.id===id);return `<li><span>${esc(b.name)}, ${esc(b.sub)}</span>${e.done?"":`<button class="rm" data-rm="${id}" aria-label="Remove ${esc(b.sub)}">Remove</button>`}</li>`}).join("")}</ul>`:`<p class="muted" style="font-size:.85rem">The tank is empty. Click bottles on the shelf to add them.</p>`;
   const mixer=`<div class="mixer">
     <div class="tankimg">${tankSvg(e,node)}</div>
@@ -678,18 +688,19 @@ function vShelf(c,node,e){
       ${stepper("coN","Co-injection",bt(e.coN),m.hasCo?`${m.coz} oz`:node.need.co?"Add a co-injection first":"None in this tank",!m.hasCo)}
      </div>
      <div class="gauge">
-      <div class="gtrack"><div class="gband" style="left:${mx.min/scale*100}%;width:${(mx.max-mx.min)/scale*100}%"></div><div class="gfill ${zone}" style="width:${Math.min(100,m.st/scale*100)}%"></div></div>
+      <div class="gtrack">${showRange?`<div class="gband" style="left:${mx.min/scale*100}%;width:${(mx.max-mx.min)/scale*100}%"></div>`:""}<div class="gfill ${zone}" style="width:${Math.min(100,m.st/scale*100)}%"></div></div>
       <div class="gticks">${[0,2,4,6,8].map(v=>`<span>${v}%</span>`).join("")}</div>
      </div>
      <div class="strength ${zone}"><b>${m.artB?fmt(m.st)+"%":"--"}</b><span>${zoneTxt}</span></div>
      <p class="formula">${m.artB?`(${m.aoz} oz arterial x ${m.idx} index) / ${m.tank} oz tank = ${fmt(m.st)}%`:"Strength = (ounces of arterial x index) / total ounces in the tank"}</p>
-     <p class="muted" style="font-size:.82rem">Each bottle is ${BOTTLE_OZ} oz. 1 gallon = 128 oz. Water fills the rest of the tank${m.artB?` (about ${Math.round(m.water)} oz)`:""}. Dye and the vascular conditioner are small additions and don't change the strength. Mild is 1 to 1.99%, moderate is 2 to 3.99%, and strong is 4% and up (EHTP p. 111).</p>
+     <p class="muted" style="font-size:.82rem">Each bottle is ${BOTTLE_OZ} oz. 1 gallon = 128 oz. Water fills the rest of the tank${m.artB?` (about ${Math.round(m.water)} oz)`:""}. Dye and the vascular conditioner are small additions and don't change the strength.</p>
      ${e.done?"":`<button class="btn" id="lock" ${m.artB&&(node.need.co?m.hasCo:true)&&!m.over&&e.artN>0?"":"disabled"}>Lock in this tank</button>`}
     </div></div>`;
   let lockFb="";
   if(e.lockMsg)lockFb=`<div class="note ${e.done?"ok":"warn"}"><b>On the table:</b> ${esc(e.lockMsg)}</div>`;
   const WL=WATERLESS[S.cur];if(e.done&&WL)lockFb+=`<div class="tipbox"><span class="tk">Another option: waterless embalming</span><p>${esc(WL.lead)}</p><p class="wt">${esc(WL.title)}:</p><ul>${WL.recipe.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><ul class="wn">${WL.notes.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><p class="src">Source: ${esc(ADAMS)}</p></div>`;
-  return `${shelfHtml}${fb}${mixer}${lockFb}`;
+  const sd=node.sd?`<div class="tipbox"><span class="tk">Edema case: think about secondary dilution</span><p>Once it's injected, your solution mixes with the fluid already in the tissues and gets weaker. With edema there's a lot of extra fluid, so the secondary dilution is great. Mix strong enough to counteract it. (EHTP p. 206; p. 308)</p></div>`:"";
+  return `${sd}${shelfHtml}${fb}${mixer}${lockFb}`;
 }
 function vTreat(){
   const c=C();const node=c.nodes[S.cur];const e=curEntry();const shelf=node.type==="shelf";
@@ -761,7 +772,7 @@ function reportText(){
   t+=`DECEDENT\n`;Object.entries(c.file).forEach(([k,v])=>t+=`${k}: ${v}\n`);
   t+=`Family request: "${c.request}"\n\n`;
   t+=`PRE-EMBALMING ANALYSIS (correct on first check: ${s.ex} of ${s.exN})\n`;
-  REGIONS.forEach(r=>{const st=S.exam[r.id];t+=`- ${r.name}: ${c.exam[r.id].a}`;if(st.tries.length>1)t+=` [${st.tries.length} attempts; also chose ${st.tries.slice(0,-1).join(", ")}]`;t+=`\n`});
+  REGIONS.forEach(r=>{const st=S.exam[r.id]||{tries:[]};t+=`- ${r.name}: ${c.exam[r.id].a}`;if(st.tries.length>1)t+=` [${st.tries.length} attempts; also chose ${st.tries.slice(0,-1).join(", ")}]`;t+=`\n`});
   t+=`\nEMBALMING DECISIONS (correct on first try: ${s.tr} of ${s.trN}; complications caused by choices: ${s.detours})\n`;
   S.path.filter(p=>p.done).forEach((p,i)=>{const nd=c.nodes[p.id];
     t+=`${i+1}. ${nd.t}${nd.ev==="Things got worse"?" (complication from an earlier choice)":""}\n`;
@@ -774,18 +785,31 @@ function reportText(){
   return t;
 }
 function missing(){return Object.entries(MINS).filter(([k,n])=>words(S.ref[k])<n)}
+function vFunEnd(){
+  const s=scores();const c=C();
+  app.innerHTML=`<section class="stack"><div class="panel stack">
+   <h2>${S.finished?`Nice work. You finished Case ${esc(c.code.slice(-1))}.`:`Your scores so far on Case ${esc(c.code.slice(-1))}`}</h2>
+   <div class="score"><div><b>${s.ex}/${s.exN}</b><small>Analysis, first check</small></div><div><b>${s.tr}/${s.trN}</b><small>Decisions, first try</small></div><div><b>${s.detours}</b><small>Complications caused</small></div></div>
+   <p class="muted">You played for fun, so there's no report to submit. If this is for a grade, go back to Sign in and choose For an assignment.</p>
+   <h3>Try another case</h3><div class="row" style="flex-wrap:wrap;gap:8px">${CASES.map((cc,i)=>`<button class="btn ${i===S.ci?"":"ghost"}" data-ci="${i}">Case ${esc(cc.code.slice(-1))}${i===S.ci?" again":""}</button>`).join("")}</div>
+  </div></section>`;
+  app.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>startCase(+b.dataset.ci));
+}
+const unfinished=()=>[2,3].filter(k=>!secDone(k)).map(k=>SECT[k]);
+const copyHint=()=>{const u=unfinished();return u.length?"Finish first: "+u.join(", "):missing().length?"Finish both boxes to copy":""};
 function vReport(){
+  if(S.mode==="fun")return vFunEnd();
   const s=scores();
   const box=(k,label,help)=>`<div class="stack" style="gap:6px"><label for="r_${k}">${label}</label>${help?`<p class="muted" style="font-size:.88rem">${help}</p>`:""}<textarea id="r_${k}" data-k="${k}">${esc(S.ref[k])}</textarea><span class="progress" id="w_${k}">${words(S.ref[k])} of ${MINS[k]} words</span></div>`;
   app.innerHTML=`<section class="stack">
    <div class="panel stack">
-    <h2>Case report</h2>
+    <h2>Case report</h2>${unfinished().length?`<div class="note warn">You haven't finished ${unfinished().join(" and ")}. Use the steps at the top to go back. You can copy your report once both are done.</div>`:""}
     <div class="score"><div><b>${s.ex}/${s.exN}</b><small>Analysis, first check</small></div><div><b>${s.tr}/${s.trN}</b><small>Decisions, first try</small></div><div><b>${s.detours}</b><small>Complications caused</small></div></div>
     ${box("diff","1. What would you do differently?","Think beyond the choices you were given. What would you add, change, or try on this case if you were in the prep room? Products, techniques, timing, anything.")}
     ${box("feedback","2. Your feedback on this lab","What helped you learn? What was confusing? What would you change about this assignment?")}
    </div>
    <div class="reportbox">
-    <div class="bar2"><span>Your report: copy all of this into Blackboard</span><span class="row" style="gap:10px"><span id="chint" style="font-size:.82rem">${missing().length?"Finish both boxes to copy":""}</span><button class="btn" id="copy" ${missing().length?"disabled":""}>Copy report</button></span></div>
+    <div class="bar2"><span>Your report: copy all of this into Blackboard</span><span class="row" style="gap:10px"><span id="chint" style="font-size:.82rem">${copyHint()}</span><button class="btn" id="copy" ${copyHint()?"disabled":""}>Copy report</button></span></div>
     <pre class="report" id="rep">${esc(reportText())}</pre>
    </div>
    <div class="note warn" id="cmsg" hidden></div>
@@ -794,14 +818,15 @@ function vReport(){
    <button class="btn ghost" id="back">Back to the last decision</button>
   </section>`;
   const cm=document.getElementById("cmsg");
-  app.querySelectorAll("textarea[data-k]").forEach(ta=>ta.addEventListener("input",()=>{const k=ta.dataset.k;S.ref[k]=ta.value;document.getElementById("w_"+k).textContent=`${words(S.ref[k])} of ${MINS[k]} words`;document.getElementById("rep").textContent=reportText();const m=missing().length;document.getElementById("copy").disabled=!!m;document.getElementById("chint").textContent=m?"Finish both boxes to copy":"";if(!m&&cm.className.includes("warn"))cm.hidden=true}));
+  app.querySelectorAll("textarea[data-k]").forEach(ta=>ta.addEventListener("input",()=>{const k=ta.dataset.k;S.ref[k]=ta.value;document.getElementById("w_"+k).textContent=`${words(S.ref[k])} of ${MINS[k]} words`;document.getElementById("rep").textContent=reportText();const h=copyHint();document.getElementById("copy").disabled=!!h;document.getElementById("chint").textContent=h;if(!h&&cm.className.includes("warn"))cm.hidden=true}));
   document.getElementById("copy").onclick=()=>{
+    if(unfinished().length){cm.className="note warn";cm.textContent="Finish "+unfinished().join(" and ")+" before you copy.";cm.hidden=false;return}
     const m=missing();
     if(m.length){const names={diff:"what you would do differently",feedback:"your feedback"};cm.className="note warn";cm.textContent="Finish these before you copy: "+m.map(([k,n])=>`${names[k]} (${n} words minimum)`).join(", ")+".";cm.hidden=false;document.getElementById("r_"+m[0][0]).focus();return}
     const txt=reportText();const done=()=>{cm.className="note ok";cm.textContent="Copied. Paste it into the Week 12 Lab submission in Blackboard.";cm.hidden=false;S.copied=true;document.getElementById("another").hidden=false};
     try{navigator.clipboard.writeText(txt).then(done,()=>sel(cm))}catch(e){sel(cm)}};
   document.getElementById("back").onclick=()=>{S.step=3;render()};
-  app.querySelectorAll("#another [data-ci]").forEach(b=>b.onclick=()=>{S.ci=+b.dataset.ci;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.copied=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()});
+  app.querySelectorAll("#another [data-ci]").forEach(b=>b.onclick=()=>startCase(+b.dataset.ci));
 }
 function sel(m){const pre=document.getElementById("rep");const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);m.className="note ok";m.textContent="The report is selected. Press Ctrl+C (Cmd+C on a Mac) to copy it.";m.hidden=false;S.copied=true;const a=document.getElementById("another");if(a)a.hidden=false}
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="a"&&document.activeElement&&document.activeElement.tagName!=="TEXTAREA"&&document.activeElement.tagName!=="INPUT"&&document.getElementById("rep")){e.preventDefault();const r=document.createRange();r.selectNodeContents(document.getElementById("rep"));const s=getSelection();s.removeAllRanges();s.addRange(r)}});
