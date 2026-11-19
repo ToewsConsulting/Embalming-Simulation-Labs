@@ -583,17 +583,19 @@ function vSignIn(){
     <p class="muted">Wrong choices show you what would happen on the table. Some send you down a harder path you have to fix. Every choice is recorded in your case report.</p>
     ${S.mode?`<div class="note warn">You're already working on Case ${esc(C().code.slice(-1))}. Use the steps at the top to keep going. Choosing an option below starts over and clears your progress.</div>`:""}
     <div class="stack" style="gap:6px"><span class="qlabel" style="font-weight:600">Choose your case</span><div class="cases" role="radiogroup" aria-label="Choose your case">${CASES.map((cc,i)=>`<button class="casepick${S.pick===i?" on":""}" role="radio" aria-checked="${S.pick===i}" data-pick="${i}"><span class="cn">Case ${cc.code.slice(-1)}</span><span class="cd">${esc(cc.file.Decedent)}. ${esc(cc.file.Cause)}</span></button>`).join("")}</div></div>
-    <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name.startsWith("Practice ")?"":S.name)}"><span class="muted" style="font-size:.85rem">Needed for an assignment. Optional for fun.</span></div>
-    <p style="font-weight:600">Are you completing this for an assignment or just playing for fun?</p>
-    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.name.trim().length<3||S.pick==null?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun" ${S.pick==null?"disabled":""}>Just for fun</button></div>
+    <p class="qlabel" style="font-weight:600">Are you completing this for an assignment or just playing for fun?</p>
+    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.pick==null?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun" ${S.pick==null?"disabled":""}>Just for fun</button></div>
+    <div class="stack" id="namebox" style="gap:8px" ${S.askName?"":"hidden"}><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name.startsWith("Practice ")?"":S.name)}"><button class="btn" id="start" ${S.name.trim().length<3||S.name.startsWith("Practice ")||S.pick==null?"disabled":""}>Start the lab</button></div>
     <p class="muted" style="font-size:.88rem">For an assignment, you'll finish with a case report to paste into the Week 12 Lab submission in Blackboard. For fun, you'll finish with your scores and can try another case.</p>
    </div></section>`;
-  const nm=document.getElementById("nm"),go=document.getElementById("go");
-  const fun=document.getElementById("fun");const upd=()=>{go.disabled=S.name.trim().length<3||S.pick==null;fun.disabled=S.pick==null};
+  const nm=document.getElementById("nm"),go=document.getElementById("go"),fun=document.getElementById("fun"),st=document.getElementById("start"),nb=document.getElementById("namebox");
+  const upd=()=>{go.disabled=S.pick==null;fun.disabled=S.pick==null;st.disabled=S.name.trim().length<3||S.pick==null};
   nm.addEventListener("input",()=>{S.name=nm.value;upd()});
+  nm.addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!st.disabled)st.click()});
   app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.pick;app.querySelectorAll("[data-pick]").forEach(x=>{const on=+x.dataset.pick===S.pick;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});upd()});
-  go.onclick=()=>{S.mode="assign";startCase(S.pick)};
-  fun.onclick=()=>{S.mode="fun";if(S.name.trim().length<1)S.name="Practice "+Math.floor(Math.random()*1e6);startCase(S.pick)};
+  go.onclick=()=>{if(S.name.startsWith("Practice "))S.name="";S.askName=true;nb.hidden=false;upd();nm.focus()};
+  st.onclick=()=>{S.mode="assign";startCase(S.pick)};
+  fun.onclick=()=>{S.mode="fun";S.askName=false;if(S.name.trim().length<1||S.name.startsWith("Practice "))S.name="Practice "+Math.floor(Math.random()*1e6);startCase(S.pick)};
 }
 
 function vFile(){
