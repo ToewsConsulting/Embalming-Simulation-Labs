@@ -253,6 +253,12 @@ body.modal-open{overflow:hidden}
 .dots button.cur{border-color:var(--accent);color:var(--accent)}
 .steps li.nav{cursor:pointer}
 .steps li.nav:hover,.steps li.nav:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.casepick{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 12px;line-height:1.3}
+.casepick .cn{font-weight:700}
+.casepick .cd{font-size:.82rem;color:var(--muted)}
+.casepick:hover{border-color:var(--accent)}
+.casepick.on{border-color:var(--accent);background:var(--bg);box-shadow:inset 0 0 0 1px var(--accent)}
 </style>
 
 <div class="wrap">
@@ -743,15 +749,18 @@ function vSign(){
     <p>It's your first day in the NTCC prep room. Before anyone embalms, you'll find and inspect each part of the room, fix what's wrong, suit up, set your instrument tray, and handle what comes up during the day.</p>
     <p class="muted">Wrong choices show you what would happen. Some lead to a harder situation you have to fix. Everything you choose is recorded in your report.</p>
     ${S.mode?`<div class="note warn">You're already working on ${esc(C().home)}. Use the steps at the top to keep going. Choosing an option below starts over and clears your progress.</div>`:""}
-    <p class="qlabel">Are you completing this for an assignment or just playing for fun?</p>
+    <div class="stack" style="gap:6px"><span class="qlabel">Choose your funeral home</span><div class="cases" role="radiogroup" aria-label="Choose your funeral home">${CASES.map((cc,i)=>`<button class="casepick${S.pick===i?" on":""}" role="radio" aria-checked="${S.pick===i}" data-pick="${i}"><span class="cn">${esc(cc.home)}</span><span class="cd">Room ${cc.code.slice(-1)}</span></button>`).join("")}</div></div>
     <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name.startsWith("Practice ")?"":S.name)}"><span class="muted" style="font-size:.85rem">Needed for an assignment. Optional for fun.</span></div>
-    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.name.trim().length<3?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun">Just for fun</button></div>
+    <p class="qlabel">Are you completing this for an assignment or just playing for fun?</p>
+    <div class="row" style="gap:10px;flex-wrap:wrap"><button class="btn" id="go" ${S.name.trim().length<3||S.pick==null?"disabled":""}>For an assignment</button><button class="btn ghost" id="fun" ${S.pick==null?"disabled":""}>Just for fun</button></div>
     <p class="muted" style="font-size:.88rem">For an assignment, you'll finish with a report to paste into the Week 2 Lab submission in Blackboard. For fun, you'll finish with your scores and can try another room.</p>
    </div></section>`;
-  const nm=document.getElementById("nm"),go=document.getElementById("go");
-  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=S.name.trim().length<3});
-  go.onclick=()=>{S.mode="assign";reset(hashName(S.name));S.step=1;render()};
-  document.getElementById("fun").onclick=()=>{S.mode="fun";if(S.name.trim().length<1)S.name="Practice "+Math.floor(Math.random()*1e6);reset(S.name.startsWith("Practice ")?Math.floor(Math.random()*CASES.length):hashName(S.name));S.step=1;render()};
+  const nm=document.getElementById("nm"),go=document.getElementById("go"),fun=document.getElementById("fun");
+  const upd=()=>{go.disabled=S.name.trim().length<3||S.pick==null;fun.disabled=S.pick==null};
+  nm.addEventListener("input",()=>{S.name=nm.value;upd()});
+  app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.pick;app.querySelectorAll("[data-pick]").forEach(x=>{const on=+x.dataset.pick===S.pick;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});upd()});
+  go.onclick=()=>{S.mode="assign";reset(S.pick);S.step=1;render()};
+  fun.onclick=()=>{S.mode="fun";if(S.name.trim().length<1)S.name="Practice "+Math.floor(Math.random()*1e6);reset(S.pick);S.step=1;render()};
 }
 const INFO={
  door:{label:"the prep room door",i:"Admittance to the prep room is by authorization only: licensees, registered students and trainees, and officials like the medical examiner. The door locks, carries a private sign, and the room is never a hallway to other parts of the building. (EHTP p. 60; p. 66)"},
@@ -940,7 +949,7 @@ const words=s=>s.trim().split(/\s+/).filter(Boolean).length;
 const MINS={diff:25,feedback:10};
 function reportText(){
   const c=C();const s=scores();const d=new Date();
-  let t=`MRTS 2244 WEEK 2 LAB: PREP ROOM READY\nStudent: ${S.name.trim()}\nCase: ${c.code}, ${c.home}${S.ci===hashName(S.name)?" (assigned case)":" (extra practice case)"}\nCompleted: ${d.toLocaleString()}\n`;
+  let t=`MRTS 2244 WEEK 2 LAB: PREP ROOM READY\nStudent: ${S.name.trim()}\nCase: ${c.code}, ${c.home} (chosen by student)\nCompleted: ${d.toLocaleString()}\n`;
   t+=`SCORES: Found on first click ${s.found1}/${ITEMS.length} (wrong clicks ${s.misses}) | Right call first try ${s.fix1}/${ITEMS.length} | PPE checks ${s.ppe} | Instruments ${s.instFirst}/${TASKS.length} first try | Scenarios ${s.scFirst}/${s.scN} first try | Complications caused ${s.detours}\n\n`;
   t+=`ROOM INSPECTION\n`;S.find.order.forEach((id,n)=>{const it=ITEMS.find(x=>x.id===id);const l=S.find.log[id];const L=choiceList(it);const fin=L.find(o=>o.ok);t+=`${n+1}. ${it.name}: ${isBad(id)?"PROBLEM":"set up correctly"}`;if(l.misses.length)t+=` [clicked ${l.misses.map(m=>ITEMS.find(x=>x.id===m).name).join(", ")} first]`;t+=`\n`;if(isBad(id))t+=`   Fix: ${fin.t}\n`;if(l.fix.length>1)t+=`   Earlier choices: ${l.fix.slice(0,-1).map(j=>L[j].t).join(" | ")}\n`});
   t+=`\nPPE: ${PPE.filter(x=>x.need===1||(x.need==="eye"&&S.ppe.sel.includes(x.id))).map(x=>x.n).join(", ")}\n`;S.ppe.log.slice(0,-1).forEach((l,i)=>{t+=`   Check ${i+1}: missing ${l.missing.length} item(s)${l.extra.length?`; also chose ${l.extra.join(", ")}`:""}\n`});

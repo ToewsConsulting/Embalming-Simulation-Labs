@@ -166,6 +166,12 @@ details.calc summary{font-family:var(--f-display);font-weight:600;font-size:1.1r
 .tipbox ul{margin:0;padding-left:20px;font-size:.92rem;display:flex;flex-direction:column;gap:3px}
 .tipbox ul.wn{color:var(--muted);font-size:.86rem}
 .tipbox .src{font-size:.78rem;color:var(--muted)}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.casepick{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:8px;padding:10px 12px;line-height:1.3}
+.casepick .cn{font-weight:700}
+.casepick .cd{font-size:.82rem;color:var(--muted)}
+.casepick:hover{border-color:var(--accent)}
+.casepick.on{border-color:var(--accent);background:var(--bg);box-shadow:inset 0 0 0 1px var(--accent)}
 </style>
 
 <div class="wrap">
@@ -552,15 +558,18 @@ function vSignIn(){
    <div class="chart">${figure(null,{id:"s"})}<div class="legend"><span>Supine, anterior view</span><span>R = decedent's right</span></div></div>
    <div class="panel stack">
     <h2>Pre-embalming analysis and treatment: moisture</h2>
-    <p>You'll get a case file for one decedent. Examine the body at each marked point and identify what you find. Then embalm the case, making each decision as it comes up. Things won't always go to plan.</p>
+    <p>Choose a case file below. Examine the body at each marked point and identify what you find. Then embalm the case, making each decision as it comes up. Things won't always go to plan.</p>
     <p class="muted">Wrong choices show you what would happen on the table. Some send you down a harder path you have to fix. Every choice is recorded in your case report.</p>
     <p class="muted">At the end you'll copy your case report and paste it into the Week 12 Lab submission in Blackboard.</p>
+    <div class="stack" style="gap:6px"><span class="qlabel" style="font-weight:600">Choose your case</span><div class="cases" role="radiogroup" aria-label="Choose your case">${CASES.map((cc,i)=>`<button class="casepick${S.pick===i?" on":""}" role="radio" aria-checked="${S.pick===i}" data-pick="${i}"><span class="cn">Case ${cc.code.slice(-1)}</span><span class="cd">${esc(cc.file.Decedent)}. ${esc(cc.file.Cause)}</span></button>`).join("")}</div></div>
     <div class="stack" style="gap:6px"><label for="nm">Your full name, as it appears in Blackboard</label><input type="text" id="nm" autocomplete="name" value="${esc(S.name)}"></div>
-    <button class="btn" id="go" ${S.name.trim().length<3?"disabled":""}>Open case file</button>
+    <button class="btn" id="go" ${S.name.trim().length<3||S.pick==null?"disabled":""}>Open case file</button>
    </div></section>`;
   const nm=document.getElementById("nm"),go=document.getElementById("go");
-  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=S.name.trim().length<3});
-  go.onclick=()=>{S.ci=hashName(S.name);S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()};
+  const ready=()=>S.name.trim().length>=3&&S.pick!=null;
+  nm.addEventListener("input",()=>{S.name=nm.value;go.disabled=!ready()});
+  app.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{S.pick=+b.dataset.pick;app.querySelectorAll("[data-pick]").forEach(x=>{const on=+x.dataset.pick===S.pick;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});go.disabled=!ready()});
+  go.onclick=()=>{S.ci=S.pick;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()};
 }
 
 function vFile(){
@@ -746,7 +755,7 @@ const MINS={diff:25,feedback:10};
 function reportText(){
   const c=C();const s=scores();const d=new Date();const bn=id=>{const b=BOTTLES.find(x=>x.id===id);return b.name+" ("+b.sub+")"};
   let t=`MRTS 2244 WEEK 12 LAB: MOISTURE CASE REPORT\n`;
-  t+=`Student: ${S.name.trim()}\nCase file: ${c.code}${S.ci===hashName(S.name)?" (assigned case)":" (extra practice case)"}\nCompleted: ${d.toLocaleString()}\n`;
+  t+=`Student: ${S.name.trim()}\nCase file: ${c.code} (chosen by student)\nCompleted: ${d.toLocaleString()}\n`;
   const tm=S.path.filter(p=>p.done&&c.nodes[p.id].type==="shelf").reduce((a,p)=>a+(p.misses||0),0);
   t+=`SCORES: Exam ${s.ex}/${s.exN} on first check (${S.examRound||1} check${(S.examRound||1)>1?"s":""}) | Decisions ${s.tr}/${s.trN} on first try | Complications caused ${s.detours} | Tanks rejected ${tm}\n\n`;
   t+=`DECEDENT\n`;Object.entries(c.file).forEach(([k,v])=>t+=`${k}: ${v}\n`);
