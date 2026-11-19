@@ -254,11 +254,11 @@ const CASES=[
    {t:"Start with a mild first gallon to clear the blood congestion and discolorations, then switch to stronger solution for the rest.",ok:1,next:"a2",c:"With heart failure, a mild first gallon clears the congestion. Stronger solutions follow to meet the preservative demand of the edema. (EHTP p. 319)"},
    {t:"Use the strong solution from the very first ounce.",c:"The strong solution set the blood in place before it drained. The face and neck stayed congested and dark. (EHTP p. 319)"},
    {t:"Run a full gallon of pre-injection fluid first.",c:"In renal failure, pre-injection can make tissues swell easily. The face and hands puffed up. (EHTP p. 336)"}]},
-  a2:{type:"shelf",waterless:1,sd:1,t:"Trunk tank",s:"After the mild first gallon, build the strong tank for the trunk and legs. Click bottles to add them. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b3",co:"b5"},next:"aM",mix:{gal:2,min:4,max:6,co:[1,3],good:"Strong enough to counteract the secondary dilution from the edema and the nitrogenous wastes from kidney failure. (EHTP p. 308; p. 313)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206) Kidney wastes also neutralize formaldehyde. (EHTP p. 313)",high:"It firmed, but it wasted fluid and started to gray the tissues."},fb:{
+  a2:{type:"shelf",waterless:1,sd:"Kidney failure adds to the demand. Nitrogenous wastes neutralize formaldehyde, so this body needs even more preservative than edema alone. (EHTP p. 336)",t:"Trunk tank",s:"After the mild first gallon, build the strong tank for the trunk and legs. Click bottles to add them. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b3",co:"b5"},next:"aM",mix:{gal:2,min:6,max:10,co:[1,3],good:"Strong enough to meet a very high preservative demand. The edema dilutes the solution, and the nitrogenous wastes from kidney failure neutralize formaldehyde. (EHTP p. 308; p. 336)",low:"Severe edema on top of kidney failure needs at least 6%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected (EHTP p. 308; p. 206). Kidney failure raises the demand even more. Nitrogenous wastes neutralize formaldehyde, and it has been estimated that six times more preservative is needed (EHTP p. 336).",high:"It firmed, but it wasted fluid and started to gray the tissues."},fb:{
    b9:"Not for this case. With kidney failure, pre-injection may not be advised because the tissues swell easily. (EHTP p. 336)",
    b1:"This adds moisture to tissue that is already waterlogged. The face and legs would swell more. (EHTP p. 309)",
-   b2:"A medium index gets diluted by all the extra tissue water. With kidney failure, a high-index fluid is advised. (EHTP p. 313)",
-   b3:"Right pick. A high index stays strong enough after the edema dilutes it, and kidney failure calls for high-index fluid. (EHTP p. 313)",
+   b2:"A medium index gets diluted by all the extra tissue water. With kidney failure, a high-index fluid is advised. (EHTP p. 336)",
+   b3:"Right pick. A high index stays strong enough after the edema dilutes it, and kidney failure calls for high-index fluid. (EHTP p. 336)",
    b4:"Humectants hold moisture in. That is the opposite of what this body needs.",
    b5:"Right pick. Edema corrective makes the solution hypertonic, which draws edema out of the tissue spaces into the drainage. (EHTP p. 117)",
    b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
@@ -685,7 +685,7 @@ function vShelf(c,node,e){
     const txt=neu?"Dye is optional. It helps you see where the solution goes, but it does not solve a moisture problem.":(node.fb[lastB.id]||"");
     fb=`<div class="note ${good||neu?"ok":"warn"}"><b>${esc(lastB.name)}, ${esc(lastB.sub)}.</b> ${esc(lastB.desc)}<br>${esc(txt)}${good||neu?"":" Remove it from the tank."}</div>`;}
   const inTank=id=>e.items.includes(id);
-  const m=mixOf(e,node);const mx=node.mix;const scale=8;const showRange=e.misses>0||e.done;
+  const m=mixOf(e,node);const mx=node.mix;const scale=Math.max(8,Math.ceil((node.mix.max+2)/2)*2);const showRange=e.misses>0||e.done;
   const zone=!m.artB?"":m.over?"over":!showRange?"open":m.st<mx.min?"low":m.st>mx.max?"high":"in";
   const zoneTxt={"":m.multiArt?"Use only one arterial fluid in the tank.":"Add an arterial fluid to see the strength.",over:"The chemicals take up more than the whole tank. Use a bigger tank or fewer bottles.",open:"Lock in the tank when you think the strength is right for this case.",low:"Below the range for this case.",high:"Above the range for this case.",in:"In range for this case."}[zone];
   const stepper=(key,label,val,sub,dis)=>`<div class="stp"><span class="stl">${label}</span><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="sb" data-k="${key}" data-d="-1" ${dis||e.done?"disabled":""} aria-label="Less ${label}">&minus;</button><span class="sv">${val}</span><button class="sb" data-k="${key}" data-d="1" ${dis||e.done?"disabled":""} aria-label="More ${label}">+</button></div><span class="ssub">${sub}</span></div>`;
@@ -703,7 +703,7 @@ function vShelf(c,node,e){
      </div>
      <div class="gauge">
       <div class="gtrack">${showRange?`<div class="gband" style="left:${mx.min/scale*100}%;width:${(mx.max-mx.min)/scale*100}%"></div>`:""}<div class="gfill ${zone}" style="width:${Math.min(100,m.st/scale*100)}%"></div></div>
-      <div class="gticks">${[0,2,4,6,8].map(v=>`<span>${v}%</span>`).join("")}</div>
+      <div class="gticks">${Array.from({length:scale/2+1},(_,i)=>i*2).map(v=>`<span>${v}%</span>`).join("")}</div>
      </div>
      <div class="strength ${zone}"><b>${m.artB?fmt(m.st)+"%":"--"}</b><span>${zoneTxt}</span></div>
      <p class="formula">${m.artB?`(${m.aoz} oz arterial x ${m.idx} index) / ${m.tank} oz tank = ${fmt(m.st)}%`:"Strength = (ounces of arterial x index) / total ounces in the tank"}</p>
@@ -713,7 +713,7 @@ function vShelf(c,node,e){
   let lockFb="";
   if(e.lockMsg)lockFb=`<div class="note ${e.done?"ok":"warn"}"><b>On the table:</b> ${esc(e.lockMsg)}</div>`;
   const WL=WATERLESS[S.cur];if(e.done&&WL)lockFb+=`<div class="tipbox"><span class="tk">Another option: waterless embalming</span><p>${esc(WL.lead)}</p><p class="wt">${esc(WL.title)}:</p><ul>${WL.recipe.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><ul class="wn">${WL.notes.map(r=>`<li>${esc(r)}</li>`).join("")}</ul><p class="src">Source: ${esc(ADAMS)}</p></div>`;
-  const sd=node.sd?`<div class="tipbox"><span class="tk">Edema case: think about secondary dilution</span><p>Once it's injected, your solution mixes with the fluid already in the tissues and gets weaker. With edema there's a lot of extra fluid, so the secondary dilution is great. Mix strong enough to counteract it. (EHTP p. 206; p. 308)</p></div>`:"";
+  const sd=node.sd?`<div class="tipbox"><span class="tk">Edema case: think about secondary dilution</span><p>Once it's injected, your solution mixes with the fluid already in the tissues and gets weaker. With edema there's a lot of extra fluid, so the secondary dilution is great. Mix strong enough to counteract it. (EHTP p. 206; p. 308)</p>${typeof node.sd==="string"?`<p>${esc(node.sd)}</p>`:""}</div>`:"";
   return `${sd}${shelfHtml}${fb}${mixer}${lockFb}`;
 }
 function vTreat(){
