@@ -330,12 +330,12 @@ const CASES=[
    {t:"Apply a light coat of massage cream to the face, lips, and hands, and keep the body covered.",ok:1,next:"b2",c:"Massage cream and coverings slow surface drying during and after embalming. (EHTP p. 304; p. 306)"},
    {t:"Leave the face uncovered so you can watch it during injection.",c:"Air moving across the body dried the lips and eyelids further. (EHTP p. 306)"},
    {t:"Wipe the face with solvent to clean it.",c:"Solvent dehydrates the skin. The lips cracked. (EHTP p. 305)"}]},
-  b2:{type:"shelf",t:"Build your tank",s:"Look back at your findings. Click bottles to add them to the tank. You need one arterial fluid and one co-injection. Then set the tank size and bottles to get the right strength.",need:{art:"b1",co:"b4"},next:"bM",mix:{gal:2,min:2,max:2.5,co:"eq",good:"A 2 to 2.5% solution preserves her for a 2-day wait without over-drying. (EHTP p. 304; p. 306)",low:"Too weak to preserve her for a 2-day wait. Areas stayed soft and began to discolor. (EHTP p. 306)",high:"It pulled moisture from her face and fingers. The wrinkling and browning got worse. (EHTP p. 151)"},fb:{
-   b9:"It can help condition the vessels and clear drug residue from her cancer treatment, but it is not a humectant. Your humectant co-injection is what fills out the hollow tissue.",
+  b2:{type:"shelf",t:"Build your tank",s:"Look back at your findings. Click bottles to add them to the tank. You need one arterial fluid. A co-injection is up to you. Then set the tank size and bottles to get the right strength.",need:{art:"b1",co:null},opt:["b4"],next:"bM",mix:{gal:2,min:2,max:4,good:"A 2 to 4% solution preserves her for a 2-day wait without over-drying. (EHTP p. 304; p. 306)",low:"Too weak to preserve her for a 2-day wait. Areas stayed soft and began to discolor. (EHTP p. 306)",high:"It pulled moisture from her face and fingers. The wrinkling and browning got worse. (EHTP p. 151)"},fb:{
+   b9:"Good choice as a co-injection. It conditions the vessels and helps clear drug residue from her cancer treatment. Your humectant arterial does the work of filling out the hollow tissue.",
    b1:"Right pick. A lower index lets you keep the strength mild to moderate without over-drying her. (EHTP p. 151)",
    b2:"It would work at a mild strength, but the lower index gives you more room to add volume without over-drying. There is a better fit on the shelf.",
    b3:"A high index pulls more moisture out of tissue that is already dry. Her face would wrinkle and darken. (EHTP p. 151)",
-   b4:"Right pick. Humectant adds and holds moisture. Use about the same amount as the arterial fluid. Too much humectant has the opposite effect and dehydrates. (EHTP p. 306)",
+   b4:"Optional. Your arterial fluid already has humectant built in, so you don't need to add more. If you do, keep it modest. Too much humectant has the opposite effect and dehydrates. (EHTP p. 306)",
    b5:"Edema corrective removes water. She needs more moisture, not less. The swollen hand gets treated separately.",
    b7:"Cavity fluid is far too harsh to inject arterially. It goes in by trocar after arterial injection.",
    b8:"Tissue builder fills hollows, but it goes in by hypodermic after arterial injection. It never goes in the tank. (EHTP p. 118)"}},
@@ -407,7 +407,7 @@ const CASES=[
    {t:"Both common carotids and the right internal jugular for the trunk, arms, and head, plus the femoral arteries for the legs",ok:1,next:"c2h",c:"Both carotids give you restricted cervical injection, and the femorals give you separate control of the legs. The carotids are rarely sclerotic in an older body. (EHTP p. 183; p. 315)"},
    {t:"Radial arteries only",c:"The radials are small and far from the legs and face. You had no control of distribution."},
    {t:"Right femoral only, toward the head",c:"Injecting toward the head from the femoral sends solution to both sides of the face at once. That is the opposite of what a swollen face needs."}]},
-  c2h:{type:"shelf",sd:1,t:"Trunk, arms, and head tank",s:"Build the tank for the trunk, arms, and head. Look at your findings. You need one arterial fluid. Decide whether this tank needs a co-injection. Then mix it to the right strength.",need:{art:"b2",co:null},next:"c2l",mix:{gal:2,min:4,max:5,good:"Strong enough to counteract the secondary dilution from the edema without being harsh on the face. (EHTP p. 308)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"Too strong for the face. It firmed and grayed the swollen tissue without bringing it down."},fb:{
+  c2h:{type:"shelf",sd:1,t:"Trunk, arms, and head tank",s:"Build the tank for the trunk, arms, and head. Look at your findings. You need one arterial fluid. Decide whether this tank needs a co-injection. Then mix it to the right strength.",need:{art:"b2",co:null},next:"c2l",mix:{gal:2,min:4,max:6,good:"Strong enough to counteract the secondary dilution from the edema without being harsh on the face. (EHTP p. 308)",low:"An edema case needs at least 4%. Consider the secondary dilution: the excess fluid in the edematous tissues dilutes the solution further once it's injected. (EHTP p. 308; p. 206)",high:"Too strong for the face. It firmed and grayed the swollen tissue without bringing it down."},fb:{
    b9:"Optional. It can help condition the vessels in an older body. It won't change the solid edema.",
    b1:"Its built-in humectants add moisture. The face is already full of fluid inside the cells. Use a general-purpose fluid mixed to at least 4%.",
    b2:"Right pick. A general-purpose fluid mixed to at least 4% counters the secondary dilution without the harshness of a high index on the face.",
@@ -566,7 +566,7 @@ const C=()=>CASES[S.ci];
 const SECT=["Sign in","Case file","Examine","Embalm","Report"];
 function secDone(k){if(k===0)return !!S.mode;if(k===1)return !!S.mode;if(k===2)return !!S.mode&&examDone();if(k===3)return !!S.finished;if(k===4)return !!S.copied;return false}
 function setSteps(){const rl=document.querySelector('#steps li[data-s="4"]');if(rl)rl.textContent=S.mode==="fun"?"Finish":"Report";
- document.querySelectorAll("#steps li").forEach(li=>{const k=+li.dataset.s;const open=(!!S.mode&&(k!==3||examDone()))||k===0;if(k===3&&S.mode&&!examDone())li.title="Finish the exam first";else li.removeAttribute("title");li.className=(k===S.step?"on":secDone(k)?"done":"")+(open?" nav":"");li.tabIndex=open?0:-1;li.setAttribute("role","button");li.setAttribute("aria-current",k===S.step?"step":"false");
+ document.querySelectorAll("#steps li").forEach(li=>{const k=+li.dataset.s;const open=!!S.mode||k===0;li.className=(k===S.step?"on":secDone(k)?"done":"")+(open?" nav":"");li.tabIndex=open?0:-1;li.setAttribute("role","button");li.setAttribute("aria-current",k===S.step?"step":"false");
   li.onclick=()=>{if(!open||k===S.step)return;S.step=k;render()};li.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();li.onclick()}}})}
 function startCase(ci){S.ci=ci;S.exam={};S.sel=null;S.cur=C().start;S.path=[];S.finished=false;S.copied=false;S.examRound=0;S.ref={diff:"",feedback:""};S.step=1;render()}
 function render(top){setSteps();[vSignIn,vFile,vExam,vTreat,vReport][S.step]();if(top!==false)window.scrollTo({top:0})}
@@ -659,12 +659,12 @@ function bottleSvg(b){
 }
 const BOTTLE_OZ=16;
 function tankArts(e){return (e.items||[]).map(id=>BOTTLES.find(b=>b.id===id)).filter(b=>b.cat==="art")}
-function tankCos(e){return (e.items||[]).map(id=>BOTTLES.find(b=>b.id===id)).filter(b=>b.cat==="co")}
+function tankCos(e){return (e.items||[]).map(id=>BOTTLES.find(b=>b.id===id)).filter(b=>b.cat==="co"||b.id==="b9")}
 function mixOf(e,node){
   const arts=tankArts(e);const artB=arts.length===1?arts[0]:null;const hasCo=tankCos(e).length>0;
   const idx=artB?+artB.tag:0;const tank=e.gal*128;const aoz=artB?e.artN*BOTTLE_OZ:0;const coz=hasCo?e.coN*BOTTLE_OZ:0;
   const st=tank>0&&idx?aoz*idx/tank:0;const has=id=>(e.items||[]).includes(id);
-  return {artB,idx,tank,aoz,coz,st,water:Math.max(0,tank-aoz-coz-(has("b9")?8:0)-(has("b6")?1:0)),over:aoz+coz>tank,multiArt:arts.length>1,hasCo};
+  return {artB,idx,tank,aoz,coz,st,water:Math.max(0,tank-aoz-coz-(has("b6")?1:0)),over:aoz+coz>tank,multiArt:arts.length>1,hasCo};
 }
 const fmt=n=>(Math.round(n*100)/100).toString();
 const bt=n=>`${fmt(n)} bottle${n===1?"":"s"}`;
@@ -675,12 +675,12 @@ function tankSvg(e,node){
   return `<svg viewBox="0 0 140 170" aria-hidden="true"><rect x="18" y="16" width="104" height="138" rx="8" fill="#eef3f6" stroke="#8796a2" stroke-width="3"/><rect x="22" y="${top}" width="96" height="${h}" rx="4" fill="${col}" opacity="${art?Math.min(.95,.35+m.st/8):.7}"/><g stroke="#8796a2" stroke-width="1.5"><line x1="110" y1="${150-118/3}" x2="120" y2="${150-118/3}"/><line x1="110" y1="${150-236/3}" x2="120" y2="${150-236/3}"/><line x1="110" y1="32" x2="120" y2="32"/></g><text x="102" y="${153-118/3}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">1</text><text x="102" y="${153-236/3}" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">2</text><text x="102" y="35" font-family="IBM Plex Mono,monospace" font-size="9" fill="#56636d" text-anchor="end">3</text><rect x="56" y="154" width="28" height="12" fill="#4a5560"/></svg>`;
 }
 function coRule(mx){if(!mx.co)return null;return mx.co==="eq"?"about the same amount of co-injection as arterial fluid (within half a bottle)":`${fmt(mx.co[0])} to ${fmt(mx.co[1])} bottles of co-injection`}
-function coOk(e,mx){if(!mx.co)return true;if(mx.co==="eq")return Math.abs(e.coN-e.artN)<=0.5;return e.coN>=mx.co[0]&&e.coN<=mx.co[1]}
+function coOk(e,mx){if(!mx.co)return true;if(!tankCos(e).length)return false;if(mx.co==="eq")return Math.abs(e.coN-e.artN)<=0.5;return e.coN>=mx.co[0]&&e.coN<=mx.co[1]}
 function vShelf(c,node,e){
   if(e.gal==null){e.gal=node.mix.gal;e.artN=0;e.coN=0.5;e.misses=0;e.items=[];}
   const lastB=e.last?BOTTLES.find(b=>b.id===e.last):null;
   let fb="";
-  if(lastB&&!e.lockMsg){const good=lastB.id===node.need.art||lastB.id===node.need.co||lastB.cat==="aid";const neu=lastB.cat==="neutral";
+  if(lastB&&!e.lockMsg){const good=lastB.id===node.need.art||lastB.id===node.need.co||lastB.cat==="aid"||(node.opt||[]).includes(lastB.id);const neu=lastB.cat==="neutral";
     const txt=neu?"Dye is optional. It helps you see where the solution goes, but it does not solve a moisture problem.":(node.fb[lastB.id]||"");
     fb=`<div class="note ${good||neu?"ok":"warn"}"><b>${esc(lastB.name)}, ${esc(lastB.sub)}.</b> ${esc(lastB.desc)}<br>${esc(txt)}${good||neu?"":" Remove it from the tank."}</div>`;}
   const inTank=id=>e.items.includes(id);
@@ -698,7 +698,7 @@ function vShelf(c,node,e){
      <div class="stps">
       ${stepper("gal","Tank size",fmt(e.gal)+" gal",m.tank+" oz",false)}
       ${stepper("artN","Arterial fluid",bt(e.artN),m.artB?`${m.aoz} oz, index ${m.idx}`:"Add one arterial first",!m.artB)}
-      ${stepper("coN","Co-injection",bt(e.coN),m.hasCo?`${m.coz} oz`:node.need.co?"Add a co-injection first":"None in this tank",!m.hasCo)}
+      ${stepper("coN","Co-injection",bt(e.coN),m.hasCo?`${m.coz} oz`:node.need.co?"Add a co-injection first":"Optional for this tank",!m.hasCo)}
      </div>
      <div class="gauge">
       <div class="gtrack">${showRange?`<div class="gband" style="left:${mx.min/scale*100}%;width:${(mx.max-mx.min)/scale*100}%"></div>`:""}<div class="gfill ${zone}" style="width:${Math.min(100,m.st/scale*100)}%"></div></div>
@@ -706,7 +706,7 @@ function vShelf(c,node,e){
      </div>
      <div class="strength ${zone}"><b>${m.artB?fmt(m.st)+"%":"--"}</b><span>${zoneTxt}</span></div>
      <p class="formula">${m.artB?`(${m.aoz} oz arterial x ${m.idx} index) / ${m.tank} oz tank = ${fmt(m.st)}%`:"Strength = (ounces of arterial x index) / total ounces in the tank"}</p>
-     <p class="muted" style="font-size:.82rem">Each bottle is ${BOTTLE_OZ} oz. 1 gallon = 128 oz. Water fills the rest of the tank${m.artB?` (about ${Math.round(m.water)} oz)`:""}. Dye and the vascular conditioner are small additions and don't change the strength.</p>
+     <p class="muted" style="font-size:.82rem">Each bottle is ${BOTTLE_OZ} oz. 1 gallon = 128 oz. Water fills the rest of the tank${m.artB?` (about ${Math.round(m.water)} oz)`:""}. Co-injections, including the vascular conditioner, take up room in the tank but don't change the strength. Dye is a small addition.</p>
      ${e.done?"":`<button class="btn" id="lock" ${m.artB&&(node.need.co?m.hasCo:true)&&!m.over&&e.artN>0?"":"disabled"}>Lock in this tank</button>`}
     </div></div>`;
   let lockFb="";
@@ -741,7 +741,7 @@ function vTreat(){
     </div>
     <div class="stack thist">
      <details class="panel hist" ${innerWidth>820?"open":""}><summary><h3>Steps completed (${nSteps})</h3></summary>${trail?`<ol class="trail">${trail}</ol>`:`<p class="muted">None yet.</p>`}</details>
-     <details class="panel hist" ${innerWidth>820?"open":""}><summary><h3>Your examination findings</h3></summary><ul class="findings">${REGIONS.map(r=>`<li><span>${r.name}</span><span class="v">${esc(c.exam[r.id].a)}</span></li>`).join("")}</ul></details>
+     <details class="panel hist" ${innerWidth>820?"open":""}><summary><h3>Your examination findings</h3></summary>${examDone()?`<ul class="findings">${REGIONS.map(r=>`<li><span>${r.name}</span><span class="v">${esc(c.exam[r.id].a)}</span></li>`).join("")}</ul>`:`<p class="muted">Finish the exam to see your findings here.</p>`}</details>
     </div></section>`;
   if(shelf){
     app.querySelectorAll(".bottle").forEach(b=>b.onclick=()=>{const id=b.dataset.b;const bo=BOTTLES.find(x=>x.id===id);e.last=id;e.lockMsg=null;
@@ -753,12 +753,12 @@ function vTreat(){
       e[k]=Math.min(lim[1],Math.max(lim[0],Math.round((e[k]+d*lim[2])*100)/100));e.lockMsg=null;keep()});
     const lock=document.getElementById("lock");
     if(lock)lock.onclick=()=>{const m=mixOf(e,node);const mx=node.mix;e.last=null;
-      const wrong=e.items.filter(id=>{const bo=BOTTLES.find(x=>x.id===id);return bo.cat!=="neutral"&&bo.cat!=="aid"&&id!==node.need.art&&id!==node.need.co});
+      const wrong=e.items.filter(id=>{const bo=BOTTLES.find(x=>x.id===id);return bo.cat!=="neutral"&&bo.cat!=="aid"&&id!==node.need.art&&id!==node.need.co&&!(node.opt||[]).includes(id)});
       if(wrong.length){e.misses++;e.lockMsg=`The tank has the wrong chemical for this case: ${wrong.map(id=>BOTTLES.find(x=>x.id===id).sub).join(", ")}. ${node.fb[wrong[0]]||""} Fix the tank and lock it in again.`}
       else if(m.st<mx.min){e.misses++;e.lockMsg=`${fmt(m.st)}% is too weak. ${mx.low} Adjust the tank and lock it in again.`}
       else if(m.st>mx.max){e.misses++;e.lockMsg=`${fmt(m.st)}% is too strong. ${mx.high} Adjust the tank and lock it in again.`}
       else if(!coOk(e,mx)){e.misses++;e.lockMsg=`The strength is right, but ${bt(e.coN)} of co-injection is off for this tank. Use ${coRule(mx)}. ${mx.co==="eq"?"The book recommends equal amounts of co-injection and arterial fluid, and too much humectant dehydrates (EHTP p. 306).":"How much edema corrective to use depends on how severe the edema is (EHTP p. 117)."} Adjust and lock it in again.`}
-      else{e.done=true;e.aid=e.items.includes("b9");e.dye=e.items.includes("b6");e.final={gal:e.gal,artN:e.artN,coN:e.coN,st:m.st,aoz:m.aoz,coz:m.coz,idx:m.idx};e.lockMsg=`${fmt(m.st)}%${node.need.co?` with ${bt(e.coN)} of co-injection`:""} is right for this case. ${mx.good}`}
+      else{e.done=true;e.aid=e.items.includes("b9");e.dye=e.items.includes("b6");e.final={gal:e.gal,artN:e.artN,coN:e.coN,st:m.st,aoz:m.aoz,coz:m.coz,idx:m.idx,items:[...e.items]};e.lockMsg=`${fmt(m.st)}%${m.hasCo?` with ${bt(e.coN)} of co-injection`:""} is right for this case. ${mx.good}`}
       keep()};
   } else app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;e.tries.push(i);if(node.o[i].ok)e.done=true;keep()});
   const go=document.getElementById("go");
@@ -790,7 +790,7 @@ function reportText(){
   t+=`\nEMBALMING DECISIONS (correct on first try: ${s.tr} of ${s.trN}; complications caused by choices: ${s.detours})\n`;
   S.path.filter(p=>p.done).forEach((p,i)=>{const nd=c.nodes[p.id];
     t+=`${i+1}. ${nd.t}${nd.ev==="Things got worse"?" (complication from an earlier choice)":""}\n`;
-    if(nd.type==="shelf"){const f=p.final;t+=`   Chemicals: ${bn(nd.need.art)}${nd.need.co?" + "+bn(nd.need.co):""}${p.aid?" + vascular conditioner":""}${p.dye?" + active dye":""}\n   Mix: ${fmt(f.gal)} gal tank (${f.gal*128} oz), ${bt(f.artN)} arterial (${f.aoz} oz)${nd.need.co?`, ${bt(f.coN)} co-injection (${f.coz} oz)`:""}\n   Strength: (${f.aoz} x ${f.idx}) / ${f.gal*128} = ${fmt(f.st)}%\n`;if(p.misses)t+=`   Tanks locked in wrong first: ${p.misses}\n`;const w=wrongShelf(p,nd);if(w.length)t+=`   Wrong bottles tried: ${w.map(bn).join(" | ")}\n`;}
+    if(nd.type==="shelf"){const f=p.final;t+=`   Chemicals: ${(f.items||[nd.need.art,nd.need.co].filter(Boolean)).map(bn).join(" + ")}\n   Mix: ${fmt(f.gal)} gal tank (${f.gal*128} oz), ${bt(f.artN)} arterial (${f.aoz} oz)${f.coz?`, ${bt(f.coN)} co-injection (${f.coz} oz)`:""}\n   Strength: (${f.aoz} x ${f.idx}) / ${f.gal*128} = ${fmt(f.st)}%\n`;if(p.misses)t+=`   Tanks locked in wrong first: ${p.misses}\n`;const w=wrongShelf(p,nd);if(w.length)t+=`   Wrong bottles tried: ${w.map(bn).join(" | ")}\n`;}
     else if(p.went!=null){t+=`   Chose: ${nd.o[p.went].t}\n   Result: ${nd.o[p.went].c} This caused a complication.\n`;if(p.tries.length>1)t+=`   Earlier choices: ${p.tries.slice(0,-1).map(j=>nd.o[j].t).join(" | ")}\n`;}
     else{t+=`   Final: ${nd.o.find(o=>o.ok).t}\n`;if(p.tries.length>1)t+=`   Earlier choices: ${p.tries.slice(0,-1).map(j=>nd.o[j].t).join(" | ")}\n`;}});
   const f=(k,blank)=>S.ref[k].trim()||blank;
